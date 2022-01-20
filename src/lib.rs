@@ -1,3 +1,21 @@
+pub struct ControlMessage {}
+
+pub struct DataMessage {}
+
+pub enum Message {
+    Control(ControlMessage),
+    Data(DataMessage),
+}
+
+enum MessageType {
+    Control,
+    Data,
+}
+
+struct Flags {
+    data: u16,
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
