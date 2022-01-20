@@ -1,0 +1,10 @@
+[package]
+name = "rl2tp"
+version = "0.1.0"
+authors = ["Kim Nilsson <kim@wayoftao.net>"]
+license = "MIT"
+homepage = "https://github.com/nilssonk/rl2tp"
+repository = "https://github.com/nilssonk/rl2tp"
+edition = "2021"
+
+[dependencies]
