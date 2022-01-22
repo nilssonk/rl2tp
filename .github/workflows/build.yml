@@ -1,0 +1,13 @@
+name: Build and Lint
+on: [push]
+jobs:
+  Build-and-Lint:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          cargo build
+      - name: Lint
+        run: |
+          cargo clippy
