@@ -1,7 +1,7 @@
-name: Build and Lint
+name: Build, Lint and Test
 on: [push]
 jobs:
-  Build-and-Lint:
+  Build-Lint-Test:
     runs-on: [self-hosted]
     steps:
       - uses: actions/checkout@v2
@@ -11,3 +11,6 @@ jobs:
       - name: Lint
         run: |
           cargo clippy
+      - name: Test
+        run: |
+          cargo test
