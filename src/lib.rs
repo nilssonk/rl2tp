@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 pub struct ControlMessage {}
 
 pub struct DataMessage {}
@@ -7,6 +10,7 @@ pub enum Message {
     Data(DataMessage),
 }
 
+#[derive(Debug, PartialEq)]
 enum MessageType {
     Control,
     Data,
@@ -19,9 +23,9 @@ struct Flags {
 impl Flags {
     pub fn new(input: &[u8]) -> Self {
         let lsb = input[0] as u16;
-        let msb = (input[1] & 0xf3) as u16;
+        let msb = input[1] as u16;
         Self {
-            data: (msb << 8) & lsb,
+            data: (msb << 8) | lsb,
         }
     }
 
@@ -61,14 +65,5 @@ impl Flags {
 
     pub fn get_version(&self) -> u8 {
         ((self.data >> 12) & 0xf) as u8
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
     }
 }
