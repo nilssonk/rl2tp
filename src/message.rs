@@ -1,7 +1,9 @@
 #[cfg(test)]
 mod tests;
 
-use crate::flags::*;
+mod flags;
+
+use flags::*;
 
 #[derive(Debug, PartialEq)]
 pub struct ControlMessage<'a> {
