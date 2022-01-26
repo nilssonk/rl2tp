@@ -1,3 +1,4 @@
+mod flags;
 pub mod types;
 
 pub enum AVP {
