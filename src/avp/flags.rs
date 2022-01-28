@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 #[derive(Debug, PartialEq)]
 pub struct Flags {
     data: u8,
