@@ -2,6 +2,7 @@ mod flags;
 pub mod types;
 
 use crate::common::{read_u16_be_unchecked, ResultStr};
+use flags::Flags;
 use phf::phf_map;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -36,38 +37,38 @@ pub enum AVP {
     SequencingRequired(types::SequencingRequired),
 }
 
-use flags::Flags;
 use AVP::*;
 
-static AVP_CODES: phf::Map<u16, fn(&[u8]) -> AVP> = phf_map! {
-    0u16 => |data| MessageType(types::MessageType::from(data)),
-    1u16 => |data| ResultCode(types::ResultCode::from(data)),
-    2u16 => |data| ProtocolVersion(types::ProtocolVersion::from(data)),
-    3u16 => |data| FramingCapabilities(types::FramingCapabilities::from(data)),
-    4u16 => |data| BearerCapabilities(types::BearerCapabilities::from(data)),
-    5u16 => |data| TieBreaker(types::TieBreaker::from(data)),
-    6u16 => |data| FirmwareRevision(types::FirmwareRevision::from(data)),
-    7u16 => |data| HostName(types::HostName::from(data)),
-    8u16 => |data| VendorName(types::VendorName::from(data)),
-    9u16 => |data| AssignedTunnelId(types::AssignedTunnelId::from(data)),
-    10u16 => |data| ReceiveWindowSize(types::ReceiveWindowSize::from(data)),
-    11u16 => |data| Challenge(types::Challenge::from(data)),
-    12u16 => |data| Q931CauseCode(types::Q931CauseCode::from(data)),
-    13u16 => |data| ChallengeResponse(types::ChallengeResponse::from(data)),
-    14u16 => |data| AssignedSessionId(types::AssignedSessionId::from(data)),
-    15u16 => |data| CallSerialNumber(types::CallSerialNumber::from(data)),
-    16u16 => |data| MinimumBps(types::MinimumBps::from(data)),
-    17u16 => |data| MaximumBps(types::MaximumBps::from(data)),
-    18u16 => |data| BearerType(types::BearerType::from(data)),
-    19u16 => |data| FramingType(types::FramingType::from(data)),
-    21u16 => |data| CalledNumber(types::CalledNumber::from(data)),
-    22u16 => |data| CallingNumber(types::CallingNumber::from(data)),
-    23u16 => |data| SubAddress(types::SubAddress::from(data)),
-    24u16 => |data| TxConnectSpeed(types::TxConnectSpeed::from(data)),
-    25u16 => |data| PhysicalChannelId(types::PhysicalChannelId::from(data)),
-    37u16 => |data| PrivateGroupId(types::PrivateGroupId::from(data)),
-    38u16 => |data| RxConnectSpeed(types::RxConnectSpeed::from(data)),
-    39u16 => |data| SequencingRequired(types::SequencingRequired::from(data))
+type DecodeFunction = fn(&[u8]) -> ResultStr<AVP>;
+static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
+    0u16 => |data| Ok(MessageType(types::MessageType::from(data)?)),
+    1u16 => |data| Ok(ResultCode(types::ResultCode::from(data)?)),
+    2u16 => |data| Ok(ProtocolVersion(types::ProtocolVersion::from(data)?)),
+    3u16 => |data| Ok(FramingCapabilities(types::FramingCapabilities::from(data)?)),
+    4u16 => |data| Ok(BearerCapabilities(types::BearerCapabilities::from(data)?)),
+    5u16 => |data| Ok(TieBreaker(types::TieBreaker::from(data)?)),
+    6u16 => |data| Ok(FirmwareRevision(types::FirmwareRevision::from(data)?)),
+    7u16 => |data| Ok(HostName(types::HostName::from(data)?)),
+    8u16 => |data| Ok(VendorName(types::VendorName::from(data)?)),
+    9u16 => |data| Ok(AssignedTunnelId(types::AssignedTunnelId::from(data)?)),
+    10u16 => |data| Ok(ReceiveWindowSize(types::ReceiveWindowSize::from(data)?)),
+    11u16 => |data| Ok(Challenge(types::Challenge::from(data)?)),
+    12u16 => |data| Ok(Q931CauseCode(types::Q931CauseCode::from(data)?)),
+    13u16 => |data| Ok(ChallengeResponse(types::ChallengeResponse::from(data)?)),
+    14u16 => |data| Ok(AssignedSessionId(types::AssignedSessionId::from(data)?)),
+    15u16 => |data| Ok(CallSerialNumber(types::CallSerialNumber::from(data)?)),
+    16u16 => |data| Ok(MinimumBps(types::MinimumBps::from(data)?)),
+    17u16 => |data| Ok(MaximumBps(types::MaximumBps::from(data)?)),
+    18u16 => |data| Ok(BearerType(types::BearerType::from(data)?)),
+    19u16 => |data| Ok(FramingType(types::FramingType::from(data)?)),
+    21u16 => |data| Ok(CalledNumber(types::CalledNumber::from(data)?)),
+    22u16 => |data| Ok(CallingNumber(types::CallingNumber::from(data)?)),
+    23u16 => |data| Ok(SubAddress(types::SubAddress::from(data)?)),
+    24u16 => |data| Ok(TxConnectSpeed(types::TxConnectSpeed::from(data)?)),
+    25u16 => |data| Ok(PhysicalChannelId(types::PhysicalChannelId::from(data)?)),
+    37u16 => |data| Ok(PrivateGroupId(types::PrivateGroupId::from(data)?)),
+    38u16 => |data| Ok(RxConnectSpeed(types::RxConnectSpeed::from(data)?)),
+    39u16 => |data| Ok(SequencingRequired(types::SequencingRequired::from(data)?))
 };
 
 impl AVP {
@@ -141,7 +142,7 @@ impl AVP {
         let attribute_type = unsafe { read_u16_be_unchecked(&input[offset..]) };
         offset += 2;
         match AVP_CODES.get(&attribute_type) {
-            Some(constructor) => Ok(constructor(&input[offset..])),
+            Some(constructor) => constructor(&input[offset..]),
             None => Err("Could not decode mandatory AVP"),
         }
     }
