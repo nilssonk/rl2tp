@@ -3,6 +3,9 @@ use crate::common::ResultStr;
 mod message_type;
 pub use message_type::*;
 
+mod random_vector;
+pub use random_vector::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ResultCode {}
 #[derive(Clone, Debug, PartialEq)]
