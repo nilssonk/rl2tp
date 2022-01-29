@@ -11,4 +11,5 @@ edition = "2021"
 fail-on-warnings = []
 
 [dependencies]
+num_enum = "0.5"
 phf = {version = "0.10", features=["macros"]}
