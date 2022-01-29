@@ -1,7 +1,8 @@
 use crate::common::ResultStr;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct MessageType {}
+mod message_type;
+pub use message_type::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ResultCode {}
 #[derive(Clone, Debug, PartialEq)]
@@ -57,11 +58,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl MessageType {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        Ok(Self {})
-    }
-}
 impl ResultCode {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();

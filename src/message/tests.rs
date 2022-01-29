@@ -51,7 +51,7 @@ fn from_bytes_control_valid() {
         0x00, 0x08, // Flags and Length
         0x00, 0x00, // Vendor ID
         0x00, 0x00, // Attribute Type (Message Type)
-        0x00, 0x00, // Type 0
+        0x00, 0x01, // Type 1 (StartControlConnectionRequest)
     ];
     let m = Message::from_bytes(
         &input,
@@ -67,7 +67,9 @@ fn from_bytes_control_valid() {
             session_id: 3,
             ns: 4,
             nr: 5,
-            avps: vec![AVP::MessageType(types::MessageType {})],
+            avps: vec![AVP::MessageType(
+                types::MessageType::StartControlConnectionRequest
+            )],
         }))
     );
 }
