@@ -1,4 +1,4 @@
-use crate::flags::{Flags, MessageFlagType};
+use super::{Flags, MessageFlagType};
 
 #[test]
 fn from_bytes() {
