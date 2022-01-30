@@ -7,10 +7,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          cargo build
+          cargo build --features=fail-on-warnings
       - name: Lint
         run: |
-          cargo clippy
+          cargo clippy --features=fail-on-warnings
       - name: Test
         run: |
-          cargo test
+          cargo test --features=fail-on-warnings
