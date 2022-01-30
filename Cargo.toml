@@ -8,3 +8,4 @@ repository = "https://github.com/nilssonk/rl2tp"
 edition = "2021"
 
 [dependencies]
+phf = {version = "0.10", features=["macros"]}

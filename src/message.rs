@@ -3,31 +3,32 @@ mod tests;
 
 mod flags;
 
+use crate::avp::AVP;
 use flags::*;
 
-#[derive(Debug, PartialEq)]
-pub struct ControlMessage<'a> {
-    length: u16,
-    tunnel_id: u16,
-    session_id: u16,
-    ns: u16,
-    nr: u16,
-    data: &'a [u8],
+#[derive(Clone, Debug, PartialEq)]
+pub struct ControlMessage {
+    pub length: u16,
+    pub tunnel_id: u16,
+    pub session_id: u16,
+    pub ns: u16,
+    pub nr: u16,
+    pub avps: Vec<AVP>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct DataMessage<'a> {
-    length: Option<u16>,
-    tunnel_id: u16,
-    session_id: u16,
-    ns_nr: Option<(u16, u16)>,
-    offset: Option<(u16, u16)>,
-    data: &'a [u8],
+    pub length: Option<u16>,
+    pub tunnel_id: u16,
+    pub session_id: u16,
+    pub ns_nr: Option<(u16, u16)>,
+    pub offset: Option<(u16, u16)>,
+    pub data: &'a [u8],
 }
 
 #[derive(Debug, PartialEq)]
 pub enum Message<'a> {
-    Control(ControlMessage<'a>),
+    Control(ControlMessage),
     Data(DataMessage<'a>),
 }
 
@@ -161,13 +162,26 @@ impl<'a> Message<'a> {
                 }
                 let (ns, nr) = read_pair(&mut offset)?;
 
+                let (avp_and_err, result) = AVP::from_bytes_greedy(&input[offset..length as usize]);
+                if let Err(e) = result {
+                    return Err(e);
+                }
+
+                if avp_and_err.iter().any(|x| x.is_err()) {
+                    // @TODO: Better error reporting
+                    // @TODO: Allow errors?
+                    return Err("AVP errors detected in control message");
+                }
+
+                let avps = avp_and_err.into_iter().filter_map(|x| x.ok()).collect();
+
                 Ok(Message::Control(ControlMessage {
                     length,
                     tunnel_id,
                     session_id,
                     ns,
                     nr,
-                    data: &input[offset..],
+                    avps,
                 }))
             }
         }
