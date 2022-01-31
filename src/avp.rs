@@ -1,6 +1,7 @@
 mod flags;
 pub mod types;
 
+use crate::common::{read_u16_be_unchecked, ResultStr};
 use phf::phf_map;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -69,8 +70,6 @@ static AVP_CODES: phf::Map<u16, fn(&[u8]) -> AVP> = phf_map! {
     39u16 => |data| SequencingRequired(types::SequencingRequired::from(data))
 };
 
-type ResultStr<T> = Result<T, &'static str>;
-
 impl AVP {
     pub fn from_bytes_greedy(input: &[u8]) -> (Vec<ResultStr<Self>>, ResultStr<()>) {
         let mut avp_start_offset = 0;
@@ -129,20 +128,18 @@ impl AVP {
     }
 
     fn decode(input: &[u8]) -> ResultStr<Self> {
-        let read_u16 = |off: &mut usize| unsafe {
-            let result = u16::from_be_bytes(input[*off..*off + 2].try_into().unwrap_unchecked());
-            *off += 2;
-            result
-        };
+        assert!(input.len() >= 4);
 
         let mut offset = 0;
 
-        let vendor_id = read_u16(&mut offset);
+        let vendor_id = unsafe { read_u16_be_unchecked(&input[offset..]) };
+        offset += 2;
         if vendor_id != 0 {
             return Err("Unsupported AVP vendor ID encountered");
         }
 
-        let attribute_type = read_u16(&mut offset);
+        let attribute_type = unsafe { read_u16_be_unchecked(&input[offset..]) };
+        offset += 2;
         match AVP_CODES.get(&attribute_type) {
             Some(constructor) => Ok(constructor(&input[offset..])),
             None => Err("Could not decode mandatory AVP"),
