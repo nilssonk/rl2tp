@@ -1,3 +1,5 @@
+use crate::common::ResultStr;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct MessageType {}
 #[derive(Clone, Debug, PartialEq)]
@@ -56,142 +58,142 @@ pub struct PrivateGroupId {}
 pub struct SequencingRequired {}
 
 impl MessageType {
-    pub fn from(_data: &[u8]) -> Self {
-        Self {}
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
+        Ok(Self {})
     }
 }
 impl ResultCode {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl ProtocolVersion {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl FramingCapabilities {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl BearerCapabilities {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl TieBreaker {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl FirmwareRevision {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl HostName {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl VendorName {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl AssignedTunnelId {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl ReceiveWindowSize {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl Challenge {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl ChallengeResponse {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl Q931CauseCode {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl AssignedSessionId {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl CallSerialNumber {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl MinimumBps {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl MaximumBps {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl BearerType {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl FramingType {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl CalledNumber {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl CallingNumber {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl SubAddress {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl TxConnectSpeed {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl RxConnectSpeed {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl PhysicalChannelId {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl PrivateGroupId {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
 impl SequencingRequired {
-    pub fn from(_data: &[u8]) -> Self {
+    pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
     }
 }
