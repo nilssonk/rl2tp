@@ -6,8 +6,9 @@ pub use message_type::*;
 mod random_vector;
 pub use random_vector::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct ResultCode {}
+pub mod result_code;
+pub use result_code::ResultCode;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ProtocolVersion {}
 #[derive(Clone, Debug, PartialEq)]
@@ -61,11 +62,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl ResultCode {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl ProtocolVersion {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
