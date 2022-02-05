@@ -9,8 +9,9 @@ pub use random_vector::*;
 pub mod result_code;
 pub use result_code::ResultCode;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct ProtocolVersion {}
+mod protocol_version;
+pub use protocol_version::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct FramingCapabilities {}
 #[derive(Clone, Debug, PartialEq)]
@@ -62,11 +63,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl ProtocolVersion {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl FramingCapabilities {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
