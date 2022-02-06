@@ -27,8 +27,9 @@ pub use firmware_revision::*;
 mod host_name;
 pub use host_name::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct VendorName {}
+mod vendor_name;
+pub use vendor_name::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct AssignedTunnelId {}
 #[derive(Clone, Debug, PartialEq)]
@@ -68,11 +69,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl VendorName {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl AssignedTunnelId {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
