@@ -24,8 +24,9 @@ pub use tie_breaker::*;
 mod firmware_revision;
 pub use firmware_revision::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct HostName {}
+mod host_name;
+pub use host_name::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct VendorName {}
 #[derive(Clone, Debug, PartialEq)]
@@ -67,11 +68,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl HostName {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl VendorName {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
