@@ -342,3 +342,47 @@ fn tie_breaker() {
         }))
     );
 }
+
+#[test]
+fn firmware_revision() {
+    // ControlMessage with Firmware Revision AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x1c, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x01, // Type 1 (StartControlConnectionRequest)
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x06, // Attribute Type (Firmware Revision)
+        0xf0, 0x0d, // Firmware Revision
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 28,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::StartControlConnectionRequest),
+                AVP::FirmwareRevision(0xf00d.into()),
+            ],
+        }))
+    );
+}
