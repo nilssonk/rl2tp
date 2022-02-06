@@ -15,8 +15,9 @@ pub use protocol_version::*;
 mod framing_capabilities;
 pub use framing_capabilities::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct BearerCapabilities {}
+mod bearer_capabilities;
+pub use bearer_capabilities::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct TieBreaker {}
 #[derive(Clone, Debug, PartialEq)]
@@ -64,11 +65,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl BearerCapabilities {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl TieBreaker {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
