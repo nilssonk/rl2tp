@@ -298,3 +298,47 @@ fn bearer_capabilities() {
         _ => panic!(),
     }
 }
+
+#[test]
+fn tie_breaker() {
+    // ControlMessage with Tie Breaker AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x22, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x01, // Type 1 (StartControlConnectionRequest)
+        // AVP Payload
+        0x00, 0x0e, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x05, // Attribute Type (Tie Breaker)
+        0xde, 0xad, 0xbe, 0xef, 0xf0, 0x0d, 0xfa, 0xde, // Tie breaker value
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 34,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::StartControlConnectionRequest),
+                AVP::TieBreaker(0xdeadbeeff00dfade.into()),
+            ],
+        }))
+    );
+}
