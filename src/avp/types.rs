@@ -12,8 +12,9 @@ pub use result_code::ResultCode;
 mod protocol_version;
 pub use protocol_version::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct FramingCapabilities {}
+mod framing_capabilities;
+pub use framing_capabilities::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct BearerCapabilities {}
 #[derive(Clone, Debug, PartialEq)]
@@ -63,11 +64,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl FramingCapabilities {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl BearerCapabilities {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();

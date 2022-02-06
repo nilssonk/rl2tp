@@ -182,3 +182,61 @@ fn protocol_version() {
         }))
     );
 }
+
+#[test]
+fn framing_capabilities() {
+    // ControlMessage with Framing Capabilities AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x1e, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x01, // Type 1 (StartControlConnectionRequest)
+        // AVP Payload
+        0x00, 0x0a, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x03, // Attribute Type (Framing Capabilities)
+        0x00, 0x00, 0x00, 0xc0, // Async and sync framing supported
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 30,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::StartControlConnectionRequest),
+                AVP::FramingCapabilities(types::FramingCapabilities::from_raw(0x000000c0))
+            ],
+        }))
+    );
+
+    match m {
+        Ok(Message::Control(real_m)) => {
+            let avp = &real_m.avps[1];
+            match avp {
+                AVP::FramingCapabilities(framing) => {
+                    assert!(framing.is_async_framing_supported());
+                    assert!(framing.is_sync_framing_supported());
+                }
+                _ => panic!(),
+            }
+        }
+        _ => panic!(),
+    }
+}
