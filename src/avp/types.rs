@@ -36,8 +36,9 @@ pub use assigned_tunnel_id::*;
 mod receive_window_size;
 pub use receive_window_size::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct Challenge {}
+mod challenge;
+pub use challenge::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ChallengeResponse {}
 #[derive(Clone, Debug, PartialEq)]
@@ -71,11 +72,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl Challenge {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl ChallengeResponse {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
