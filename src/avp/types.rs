@@ -45,8 +45,9 @@ pub use challenge_response::*;
 mod q931_cause_code;
 pub use q931_cause_code::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct AssignedSessionId {}
+mod assigned_session_id;
+pub use assigned_session_id::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct CallSerialNumber {}
 #[derive(Clone, Debug, PartialEq)]
@@ -74,11 +75,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl AssignedSessionId {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl CallSerialNumber {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
