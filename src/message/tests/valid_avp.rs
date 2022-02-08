@@ -664,3 +664,54 @@ fn challenge_response() {
         }))
     );
 }
+
+#[test]
+fn q931_cause_code() {
+    // ControlMessage with Q.931 Cause Code AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x27, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x0e, // Type 14 (CallDisconnectNotify)
+        // AVP Payload
+        0x00, 0x13, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x0c, // Attribute Type (Q.931 Cause Code)
+        // Q.931 Cause Code
+        0x01, 0x02, // Cause Code
+        0x03, // Cause Msg
+        0x54, 0x65, 0x73, 0x74, 0x20, 0x65, 0x72, 0x72, 0x6f, 0x72, // "Test error"
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 39,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::CallDisconnectNotify),
+                AVP::Q931CauseCode(types::Q931CauseCode {
+                    cause_code: 0x0102,
+                    cause_msg: 0x03,
+                    advisory: Some(String::from("Test error")),
+                })
+            ],
+        }))
+    );
+}
