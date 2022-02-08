@@ -39,8 +39,9 @@ pub use receive_window_size::*;
 mod challenge;
 pub use challenge::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct ChallengeResponse {}
+mod challenge_response;
+pub use challenge_response::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Q931CauseCode {}
 #[derive(Clone, Debug, PartialEq)]
@@ -72,11 +73,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl ChallengeResponse {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl Q931CauseCode {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
