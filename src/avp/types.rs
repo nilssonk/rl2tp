@@ -21,8 +21,9 @@ pub use bearer_capabilities::*;
 mod tie_breaker;
 pub use tie_breaker::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct FirmwareRevision {}
+mod firmware_revision;
+pub use firmware_revision::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct HostName {}
 #[derive(Clone, Debug, PartialEq)]
@@ -66,11 +67,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl FirmwareRevision {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl HostName {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
