@@ -1,6 +1,7 @@
 [package]
 name = "rl2tp"
 version = "0.1.0"
+description = "A Rust implementation of the L2TP protocol."
 authors = ["Kim Nilsson <kim@wayoftao.net>"]
 license = "MIT"
 homepage = "https://github.com/nilssonk/rl2tp"
