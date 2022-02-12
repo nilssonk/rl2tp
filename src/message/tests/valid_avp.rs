@@ -1733,3 +1733,61 @@ fn proxy_authen_response() {
         }))
     );
 }
+
+#[test]
+fn call_errors() {
+    // ControlMessage with Call Errors AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x34, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x0f, // Type 15 (WanErrorNotify)
+        // AVP Payload
+        0x00, 0x20, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x22, // Attribute Type (Call Errors)
+        // Call Errors
+        0x00, 0x00, // Reserved
+        0xde, 0xad, 0xbe, 0xef, // CRC Errors
+        0xf0, 0x0d, 0xfa, 0xde, // Framing Errors
+        0xda, 0xda, 0xb0, 0xb0, // Hardware Overruns
+        0xff, 0xff, 0xcc, 0xcc, // Buffer Overruns
+        0xaa, 0xbb, 0xcc, 0xdd, // Time-out Errors
+        0x11, 0x22, 0x33, 0x44, // Alignment Errors
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 52,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::WanErrorNotify),
+                AVP::CallErrors(types::CallErrors {
+                    crc_errors: 0xdeadbeef,
+                    framing_errors: 0xf00dfade,
+                    hardware_overruns: 0xdadab0b0,
+                    buffer_overruns: 0xffffcccc,
+                    timeout_errors: 0xaabbccdd,
+                    alignment_errors: 0x11223344
+                })
+            ],
+        }))
+    );
+}

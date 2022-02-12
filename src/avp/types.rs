@@ -105,3 +105,6 @@ pub use proxy_authen_id::*;
 
 mod proxy_authen_response;
 pub use proxy_authen_response::*;
+
+mod call_errors;
+pub use call_errors::*;
