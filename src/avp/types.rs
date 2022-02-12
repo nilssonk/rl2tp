@@ -48,8 +48,9 @@ pub use q931_cause_code::*;
 mod assigned_session_id;
 pub use assigned_session_id::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct CallSerialNumber {}
+mod call_serial_number;
+pub use call_serial_number::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct MinimumBps {}
 #[derive(Clone, Debug, PartialEq)]
@@ -75,11 +76,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl CallSerialNumber {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl MinimumBps {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
