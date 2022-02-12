@@ -30,8 +30,9 @@ pub use host_name::*;
 mod vendor_name;
 pub use vendor_name::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct AssignedTunnelId {}
+mod assigned_tunnel_id;
+pub use assigned_tunnel_id::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ReceiveWindowSize {}
 #[derive(Clone, Debug, PartialEq)]
@@ -69,11 +70,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl AssignedTunnelId {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl ReceiveWindowSize {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
