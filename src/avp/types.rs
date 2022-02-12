@@ -51,8 +51,9 @@ pub use assigned_session_id::*;
 mod call_serial_number;
 pub use call_serial_number::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct MinimumBps {}
+mod minimum_bps;
+pub use minimum_bps::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct MaximumBps {}
 #[derive(Clone, Debug, PartialEq)]
@@ -76,11 +77,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl MinimumBps {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl MaximumBps {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
