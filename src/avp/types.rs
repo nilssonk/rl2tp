@@ -72,8 +72,9 @@ pub use calling_number::*;
 mod sub_address;
 pub use sub_address::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct TxConnectSpeed {}
+mod tx_connect_speed;
+pub use tx_connect_speed::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct RxConnectSpeed {}
 #[derive(Clone, Debug, PartialEq)]
@@ -83,11 +84,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl TxConnectSpeed {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl RxConnectSpeed {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
