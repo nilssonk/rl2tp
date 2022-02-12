@@ -1,5 +1,3 @@
-use crate::common::ResultStr;
-
 mod message_type;
 pub use message_type::*;
 
@@ -83,12 +81,3 @@ pub use physical_channel_id::*;
 
 mod private_group_id;
 pub use private_group_id::*;
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SequencingRequired {}
-
-impl SequencingRequired {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
