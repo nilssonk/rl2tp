@@ -1054,3 +1054,49 @@ fn called_number() {
         }))
     );
 }
+
+#[test]
+fn calling_number() {
+    // ControlMessage with Calling Number AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x25, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x0a, // Type 10 (IncomingCallRequest)
+        // AVP Payload
+        0x00, 0x11, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x16, // Attribute Type (Calling Number)
+        0x54, 0x65, 0x73, 0x74, 0x20, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, // Calling Number
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 37,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::IncomingCallRequest),
+                AVP::CallingNumber(types::CallingNumber {
+                    value: "Test number".to_owned()
+                })
+            ],
+        }))
+    );
+}
