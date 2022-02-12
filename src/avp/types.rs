@@ -54,8 +54,9 @@ pub use call_serial_number::*;
 mod minimum_bps;
 pub use minimum_bps::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct MaximumBps {}
+mod maximum_bps;
+pub use maximum_bps::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct BearerType {}
 #[derive(Clone, Debug, PartialEq)]
@@ -77,11 +78,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl MaximumBps {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl BearerType {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
