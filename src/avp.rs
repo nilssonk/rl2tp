@@ -44,6 +44,7 @@ pub enum AVP {
     ProxyAuthenChallenge(types::ProxyAuthenChallenge),
     ProxyAuthenId(types::ProxyAuthenId),
     ProxyAuthenResponse(types::ProxyAuthenResponse),
+    CallErrors(types::CallErrors),
 }
 
 use AVP::*;
@@ -83,6 +84,7 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     31u16 => |data| Ok(ProxyAuthenChallenge(types::ProxyAuthenChallenge::from(data)?)),
     32u16 => |data| Ok(ProxyAuthenId(types::ProxyAuthenId::from(data)?)),
     33u16 => |data| Ok(ProxyAuthenResponse(types::ProxyAuthenResponse::from(data)?)),
+    34u16 => |data| Ok(CallErrors(types::CallErrors::from(data)?)),
     36u16 => |data| Ok(RandomVector(types::RandomVector::from(data)?)),
     37u16 => |data| Ok(PrivateGroupId(types::PrivateGroupId::from(data)?)),
     38u16 => |data| Ok(RxConnectSpeed(types::RxConnectSpeed::from(data)?)),
