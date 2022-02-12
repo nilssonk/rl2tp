@@ -41,6 +41,7 @@ pub enum AVP {
     LastReceivedLcpConfReq(types::LastReceivedLcpConfReq),
     ProxyAuthenType(types::ProxyAuthenType),
     ProxyAuthenName(types::ProxyAuthenName),
+    ProxyAuthenChallenge(types::ProxyAuthenChallenge),
 }
 
 use AVP::*;
@@ -77,6 +78,7 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     28u16 => |data| Ok(LastReceivedLcpConfReq(types::LastReceivedLcpConfReq::from(data)?)),
     29u16 => |data| Ok(ProxyAuthenType(types::ProxyAuthenType::from(data)?)),
     30u16 => |data| Ok(ProxyAuthenName(types::ProxyAuthenName::from(data)?)),
+    31u16 => |data| Ok(ProxyAuthenChallenge(types::ProxyAuthenChallenge::from(data)?)),
     36u16 => |data| Ok(RandomVector(types::RandomVector::from(data)?)),
     37u16 => |data| Ok(PrivateGroupId(types::PrivateGroupId::from(data)?)),
     38u16 => |data| Ok(RxConnectSpeed(types::RxConnectSpeed::from(data)?)),

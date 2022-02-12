@@ -96,3 +96,6 @@ pub use proxy_authen_type::*;
 
 mod proxy_authen_name;
 pub use proxy_authen_name::*;
+
+mod proxy_authen_challenge;
+pub use proxy_authen_challenge::*;
