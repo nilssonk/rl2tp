@@ -93,3 +93,6 @@ pub use last_received_lcp_conf_req::*;
 
 mod proxy_authen_type;
 pub use proxy_authen_type::*;
+
+mod proxy_authen_name;
+pub use proxy_authen_name::*;
