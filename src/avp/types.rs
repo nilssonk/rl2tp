@@ -60,8 +60,9 @@ pub use maximum_bps::*;
 mod bearer_type;
 pub use bearer_type::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct FramingType {}
+mod framing_type;
+pub use framing_type::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct CalledNumber {}
 #[derive(Clone, Debug, PartialEq)]
@@ -79,11 +80,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl FramingType {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl CalledNumber {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
