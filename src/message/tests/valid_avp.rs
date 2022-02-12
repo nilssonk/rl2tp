@@ -1686,3 +1686,49 @@ fn proxy_authen_id() {
         }))
     );
 }
+
+#[test]
+fn proxy_authen_response() {
+    // ControlMessage with Proxy Authen Response AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x1e, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x0c, // Type 12 (IncomingCallConnected)
+        // AVP Payload
+        0x00, 0x0a, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x21, // Attribute Type (Proxy Authen Response)
+        0xde, 0xad, 0xbe, 0xef, // Proxy Authen Response
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 30,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::IncomingCallConnected),
+                AVP::ProxyAuthenResponse(types::ProxyAuthenResponse {
+                    data: vec![0xde, 0xad, 0xbe, 0xef]
+                })
+            ],
+        }))
+    );
+}
