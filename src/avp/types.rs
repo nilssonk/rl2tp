@@ -102,3 +102,6 @@ pub use proxy_authen_challenge::*;
 
 mod proxy_authen_id;
 pub use proxy_authen_id::*;
+
+mod proxy_authen_response;
+pub use proxy_authen_response::*;
