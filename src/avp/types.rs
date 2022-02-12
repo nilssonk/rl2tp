@@ -87,3 +87,6 @@ pub use initial_received_lcp_conf_req::*;
 
 mod last_sent_lcp_conf_req;
 pub use last_sent_lcp_conf_req::*;
+
+mod last_received_lcp_conf_req;
+pub use last_received_lcp_conf_req::*;
