@@ -36,6 +36,7 @@ pub enum AVP {
     PhysicalChannelId(types::PhysicalChannelId),
     PrivateGroupId(types::PrivateGroupId),
     SequencingRequired,
+    InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq),
 }
 
 use AVP::*;
@@ -67,6 +68,7 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     23u16 => |data| Ok(SubAddress(types::SubAddress::from(data)?)),
     24u16 => |data| Ok(TxConnectSpeed(types::TxConnectSpeed::from(data)?)),
     25u16 => |data| Ok(PhysicalChannelId(types::PhysicalChannelId::from(data)?)),
+    26u16 => |data| Ok(InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq::from(data)?)),
     36u16 => |data| Ok(RandomVector(types::RandomVector::from(data)?)),
     37u16 => |data| Ok(PrivateGroupId(types::PrivateGroupId::from(data)?)),
     38u16 => |data| Ok(RxConnectSpeed(types::RxConnectSpeed::from(data)?)),
