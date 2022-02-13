@@ -6,7 +6,7 @@ pub struct TieBreaker {
 }
 
 impl TieBreaker {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.len() < 8 {
             return Err("Incomplete TieBreaker AVP encountered");
         }

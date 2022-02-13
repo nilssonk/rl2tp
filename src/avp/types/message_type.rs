@@ -40,7 +40,7 @@ static MESSAGE_TYPES: phf::Map<u16, MessageType> = phf_map! {
 };
 
 impl MessageType {
-    pub fn from(data: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(data: &[u8]) -> ResultStr<Self> {
         if data.len() < 2 {
             return Err("Incomplete MessageType AVP payload encountered");
         }

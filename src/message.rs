@@ -162,7 +162,7 @@ impl<'a> Message<'a> {
                 }
                 let (ns, nr) = read_pair(&mut offset)?;
 
-                let avp_and_err = AVP::from_bytes_greedy(&input[offset..length as usize]);
+                let avp_and_err = AVP::try_from_bytes_greedy(&input[offset..length as usize]);
 
                 if let Some(first) = avp_and_err.first() {
                     match first {

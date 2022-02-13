@@ -6,7 +6,7 @@ pub struct LastSentLcpConfReq {
 }
 
 impl LastSentLcpConfReq {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.is_empty() {
             return Err("Incomplete LastSentLcpConfReq AVP encountered");
         }

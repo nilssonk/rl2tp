@@ -7,7 +7,7 @@ pub struct Accm {
 }
 
 impl Accm {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.len() < 10 {
             return Err("Incomplete Accm AVP encountered");
         }

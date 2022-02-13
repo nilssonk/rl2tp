@@ -6,7 +6,7 @@ pub struct ChallengeResponse {
 }
 
 impl ChallengeResponse {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.len() < 16 {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }

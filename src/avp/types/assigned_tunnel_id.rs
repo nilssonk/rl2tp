@@ -6,7 +6,7 @@ pub struct AssignedTunnelId {
 }
 
 impl AssignedTunnelId {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.len() < 2 {
             return Err("Incomplete AssignedTunnelId AVP encountered");
         }

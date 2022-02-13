@@ -11,7 +11,7 @@ pub struct CallErrors {
 }
 
 impl CallErrors {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.len() < 26 {
             return Err("Incomplete CallErrors AVP encountered");
         }

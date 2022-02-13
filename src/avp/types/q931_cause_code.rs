@@ -8,7 +8,7 @@ pub struct Q931CauseCode {
 }
 
 impl Q931CauseCode {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
+    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
         if input.len() < 3 {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }
