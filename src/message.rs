@@ -162,9 +162,13 @@ impl<'a> Message<'a> {
                 }
                 let (ns, nr) = read_pair(&mut offset)?;
 
-                let (avp_and_err, result) = AVP::from_bytes_greedy(&input[offset..length as usize]);
-                if let Err(e) = result {
-                    return Err(e);
+                let avp_and_err = AVP::from_bytes_greedy(&input[offset..length as usize]);
+
+                if let Some(first) = avp_and_err.first() {
+                    match first {
+                        Ok(AVP::MessageType(_)) => (),
+                        _ => return Err("First AVP is not a MessageType AVP"),
+                    }
                 }
 
                 if avp_and_err.iter().any(|x| x.is_err()) {
