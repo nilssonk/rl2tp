@@ -1,4 +1,4 @@
-use crate::common::{read_u16_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 mod code;
 pub use code::*;
@@ -14,25 +14,25 @@ pub struct ResultCode {
 }
 
 impl ResultCode {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 2 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 2 {
             return Err("Incomplete ResultCode AVP payload encountered");
         }
 
-        let code_raw = unsafe { read_u16_be_unchecked(input) };
+        let code_raw = unsafe { reader.read_u16_be_unchecked() };
         let code = CodeValue::from(code_raw);
 
         let mut maybe_error: Option<Error> = None;
         let mut maybe_error_message: Option<String> = None;
-        if input.len() >= 4 {
-            let error_raw = unsafe { read_u16_be_unchecked(&input[2..]) };
+        if reader.len() >= 4 {
+            let error_raw = unsafe { reader.read_u16_be_unchecked() };
             maybe_error = error_raw.try_into().ok();
             if maybe_error.is_none() {
                 return Err("Invalid ResultCode error encountered");
             }
 
-            if input.len() > 4 {
-                maybe_error_message = match std::str::from_utf8(&input[4..]) {
+            if reader.len() > 4 {
+                maybe_error_message = match std::str::from_utf8(reader.peek_bytes(reader.len())?) {
                     Ok(s) => Some(s.to_owned()),
                     Err(_) => return Err("Invalid ResultCode error message encountered"),
                 }

@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests;
 
+use crate::common::{Reader, ResultStr};
+
 #[derive(Debug, PartialEq)]
 pub enum MessageFlagType {
     Control,
@@ -13,12 +15,11 @@ pub struct Flags {
 }
 
 impl Flags {
-    pub fn from_bytes(input: &[u8]) -> Result<Self, &'static str> {
-        let array: [u8; 2] = match input.try_into() {
-            Ok(x) => x,
-            Err(_) => return Err("Incomplete flag section"),
-        };
-        let data = u16::from_le_bytes(array);
+    pub fn read(reader: &mut dyn Reader) -> ResultStr<Self> {
+        if reader.len() < 2 {
+            return Err("Incomplete flag section encountered");
+        }
+        let data = unsafe { reader.read_u16_be_unchecked() };
         Ok(Self { data })
     }
 
@@ -27,7 +28,7 @@ impl Flags {
     }
 
     pub fn get_type(&self) -> MessageFlagType {
-        if self.get_bit(0) {
+        if self.get_bit(8) {
             MessageFlagType::Control
         } else {
             MessageFlagType::Data
@@ -35,28 +36,28 @@ impl Flags {
     }
 
     pub fn has_length(&self) -> bool {
-        self.get_bit(1)
+        self.get_bit(9)
     }
 
     pub fn reserved_bits_ok(&self) -> bool {
-        [2, 3, 5, 8, 9, 10, 11]
+        [0, 1, 2, 3, 10, 11, 13]
             .into_iter()
             .all(|i| !self.get_bit(i))
     }
 
     pub fn has_ns_nr(&self) -> bool {
-        self.get_bit(4)
+        self.get_bit(12)
     }
 
     pub fn has_offset_size(&self) -> bool {
-        self.get_bit(6)
+        self.get_bit(14)
     }
 
     pub fn is_prioritized(&self) -> bool {
-        self.get_bit(7)
+        self.get_bit(15)
     }
 
     pub fn get_version(&self) -> u8 {
-        ((self.data >> 12) & 0xf) as u8
+        ((self.data >> 4) & 0xf) as u8
     }
 }

@@ -1,4 +1,4 @@
-use crate::common::{read_u32_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BearerType {
@@ -10,12 +10,12 @@ impl BearerType {
         Self { data }
     }
 
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 4 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 4 {
             return Err("Incomplete BearerType AVP encountered");
         }
 
-        let data = unsafe { read_u32_be_unchecked(input) };
+        let data = unsafe { reader.read_u32_be_unchecked() };
         Ok(Self::from_raw(data))
     }
 

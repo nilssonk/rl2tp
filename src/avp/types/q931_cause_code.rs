@@ -1,4 +1,4 @@
-use crate::common::{read_u16_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Q931CauseCode {
@@ -8,17 +8,17 @@ pub struct Q931CauseCode {
 }
 
 impl Q931CauseCode {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 3 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 3 {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }
 
-        let cause_code = unsafe { read_u16_be_unchecked(&input[..2]) };
-        let cause_msg = input[2];
+        let cause_code = unsafe { reader.read_u16_be_unchecked() };
+        let cause_msg = unsafe { reader.read_u8_unchecked() };
 
-        let advisory = if input.len() > 3 {
+        let advisory = if !reader.is_empty() {
             Some(
-                std::str::from_utf8(&input[3..])
+                std::str::from_utf8(reader.peek_bytes(reader.len())?)
                     .map_err(|_| "Parsing Q931CauseCode advisory message failed")?
                     .to_owned(),
             )

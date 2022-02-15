@@ -1,4 +1,4 @@
-use crate::common::ResultStr;
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProtocolVersion {
@@ -7,14 +7,13 @@ pub struct ProtocolVersion {
 }
 
 impl ProtocolVersion {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 2 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 2 {
             return Err("Incomplete ProtocolVersion AVP encountered");
         }
 
-        Ok(Self {
-            version: input[0],
-            revision: input[1],
-        })
+        let version = unsafe { reader.read_u8_unchecked() };
+        let revision = unsafe { reader.read_u8_unchecked() };
+        Ok(Self { version, revision })
     }
 }
