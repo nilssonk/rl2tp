@@ -1,4 +1,4 @@
-use crate::common::ResultStr;
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RandomVector {
@@ -6,13 +6,13 @@ pub struct RandomVector {
 }
 
 impl RandomVector {
-    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 4 {
+    pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 4 {
             return Err("Incomplete Random Vector AVP payload encountered");
         }
 
         Ok(Self {
-            data: unsafe { input[..4].try_into().unwrap_unchecked() },
+            data: unsafe { reader.peek_bytes(4)?.try_into().unwrap_unchecked() },
         })
     }
 }

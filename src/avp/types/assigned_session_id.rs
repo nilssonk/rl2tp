@@ -1,4 +1,4 @@
-use crate::common::{read_u16_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct AssignedSessionId {
@@ -6,12 +6,12 @@ pub struct AssignedSessionId {
 }
 
 impl AssignedSessionId {
-    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 2 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 2 {
             return Err("Incomplete AssignedSessionId AVP encountered");
         }
 
-        let value = unsafe { read_u16_be_unchecked(input) };
+        let value = unsafe { reader.read_u16_be_unchecked() };
         Ok(Self { value })
     }
 }

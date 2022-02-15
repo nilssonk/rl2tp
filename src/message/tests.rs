@@ -1,16 +1,19 @@
+use crate::common::SliceReader;
 use crate::message::*;
 
 mod valid_avp;
 
 #[test]
-fn from_bytes_data_valid() {
+fn try_read_data_valid() {
     // Data message
     let input = vec![0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0xff];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::Yes,
-        ValidateUnused::No,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -19,31 +22,32 @@ fn from_bytes_data_valid() {
             tunnel_id: 0,
             session_id: 0,
             ns_nr: None,
-            offset: None,
             data: &input[6..]
         }))
     );
 }
 
 #[test]
-fn from_bytes_data_invalid_version() {
+fn try_read_data_invalid_version() {
     // Data message with invalid version
     let input = vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::Yes,
-        ValidateUnused::No,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::No,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::No,
+        },
     );
     assert_eq!(m, Err("Invalid version encountered"));
 }
 
 #[test]
-fn from_bytes_control_valid() {
+fn try_read_control_valid() {
     // ControlMessage with Message Type AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x14, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -55,11 +59,13 @@ fn from_bytes_control_valid() {
         0x00, 0x00, // Attribute Type (Message Type)
         0x00, 0x01, // Type 1 (StartControlConnectionRequest)
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -77,7 +83,7 @@ fn from_bytes_control_valid() {
 }
 
 #[test]
-fn from_bytes_control_invalid_priority() {
+fn try_read_control_invalid_priority() {
     // ControlMessage with invalid priority
     let input = vec![
         0x83, 0x00, // Flags
@@ -89,11 +95,13 @@ fn from_bytes_control_invalid_priority() {
         0xde, 0xad, // Payload
         0xbe, 0xef,
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::No,
+            version: ValidateVersion::No,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,

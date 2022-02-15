@@ -1,4 +1,4 @@
-use crate::common::{read_u32_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MaximumBps {
@@ -6,12 +6,12 @@ pub struct MaximumBps {
 }
 
 impl MaximumBps {
-    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 4 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 4 {
             return Err("Incomplete MaximumBps AVP encountered");
         }
 
-        let value = unsafe { read_u32_be_unchecked(input) };
+        let value = unsafe { reader.read_u32_be_unchecked() };
         Ok(Self { value })
     }
 }

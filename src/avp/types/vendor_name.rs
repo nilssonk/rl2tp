@@ -1,4 +1,4 @@
-use crate::common::ResultStr;
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct VendorName {
@@ -6,13 +6,13 @@ pub struct VendorName {
 }
 
 impl VendorName {
-    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
-        if input.is_empty() {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.is_empty() {
             return Err("Incomplete VendorName AVP encountered");
         }
 
         Ok(Self {
-            data: input.to_owned(),
+            data: reader.read_bytes(reader.len())?,
         })
     }
 }

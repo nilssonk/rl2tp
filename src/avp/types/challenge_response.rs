@@ -1,4 +1,4 @@
-use crate::common::ResultStr;
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ChallengeResponse {
@@ -6,13 +6,13 @@ pub struct ChallengeResponse {
 }
 
 impl ChallengeResponse {
-    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 16 {
+    pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 16 {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }
 
         Ok(Self {
-            data: unsafe { input[..16].try_into().unwrap_unchecked() },
+            data: unsafe { reader.peek_bytes(16)?.try_into().unwrap_unchecked() },
         })
     }
 }

@@ -1,4 +1,4 @@
-use crate::common::{read_u32_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CallErrors {
@@ -11,25 +11,20 @@ pub struct CallErrors {
 }
 
 impl CallErrors {
-    pub fn try_from_bytes(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 26 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 26 {
             return Err("Incomplete CallErrors AVP encountered");
         }
 
         // Skip reserved
-        let mut offset = 2;
+        reader.skip_bytes(2);
 
-        let crc_errors = unsafe { read_u32_be_unchecked(&input[offset..]) };
-        offset += 4;
-        let framing_errors = unsafe { read_u32_be_unchecked(&input[offset..]) };
-        offset += 4;
-        let hardware_overruns = unsafe { read_u32_be_unchecked(&input[offset..]) };
-        offset += 4;
-        let buffer_overruns = unsafe { read_u32_be_unchecked(&input[offset..]) };
-        offset += 4;
-        let timeout_errors = unsafe { read_u32_be_unchecked(&input[offset..]) };
-        offset += 4;
-        let alignment_errors = unsafe { read_u32_be_unchecked(&input[offset..]) };
+        let crc_errors = unsafe { reader.read_u32_be_unchecked() };
+        let framing_errors = unsafe { reader.read_u32_be_unchecked() };
+        let hardware_overruns = unsafe { reader.read_u32_be_unchecked() };
+        let buffer_overruns = unsafe { reader.read_u32_be_unchecked() };
+        let timeout_errors = unsafe { reader.read_u32_be_unchecked() };
+        let alignment_errors = unsafe { reader.read_u32_be_unchecked() };
 
         Ok(Self {
             crc_errors,

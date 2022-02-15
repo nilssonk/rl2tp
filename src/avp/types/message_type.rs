@@ -1,4 +1,4 @@
-use crate::common::{read_u16_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 use phf::phf_map;
 
@@ -40,11 +40,12 @@ static MESSAGE_TYPES: phf::Map<u16, MessageType> = phf_map! {
 };
 
 impl MessageType {
-    pub fn try_from_bytes(data: &[u8]) -> ResultStr<Self> {
-        if data.len() < 2 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 2 {
             return Err("Incomplete MessageType AVP payload encountered");
         }
-        let id = unsafe { read_u16_be_unchecked(data) };
+        let id = unsafe { reader.read_u16_be_unchecked() };
+
         match MESSAGE_TYPES.get(&id) {
             Some(&t) => Ok(t),
             None => Err("Unknown MessageType AVP encountered"),
