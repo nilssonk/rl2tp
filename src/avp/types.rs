@@ -63,8 +63,9 @@ pub use bearer_type::*;
 mod framing_type;
 pub use framing_type::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct CalledNumber {}
+mod called_number;
+pub use called_number::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct CallingNumber {}
 #[derive(Clone, Debug, PartialEq)]
@@ -80,11 +81,6 @@ pub struct PrivateGroupId {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl CalledNumber {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl CallingNumber {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
