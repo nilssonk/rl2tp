@@ -81,16 +81,12 @@ pub use rx_connect_speed::*;
 mod physical_channel_id;
 pub use physical_channel_id::*;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct PrivateGroupId {}
+mod private_group_id;
+pub use private_group_id::*;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct SequencingRequired {}
 
-impl PrivateGroupId {
-    pub fn from(_data: &[u8]) -> ResultStr<Self> {
-        unimplemented!();
-    }
-}
 impl SequencingRequired {
     pub fn from(_data: &[u8]) -> ResultStr<Self> {
         unimplemented!();
