@@ -35,7 +35,7 @@ pub enum AVP {
     RxConnectSpeed(types::RxConnectSpeed),
     PhysicalChannelId(types::PhysicalChannelId),
     PrivateGroupId(types::PrivateGroupId),
-    SequencingRequired(types::SequencingRequired),
+    SequencingRequired,
 }
 
 use AVP::*;
@@ -70,7 +70,7 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     36u16 => |data| Ok(RandomVector(types::RandomVector::from(data)?)),
     37u16 => |data| Ok(PrivateGroupId(types::PrivateGroupId::from(data)?)),
     38u16 => |data| Ok(RxConnectSpeed(types::RxConnectSpeed::from(data)?)),
-    39u16 => |data| Ok(SequencingRequired(types::SequencingRequired::from(data)?))
+    39u16 => |data| Ok(SequencingRequired)
 };
 
 impl AVP {
