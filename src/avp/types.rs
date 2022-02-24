@@ -99,3 +99,6 @@ pub use proxy_authen_name::*;
 
 mod proxy_authen_challenge;
 pub use proxy_authen_challenge::*;
+
+mod proxy_authen_id;
+pub use proxy_authen_id::*;
