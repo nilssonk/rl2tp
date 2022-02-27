@@ -1790,3 +1790,53 @@ fn call_errors() {
         }))
     );
 }
+
+#[test]
+fn accm() {
+    // ControlMessage with ACCM AVP
+    use crate::avp::{types, AVP};
+    let input = vec![
+        0x13, 0x00, // Flags
+        0x00, 0x24, // Length
+        0x00, 0x02, // Tunnel ID
+        0x00, 0x03, // Session ID
+        0x00, 0x04, // Ns
+        0x00, 0x05, // Nr
+        // AVP Payload
+        0x00, 0x08, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x00, // Attribute Type (Message Type)
+        0x00, 0x10, // Type 15 (SetLinkInfo)
+        // AVP Payload
+        0x00, 0x10, // Flags and Length
+        0x00, 0x00, // Vendor ID
+        0x00, 0x23, // Attribute Type (ACCM)
+        // ACCM
+        0x00, 0x00, // Reserved
+        0xde, 0xad, 0xbe, 0xef, // Send ACCM
+        0xf0, 0x0d, 0xfa, 0xde, // Receive ACCM
+    ];
+    let m = Message::from_bytes(
+        &input,
+        ValidateReserved::No,
+        ValidateVersion::No,
+        ValidateUnused::Yes,
+    );
+    assert_eq!(
+        m,
+        Ok(Message::Control(ControlMessage {
+            length: 36,
+            tunnel_id: 2,
+            session_id: 3,
+            ns: 4,
+            nr: 5,
+            avps: vec![
+                AVP::MessageType(types::MessageType::SetLinkInfo),
+                AVP::Accm(types::Accm {
+                    send_accm: [0xde, 0xad, 0xbe, 0xef],
+                    receive_accm: [0xf0, 0x0d, 0xfa, 0xde],
+                })
+            ],
+        }))
+    );
+}
