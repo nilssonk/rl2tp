@@ -1,8 +1,9 @@
 mod flags;
+use flags::Flags;
+
 pub mod types;
 
 use crate::common::{read_u16_be_unchecked, ResultStr};
-use flags::Flags;
 use phf::phf_map;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -46,6 +47,7 @@ pub enum AVP {
     ProxyAuthenResponse(types::ProxyAuthenResponse),
     CallErrors(types::CallErrors),
     Accm(types::Accm),
+    Hidden(Vec<u8>),
 }
 
 use AVP::*;
@@ -93,79 +95,133 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     39u16 => |data| Ok(SequencingRequired)
 };
 
+const N_HEADER_OCTETS: usize = 6;
+const N_FLAG_LENGTH_VENDOR_OCTETS: usize = 4;
+const ATTRIBUTE_TYPE_SIZE: usize = 2;
+
 impl AVP {
-    pub fn from_bytes_greedy(input: &[u8]) -> (Vec<ResultStr<Self>>, ResultStr<()>) {
+    pub fn reveal(mut self, secret: &[u8], random_vector: &[u8]) -> ResultStr<Self> {
+        match self {
+            Self::Hidden(ref mut input) => {
+                // The first 4 octets have been peeled off and we are guaranteed to have at least 6
+                assert!(input.len() >= ATTRIBUTE_TYPE_SIZE);
+                let attribute_type = unsafe { read_u16_be_unchecked(input) };
+
+                const CHUNK_SIZE: usize = 16;
+                let chunk_data = &mut input[ATTRIBUTE_TYPE_SIZE..];
+                let n_chunks = chunk_data.len() / CHUNK_SIZE;
+
+                if chunk_data.is_empty() {
+                    return Err("Hidden AVP with empty payload encountered");
+                }
+
+                // The largest size is the size of the final intermediate value
+                let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.len();
+                let mut buffer = Vec::with_capacity(buffer_length);
+
+                if n_chunks > 1 {
+                    // The shared secret is a prefix for all chunks except the first one, so set it once for the entire loop
+                    buffer.extend_from_slice(secret);
+
+                    // Loop over chunks in reverse order
+                    for i in (1..n_chunks).rev() {
+                        let prev_chunk_start = (i - 1) * CHUNK_SIZE;
+                        let chunk_start = prev_chunk_start + CHUNK_SIZE;
+
+                        // Retain only the prefix which is guaranteed to be the shared secret
+                        buffer.truncate(secret.len());
+
+                        // The intermediate value for a given chunk is MD5(secret + previous chunk)
+                        buffer.extend_from_slice(&chunk_data[prev_chunk_start..chunk_start]);
+                        let intermediate = md5::compute(&buffer);
+
+                        // Decode with XOR
+                        for j in 0..CHUNK_SIZE {
+                            chunk_data[chunk_start + j] ^= intermediate[j];
+                        }
+                    }
+                }
+
+                // The final intermediate value is MD5(Attribute type + secret + RV)
+                buffer.clear();
+                buffer.extend_from_slice(&attribute_type.to_be_bytes());
+                buffer.extend_from_slice(secret);
+                buffer.extend_from_slice(random_vector);
+                let intermediate = md5::compute(&buffer);
+
+                // Decode with XOR
+                for j in 0..CHUNK_SIZE {
+                    chunk_data[j] ^= intermediate[j];
+                }
+
+                AVP_CODES.get(&attribute_type).map_or_else(
+                    || Err("Unknown hidden AVP encountered"),
+                    |constructor| constructor(chunk_data),
+                )
+            }
+            _ => Ok(self),
+        }
+    }
+
+    pub fn from_bytes_greedy(input: &[u8]) -> Vec<ResultStr<Self>> {
         let mut avp_start_offset = 0;
         let mut result = Vec::new();
         while avp_start_offset < input.len() {
-            const N_HEADER_OCTETS: usize = 6;
-            const N_FLAG_LENGTH_OCTETS: usize = 2;
-
-            let (flags, length) = Self::read_flags_length(
-                &input[avp_start_offset..avp_start_offset + N_FLAG_LENGTH_OCTETS],
-            );
-
+            // Note: Subsequent unsafe code depends on this check
             if input.len() < avp_start_offset + N_HEADER_OCTETS {
                 result.push(Err("Incomplete AVP header encountered"));
                 break;
             }
 
-            let mut has_error = false;
+            let (flags, length, vendor_id) =
+                Self::read_flags_length_vendor(&input[avp_start_offset..]);
 
+            let decode_start_offset = avp_start_offset + N_FLAG_LENGTH_VENDOR_OCTETS;
             let avp_end_offset = avp_start_offset + length as usize;
-            if avp_end_offset > input.len() {
-                has_error = true;
-                result.push(Err("Invalid AVP length field encountered"));
-            } else if flags.is_hidden() {
-                // @TODO: Support hidden
-                has_error = true;
-                result.push(Err("AVP with hidden flag encountered - ignoring"));
-            }
 
-            if !has_error {
-                let decode_start_offset = avp_start_offset + N_FLAG_LENGTH_OCTETS;
-                let avp = Self::decode(&input[decode_start_offset..avp_end_offset]);
-                result.push(avp);
-            }
+            let avp = if vendor_id != 0 {
+                Err("AVP with unsupported vendor ID encountered")
+            } else if avp_end_offset > input.len() {
+                Err("AVP with invalid length field encountered")
+            } else if flags.is_hidden() {
+                // Hidden AVP
+                let hidden_data = input[decode_start_offset..avp_end_offset].to_owned();
+                Ok(Self::Hidden(hidden_data))
+            } else {
+                // Regular AVP
+                Self::decode(&input[decode_start_offset..avp_end_offset])
+            };
+            result.push(avp);
 
             avp_start_offset = avp_end_offset;
         }
 
-        if let Some(first) = result.first() {
-            match first {
-                Ok(MessageType(_)) => (),
-                _ => return (result, Err("First AVP is not a MessageType AVP")),
-            }
-        }
-
-        (result, Ok(()))
+        result
     }
 
-    fn read_flags_length(input: &[u8]) -> (Flags, u16) {
+    fn read_flags_length_vendor(input: &[u8]) -> (Flags, u16, u16) {
+        assert!(input.len() >= N_FLAG_LENGTH_VENDOR_OCTETS);
+
+        // Flags and length share the first 2 octets
         let flags = Flags::from(input[0]);
         let msb = (input[0] >> 6) as u16;
         let lsb = input[1] as u16;
         let length = msb << 8 | lsb;
 
-        (flags, length)
+        // The second 2 octets are the Vendor ID
+        let vendor_id = unsafe { read_u16_be_unchecked(&input[2..]) };
+
+        (flags, length, vendor_id)
     }
 
     fn decode(input: &[u8]) -> ResultStr<Self> {
-        assert!(input.len() >= 4);
+        // The first 4 octets have been peeled off and we are guaranteed to have at least 6
+        assert!(input.len() >= ATTRIBUTE_TYPE_SIZE);
+        let attribute_type = unsafe { read_u16_be_unchecked(input) };
 
-        let mut offset = 0;
-
-        let vendor_id = unsafe { read_u16_be_unchecked(&input[offset..]) };
-        offset += 2;
-        if vendor_id != 0 {
-            return Err("Unsupported AVP vendor ID encountered");
-        }
-
-        let attribute_type = unsafe { read_u16_be_unchecked(&input[offset..]) };
-        offset += 2;
-        match AVP_CODES.get(&attribute_type) {
-            Some(constructor) => constructor(&input[offset..]),
-            None => Err("Could not decode mandatory AVP"),
-        }
+        AVP_CODES.get(&attribute_type).map_or_else(
+            || Err("Unknown AVP encountered"),
+            |constructor| constructor(&input[ATTRIBUTE_TYPE_SIZE..]),
+        )
     }
 }
