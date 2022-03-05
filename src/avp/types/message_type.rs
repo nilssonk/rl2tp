@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 use phf::phf_map;
@@ -50,5 +51,11 @@ impl MessageType {
             Some(&t) => Ok(t),
             None => Err("Unknown MessageType AVP encountered"),
         }
+    }
+}
+
+impl QueryableAVP for MessageType {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

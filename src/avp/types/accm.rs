@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -22,5 +23,11 @@ impl Accm {
             send_accm,
             receive_accm,
         })
+    }
+}
+
+impl QueryableAVP for Accm {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -25,5 +26,11 @@ impl FramingCapabilities {
 
     pub fn is_sync_framing_supported(&self) -> bool {
         ((self.data >> 7) & 0x1) != 0
+    }
+}
+
+impl QueryableAVP for FramingCapabilities {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

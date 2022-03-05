@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
@@ -25,5 +26,11 @@ impl ProxyAuthenType {
                 .try_into()
                 .map_err(|_| "Unknown ProxyAuthenType encountered")
         }
+    }
+}
+
+impl QueryableAVP for ProxyAuthenType {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

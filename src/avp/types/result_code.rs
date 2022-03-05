@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 mod code;
@@ -44,5 +45,11 @@ impl ResultCode {
             error: maybe_error,
             error_message: maybe_error_message,
         })
+    }
+}
+
+impl QueryableAVP for ResultCode {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

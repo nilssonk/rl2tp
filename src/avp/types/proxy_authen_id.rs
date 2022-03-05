@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -20,5 +21,11 @@ impl From<u16> for ProxyAuthenId {
     fn from(value: u16) -> Self {
         let masked = (value & 0xff) as u8;
         Self { value: masked }
+    }
+}
+
+impl QueryableAVP for ProxyAuthenId {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

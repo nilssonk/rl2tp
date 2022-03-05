@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -19,5 +20,11 @@ impl MaximumBps {
 impl From<u32> for MaximumBps {
     fn from(value: u32) -> Self {
         Self { value }
+    }
+}
+
+impl QueryableAVP for MaximumBps {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }
