@@ -36,7 +36,7 @@ pub enum AVP {
     RxConnectSpeed(types::RxConnectSpeed),
     PhysicalChannelId(types::PhysicalChannelId),
     PrivateGroupId(types::PrivateGroupId),
-    SequencingRequired,
+    SequencingRequired(types::SequencingRequired),
     InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq),
     LastSentLcpConfReq(types::LastSentLcpConfReq),
     LastReceivedLcpConfReq(types::LastReceivedLcpConfReq),
@@ -92,7 +92,7 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     36u16 => |reader| Ok(RandomVector(types::RandomVector::try_read(reader)?)),
     37u16 => |reader| Ok(PrivateGroupId(types::PrivateGroupId::try_read(reader)?)),
     38u16 => |reader| Ok(RxConnectSpeed(types::RxConnectSpeed::try_read(reader)?)),
-    39u16 => |reader| Ok(SequencingRequired)
+    39u16 => |reader| Ok(SequencingRequired(types::SequencingRequired::default()))
 };
 
 const N_HEADER_OCTETS: usize = 6;
