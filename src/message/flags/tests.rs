@@ -172,26 +172,26 @@ fn has_ns_nr() {
 }
 
 #[test]
-fn has_offset_size() {
+fn has_offset() {
     // All bits
     {
         let f = Flags::read(&mut SliceReader::from(&vec![0xff, 0xff])).unwrap();
-        assert_eq!(f.has_offset_size(), true);
+        assert_eq!(f.has_offset(), true);
     }
     // All but relevant bit
     {
         let f = Flags::read(&mut SliceReader::from(&vec![0xbf, 0xff])).unwrap();
-        assert_eq!(f.has_offset_size(), false);
+        assert_eq!(f.has_offset(), false);
     }
     // No bits
     {
         let f = Flags::read(&mut SliceReader::from(&vec![0x00, 0x00])).unwrap();
-        assert_eq!(f.has_offset_size(), false);
+        assert_eq!(f.has_offset(), false);
     }
     // None but relevant bit
     {
         let f = Flags::read(&mut SliceReader::from(&vec![0x40, 0x00])).unwrap();
-        assert_eq!(f.has_offset_size(), true);
+        assert_eq!(f.has_offset(), true);
     }
 }
 
