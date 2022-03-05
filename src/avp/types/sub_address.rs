@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -16,5 +17,11 @@ impl SubAddress {
             .to_owned();
 
         Ok(Self { value })
+    }
+}
+
+impl QueryableAVP for SubAddress {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

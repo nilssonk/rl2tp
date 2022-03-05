@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -19,5 +20,11 @@ impl CallSerialNumber {
 impl From<u32> for CallSerialNumber {
     fn from(value: u32) -> Self {
         Self { value }
+    }
+}
+
+impl QueryableAVP for CallSerialNumber {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

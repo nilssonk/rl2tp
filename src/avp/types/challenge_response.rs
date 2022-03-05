@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -14,5 +15,11 @@ impl ChallengeResponse {
         Ok(Self {
             data: unsafe { reader.peek_bytes(16)?.try_into().unwrap_unchecked() },
         })
+    }
+}
+
+impl QueryableAVP for ChallengeResponse {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -14,5 +15,11 @@ impl VendorName {
         Ok(Self {
             data: reader.read_bytes(reader.len())?,
         })
+    }
+}
+
+impl QueryableAVP for VendorName {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

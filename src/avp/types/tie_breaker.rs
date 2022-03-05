@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -19,5 +20,11 @@ impl TieBreaker {
 impl From<u64> for TieBreaker {
     fn from(value: u64) -> Self {
         Self { value }
+    }
+}
+
+impl QueryableAVP for TieBreaker {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

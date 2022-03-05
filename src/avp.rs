@@ -4,8 +4,10 @@ use flags::Flags;
 pub mod types;
 
 use crate::common::{Reader, ResultStr, SliceReader};
+use enum_dispatch::enum_dispatch;
 use phf::phf_map;
 
+#[enum_dispatch]
 #[derive(Clone, Debug, PartialEq)]
 pub enum AVP {
     MessageType(types::MessageType),
@@ -50,6 +52,11 @@ pub enum AVP {
     Hidden(types::Hidden),
 }
 
+#[enum_dispatch(AVP)]
+pub trait QueryableAVP {
+    fn get_length(&self) -> u16;
+}
+
 use AVP::*;
 
 type DecodeFunction = for<'a> fn(Box<dyn Reader<'a> + 'a>) -> ResultStr<AVP>;
@@ -92,7 +99,7 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     36u16 => |reader| Ok(RandomVector(types::RandomVector::try_read(reader)?)),
     37u16 => |reader| Ok(PrivateGroupId(types::PrivateGroupId::try_read(reader)?)),
     38u16 => |reader| Ok(RxConnectSpeed(types::RxConnectSpeed::try_read(reader)?)),
-    39u16 => |reader| Ok(SequencingRequired(types::SequencingRequired::default()))
+    39u16 => |reader| Ok(SequencingRequired(types::SequencingRequired::default())),
 };
 
 const N_HEADER_OCTETS: usize = 6;
