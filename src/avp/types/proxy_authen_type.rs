@@ -1,4 +1,4 @@
-use crate::common::{read_u16_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
@@ -14,14 +14,16 @@ pub enum ProxyAuthenType {
 }
 
 impl ProxyAuthenType {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 2 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 2 {
             return Err("Incomplete ProxyAuthenType AVP encountered");
         }
 
-        let value = unsafe { read_u16_be_unchecked(input) };
-        value
-            .try_into()
-            .map_err(|_| "Unknown ProxyAuthenType encountered")
+        unsafe {
+            reader
+                .read_u16_be_unchecked()
+                .try_into()
+                .map_err(|_| "Unknown ProxyAuthenType encountered")
+        }
     }
 }

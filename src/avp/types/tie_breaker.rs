@@ -1,4 +1,4 @@
-use crate::common::{read_u64_be_unchecked, ResultStr};
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TieBreaker {
@@ -6,12 +6,12 @@ pub struct TieBreaker {
 }
 
 impl TieBreaker {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 8 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 8 {
             return Err("Incomplete TieBreaker AVP encountered");
         }
 
-        let value = unsafe { read_u64_be_unchecked(input) };
+        let value = unsafe { reader.read_u64_be_unchecked() };
         Ok(Self { value })
     }
 }

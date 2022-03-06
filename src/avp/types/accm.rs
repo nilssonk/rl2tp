@@ -1,4 +1,4 @@
-use crate::common::ResultStr;
+use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Accm {
@@ -7,17 +7,16 @@ pub struct Accm {
 }
 
 impl Accm {
-    pub fn from(input: &[u8]) -> ResultStr<Self> {
-        if input.len() < 10 {
+    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+        if reader.len() < 10 {
             return Err("Incomplete Accm AVP encountered");
         }
 
         // Skip reserved
-        let mut offset = 2;
+        reader.skip_bytes(2);
 
-        let send_accm = unsafe { input[offset..offset + 4].try_into().unwrap_unchecked() };
-        offset += 4;
-        let receive_accm = unsafe { input[offset..offset + 4].try_into().unwrap_unchecked() };
+        let send_accm = unsafe { reader.read_bytes(4)?.try_into().unwrap_unchecked() };
+        let receive_accm = unsafe { reader.read_bytes(4)?.try_into().unwrap_unchecked() };
 
         Ok(Self {
             send_accm,

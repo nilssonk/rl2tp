@@ -1,3 +1,4 @@
+use crate::common::SliceReader;
 use crate::message::*;
 
 #[test]
@@ -5,7 +6,7 @@ fn message_type() {
     // ControlMessage with Message Type AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x14, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -17,11 +18,13 @@ fn message_type() {
         0x00, 0x00, // Attribute Type (Message Type)
         0x00, 0x01, // Type 1 (StartControlConnectionRequest)
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -43,7 +46,7 @@ fn random_vector() {
     // ControlMessage with Random Vector AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -61,11 +64,13 @@ fn random_vector() {
         0xde, 0xad, // Random Vector payload
         0xbe, 0xef,
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -90,7 +95,7 @@ fn result_code() {
     // ControlMessage with Result Code AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x28, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -109,11 +114,13 @@ fn result_code() {
         0x00, 0x06, // Error Code (Generic error)
         0x54, 0x65, 0x73, 0x74, 0x20, 0x65, 0x72, 0x72, 0x6f, 0x72, // "Test error"
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -140,7 +147,7 @@ fn protocol_version() {
     // ControlMessage with Protocol Version AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -158,11 +165,13 @@ fn protocol_version() {
         0xbe, // Version
         0xef, // Revision
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -188,7 +197,7 @@ fn framing_capabilities() {
     // ControlMessage with Framing Capabilities AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -205,11 +214,13 @@ fn framing_capabilities() {
         0x00, 0x03, // Attribute Type (Framing Capabilities)
         0x00, 0x00, 0x00, 0xc0, // Async and sync framing supported
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -246,7 +257,7 @@ fn bearer_capabilities() {
     // ControlMessage with Bearer Capabilities AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -263,11 +274,13 @@ fn bearer_capabilities() {
         0x00, 0x04, // Attribute Type (Bearer Capabilities)
         0x00, 0x00, 0x00, 0xc0, // Digital and analog access supported
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -304,7 +317,7 @@ fn tie_breaker() {
     // ControlMessage with Tie Breaker AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x22, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -321,11 +334,13 @@ fn tie_breaker() {
         0x00, 0x05, // Attribute Type (Tie Breaker)
         0xde, 0xad, 0xbe, 0xef, 0xf0, 0x0d, 0xfa, 0xde, // Tie breaker value
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -348,7 +363,7 @@ fn firmware_revision() {
     // ControlMessage with Firmware Revision AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -365,11 +380,13 @@ fn firmware_revision() {
         0x00, 0x06, // Attribute Type (Firmware Revision)
         0xf0, 0x0d, // Firmware Revision
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -392,7 +409,7 @@ fn host_name() {
     // ControlMessage with Host Name AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -410,11 +427,13 @@ fn host_name() {
         0xde, 0xad, // Host Name
         0xbe, 0xef,
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -439,7 +458,7 @@ fn vendor_name() {
     // ControlMessage with Vendor Name AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -457,11 +476,13 @@ fn vendor_name() {
         0xde, 0xad, // Vendor Name
         0xbe, 0xef,
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -486,7 +507,7 @@ fn assigned_tunnel_id() {
     // ControlMessage with Assigned Tunnel ID AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -503,11 +524,13 @@ fn assigned_tunnel_id() {
         0x00, 0x09, // Attribute Type (Assigned Tunnel ID)
         0xde, 0xad, // Assigned Tunnel ID
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -530,7 +553,7 @@ fn receive_window_size() {
     // ControlMessage with Receive Window Size ID AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -547,11 +570,13 @@ fn receive_window_size() {
         0x00, 0x0a, // Attribute Type (Receive Window Size)
         0xde, 0xad, // Receive Window Size
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -574,7 +599,7 @@ fn challenge() {
     // ControlMessage with Challenge AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -591,11 +616,13 @@ fn challenge() {
         0x00, 0x0b, // Attribute Type (Challenge)
         0xde, 0xad, 0xbe, 0xef, // Challenge
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -620,7 +647,7 @@ fn challenge_response() {
     // ControlMessage with Challenge Response AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x2a, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -638,11 +665,13 @@ fn challenge_response() {
         0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe,
         0xef, // Challenge Response
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -670,7 +699,7 @@ fn q931_cause_code() {
     // ControlMessage with Q.931 Cause Code AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x27, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -690,11 +719,13 @@ fn q931_cause_code() {
         0x03, // Cause Msg
         0x54, 0x65, 0x73, 0x74, 0x20, 0x65, 0x72, 0x72, 0x6f, 0x72, // "Test error"
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -721,7 +752,7 @@ fn assigned_session_id() {
     // ControlMessage with Assigned Session ID AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -738,11 +769,13 @@ fn assigned_session_id() {
         0x00, 0x0e, // Attribute Type (Assigned Session ID)
         0xde, 0xad, // Assigned Session ID
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -765,7 +798,7 @@ fn call_serial_number() {
     // ControlMessage with Call Serial Number AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -782,11 +815,13 @@ fn call_serial_number() {
         0x00, 0x0f, // Attribute Type (Call Serial Number)
         0xde, 0xad, 0xbe, 0xef, // Call Serial Number
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -809,7 +844,7 @@ fn minimum_bps() {
     // ControlMessage with Minimum BPS AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -826,11 +861,13 @@ fn minimum_bps() {
         0x00, 0x10, // Attribute Type (Minimum BPS)
         0xde, 0xad, 0xbe, 0xef, // Minimum BPS
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -853,7 +890,7 @@ fn maximum_bps() {
     // ControlMessage with Maximum BPS AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -870,11 +907,13 @@ fn maximum_bps() {
         0x00, 0x11, // Attribute Type (MaximumBps)
         0xde, 0xad, 0xbe, 0xef, // MaximumBps
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -897,7 +936,7 @@ fn bearer_type() {
     // ControlMessage with Bearer Type AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -914,11 +953,13 @@ fn bearer_type() {
         0x00, 0x12, // Attribute Type (Bearer Type)
         0x00, 0x00, 0x00, 0xc0, // Digital and analog access requested
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -955,7 +996,7 @@ fn framing_type() {
     // ControlMessage with Framing Type AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -972,11 +1013,13 @@ fn framing_type() {
         0x00, 0x13, // Attribute Type (Framing Type)
         0x00, 0x00, 0x00, 0xc0, // Digital and analog framing requested
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1013,7 +1056,7 @@ fn called_number() {
     // ControlMessage with Called Number AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x25, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1030,11 +1073,13 @@ fn called_number() {
         0x00, 0x15, // Attribute Type (Called Number)
         0x54, 0x65, 0x73, 0x74, 0x20, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, // Called Number
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1059,7 +1104,7 @@ fn calling_number() {
     // ControlMessage with Calling Number AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x25, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1076,11 +1121,13 @@ fn calling_number() {
         0x00, 0x16, // Attribute Type (Calling Number)
         0x54, 0x65, 0x73, 0x74, 0x20, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, // Calling Number
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1105,7 +1152,7 @@ fn sub_address() {
     // ControlMessage with Sub-Address AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x26, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1122,11 +1169,13 @@ fn sub_address() {
         0x00, 0x17, // Attribute Type (Sub-Address)
         0x54, 0x65, 0x73, 0x74, 0x20, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, // Sub-Address
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1151,7 +1200,7 @@ fn tx_connect_speed() {
     // ControlMessage with Tx Connect Speed AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1168,11 +1217,13 @@ fn tx_connect_speed() {
         0x00, 0x18, // Attribute Type (Tx Connect Speed)
         0xde, 0xad, 0xbe, 0xef, // Tx Connect Speed
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1195,7 +1246,7 @@ fn rx_connect_speed() {
     // ControlMessage with Rx Connect Speed AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1212,11 +1263,13 @@ fn rx_connect_speed() {
         0x00, 0x26, // Attribute Type (Rx Connect Speed)
         0xde, 0xad, 0xbe, 0xef, // Rx Connect Speed
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1239,7 +1292,7 @@ fn physical_channel_id() {
     // ControlMessage with Physical Channel ID AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1256,11 +1309,13 @@ fn physical_channel_id() {
         0x00, 0x19, // Attribute Type (Physical Channel ID)
         0xde, 0xad, 0xbe, 0xef, // Physical Channel ID
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1285,7 +1340,7 @@ fn private_group_id() {
     // ControlMessage with Private Group ID AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1302,11 +1357,13 @@ fn private_group_id() {
         0x00, 0x25, // Attribute Type (Private Group ID)
         0xde, 0xad, 0xbe, 0xef, // Private Group ID
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1331,7 +1388,7 @@ fn sequencing_required() {
     // ControlMessage with Sequencing Required AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1a, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1347,11 +1404,13 @@ fn sequencing_required() {
         0x00, 0x00, // Vendor ID
         0x00, 0x27, // Attribute Type (Sequencing Required)
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1374,7 +1433,7 @@ fn initial_received_lcp_conf_req() {
     // ControlMessage with Initial Received LCP CONFREQ AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1391,11 +1450,13 @@ fn initial_received_lcp_conf_req() {
         0x00, 0x1a, // Attribute Type (Initial Received LCP CONFREQ)
         0xde, 0xad, 0xbe, 0xef, // Initial Received LCP CONFREQ
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1420,7 +1481,7 @@ fn last_sent_lcp_conf_req() {
     // ControlMessage with Last Sent LCP CONFREQ AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1437,11 +1498,13 @@ fn last_sent_lcp_conf_req() {
         0x00, 0x1b, // Attribute Type (Last Sent LCP CONFREQ)
         0xde, 0xad, 0xbe, 0xef, // Last Sent LCP CONFREQ
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1466,7 +1529,7 @@ fn last_received_lcp_conf_req() {
     // ControlMessage with Last Received LCP CONFREQ AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1483,11 +1546,13 @@ fn last_received_lcp_conf_req() {
         0x00, 0x1c, // Attribute Type (Last Received LCP CONFREQ)
         0xde, 0xad, 0xbe, 0xef, // Last Received LCP CONFREQ
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1512,7 +1577,7 @@ fn proxy_authen_type() {
     // ControlMessage with Proxy Authen Type AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1529,11 +1594,13 @@ fn proxy_authen_type() {
         0x00, 0x1d, // Attribute Type (Proxy Authen Type)
         0x00, 0x05, // MicrosoftChapVersion1
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1556,7 +1623,7 @@ fn proxy_authen_name() {
     // ControlMessage with Proxy Authen Name AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1573,11 +1640,13 @@ fn proxy_authen_name() {
         0x00, 0x1e, // Attribute Type (Proxy Authen Name)
         0xde, 0xad, 0xbe, 0xef, // Proxy Authen Name
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1602,7 +1671,7 @@ fn proxy_authen_challenge() {
     // ControlMessage with Proxy Authen Challenge AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1619,11 +1688,13 @@ fn proxy_authen_challenge() {
         0x00, 0x1f, // Attribute Type (Proxy Authen Challenge)
         0xde, 0xad, 0xbe, 0xef, // Proxy Authen Challenge
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1648,7 +1719,7 @@ fn proxy_authen_id() {
     // ControlMessage with Proxy Authen ID AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1c, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1665,11 +1736,13 @@ fn proxy_authen_id() {
         0x00, 0x20, // Attribute Type (Proxy Authen ID)
         0x00, 0xff, // Proxy Authen ID
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1692,7 +1765,7 @@ fn proxy_authen_response() {
     // ControlMessage with Proxy Authen Response AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x1e, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1709,11 +1782,13 @@ fn proxy_authen_response() {
         0x00, 0x21, // Attribute Type (Proxy Authen Response)
         0xde, 0xad, 0xbe, 0xef, // Proxy Authen Response
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1738,7 +1813,7 @@ fn call_errors() {
     // ControlMessage with Call Errors AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x34, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1762,11 +1837,13 @@ fn call_errors() {
         0xaa, 0xbb, 0xcc, 0xdd, // Time-out Errors
         0x11, 0x22, 0x33, 0x44, // Alignment Errors
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
@@ -1796,7 +1873,7 @@ fn accm() {
     // ControlMessage with ACCM AVP
     use crate::avp::{types, AVP};
     let input = vec![
-        0x13, 0x00, // Flags
+        0x13, 0x20, // Flags
         0x00, 0x24, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
@@ -1816,11 +1893,13 @@ fn accm() {
         0xde, 0xad, 0xbe, 0xef, // Send ACCM
         0xf0, 0x0d, 0xfa, 0xde, // Receive ACCM
     ];
-    let m = Message::from_bytes(
-        &input,
-        ValidateReserved::No,
-        ValidateVersion::No,
-        ValidateUnused::Yes,
+    let m = Message::try_read(
+        Box::new(SliceReader::from(&input)),
+        ValidationOptions {
+            reserved: ValidateReserved::Yes,
+            version: ValidateVersion::Yes,
+            unused: ValidateUnused::Yes,
+        },
     );
     assert_eq!(
         m,
