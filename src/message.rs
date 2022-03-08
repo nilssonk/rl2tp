@@ -231,9 +231,11 @@ impl<'a> Message<'a> {
             return Err("Control message without required Sequence fields encountered");
         }
 
-        if reader.len() < 10 {
+        const FIXED_LENGTH_MINUS_FLAGS: usize = 10;
+        if reader.len() < FIXED_LENGTH_MINUS_FLAGS {
             return Err("Incomplete control message header encountered");
         }
+
         let length = unsafe { reader.read_u16_be_unchecked() };
         let tunnel_id = unsafe { reader.read_u16_be_unchecked() };
         let session_id = unsafe { reader.read_u16_be_unchecked() };
