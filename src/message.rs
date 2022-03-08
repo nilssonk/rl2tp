@@ -68,6 +68,33 @@ pub struct ValidationOptions {
 impl<'a> Message<'a> {
     const PROTOCOL_VERSION: u8 = 2;
 
+    pub fn try_read(
+        mut reader: Box<dyn Reader<'a> + 'a>,
+        validation_options: ValidationOptions,
+    ) -> ResultStr<Self> {
+        let flags = Flags::read(reader.as_mut())?;
+
+        if let ValidateVersion::Yes = validation_options.version {
+            let version = flags.get_version();
+            if version != Self::PROTOCOL_VERSION {
+                return Err("Invalid version encountered");
+            }
+        }
+
+        if let ValidateReserved::Yes = validation_options.reserved {
+            if !flags.reserved_bits_ok() {
+                return Err("Invalid reserved bits encountered");
+            }
+        }
+
+        match flags.get_type() {
+            MessageFlagType::Data => Self::try_read_data_message(flags, reader),
+            MessageFlagType::Control => {
+                Self::try_read_control_message(flags, validation_options, reader)
+            }
+        }
+    }
+
     /// # Summary
     /// Write a `Message` using a mutable `Writer`.
     /// # Safety
@@ -239,32 +266,5 @@ impl<'a> Message<'a> {
             nr,
             avps,
         }))
-    }
-
-    pub fn try_read(
-        mut reader: Box<dyn Reader<'a> + 'a>,
-        validation_options: ValidationOptions,
-    ) -> ResultStr<Self> {
-        let flags = Flags::read(reader.as_mut())?;
-
-        if let ValidateVersion::Yes = validation_options.version {
-            let version = flags.get_version();
-            if version != Self::PROTOCOL_VERSION {
-                return Err("Invalid version encountered");
-            }
-        }
-
-        if let ValidateReserved::Yes = validation_options.reserved {
-            if !flags.reserved_bits_ok() {
-                return Err("Invalid reserved bits encountered");
-            }
-        }
-
-        match flags.get_type() {
-            MessageFlagType::Data => Self::try_read_data_message(flags, reader),
-            MessageFlagType::Control => {
-                Self::try_read_control_message(flags, validation_options, reader)
-            }
-        }
     }
 }
