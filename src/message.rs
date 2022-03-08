@@ -68,6 +68,8 @@ pub struct ValidationOptions {
 impl<'a> Message<'a> {
     const PROTOCOL_VERSION: u8 = 2;
 
+    /// # Summary
+    /// Attempt to read a `Message` using a `Reader`. User-supplied ValidationOptions offer a way to ignore certain protocol mandates.
     pub fn try_read(
         mut reader: Box<dyn Reader<'a> + 'a>,
         validation_options: ValidationOptions,
