@@ -111,3 +111,6 @@ pub use call_errors::*;
 
 mod accm;
 pub use accm::*;
+
+mod hidden;
+pub use hidden::*;

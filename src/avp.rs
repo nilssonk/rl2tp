@@ -47,7 +47,7 @@ pub enum AVP {
     ProxyAuthenResponse(types::ProxyAuthenResponse),
     CallErrors(types::CallErrors),
     Accm(types::Accm),
-    Hidden(Vec<u8>),
+    Hidden(types::Hidden),
 }
 
 use AVP::*;
@@ -102,13 +102,14 @@ const ATTRIBUTE_TYPE_SIZE: usize = 2;
 impl AVP {
     pub fn reveal(self, secret: &[u8], random_vector: &[u8]) -> ResultStr<Self> {
         match self {
-            Self::Hidden(mut input) => {
+            Self::Hidden(mut hidden) => {
                 // The first 4 octets have been peeled off and we are guaranteed to have at least 6
-                assert!(input.len() >= ATTRIBUTE_TYPE_SIZE);
-                let attribute_type = unsafe { SliceReader::from(&input).read_u16_be_unchecked() };
+                assert!(hidden.data.len() >= ATTRIBUTE_TYPE_SIZE);
+                let attribute_type =
+                    unsafe { SliceReader::from(&hidden.data).read_u16_be_unchecked() };
 
                 const CHUNK_SIZE: usize = 16;
-                let chunk_data = &mut input[ATTRIBUTE_TYPE_SIZE..];
+                let chunk_data = &mut hidden.data[ATTRIBUTE_TYPE_SIZE..];
                 let n_chunks = chunk_data.len() / CHUNK_SIZE;
 
                 if chunk_data.is_empty() {
@@ -189,7 +190,7 @@ impl AVP {
                     .subreader(length as usize)
                     .read_bytes(reader.len())
                     .unwrap_or_default();
-                Ok(Self::Hidden(hidden_data))
+                Ok(Self::Hidden(types::Hidden { data: hidden_data }))
             } else {
                 // Regular AVP
                 unsafe { Self::decode(reader.subreader(payload_length)) }
