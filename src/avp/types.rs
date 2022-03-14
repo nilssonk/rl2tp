@@ -82,6 +82,9 @@ pub use physical_channel_id::*;
 mod private_group_id;
 pub use private_group_id::*;
 
+mod sequencing_required;
+pub use sequencing_required::*;
+
 mod initial_received_lcp_conf_req;
 pub use initial_received_lcp_conf_req::*;
 
