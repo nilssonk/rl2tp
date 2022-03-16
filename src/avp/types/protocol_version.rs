@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -15,5 +16,11 @@ impl ProtocolVersion {
         let version = unsafe { reader.read_u8_unchecked() };
         let revision = unsafe { reader.read_u8_unchecked() };
         Ok(Self { version, revision })
+    }
+}
+
+impl QueryableAVP for ProtocolVersion {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

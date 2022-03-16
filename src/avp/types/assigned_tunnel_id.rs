@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -19,5 +20,11 @@ impl AssignedTunnelId {
 impl From<u16> for AssignedTunnelId {
     fn from(value: u16) -> Self {
         Self { value }
+    }
+}
+
+impl QueryableAVP for AssignedTunnelId {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

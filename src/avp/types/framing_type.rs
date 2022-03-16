@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -25,5 +26,11 @@ impl FramingType {
 
     pub fn is_digital_request(&self) -> bool {
         ((self.data >> 7) & 0x1) != 0
+    }
+}
+
+impl QueryableAVP for FramingType {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -31,5 +32,11 @@ impl Q931CauseCode {
             cause_msg,
             advisory,
         })
+    }
+}
+
+impl QueryableAVP for Q931CauseCode {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }

@@ -1,3 +1,4 @@
+use crate::avp::QueryableAVP;
 use crate::common::{Reader, ResultStr};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -34,5 +35,11 @@ impl CallErrors {
             timeout_errors,
             alignment_errors,
         })
+    }
+}
+
+impl QueryableAVP for CallErrors {
+    fn get_length(&self) -> u16 {
+        unimplemented!();
     }
 }
