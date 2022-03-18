@@ -58,6 +58,8 @@ pub struct ValidationOptions {
 }
 
 impl<'a> Message<'a> {
+    const PROTOCOL_VERSION: u8 = 2;
+
     fn try_read_data_message(
         flags: Flags,
         mut reader: Box<dyn Reader<'a> + 'a>,
@@ -182,7 +184,7 @@ impl<'a> Message<'a> {
 
         if let ValidateVersion::Yes = validation_options.version {
             let version = flags.get_version();
-            if version != 2 {
+            if version != Self::PROTOCOL_VERSION {
                 return Err("Invalid version encountered");
             }
         }
