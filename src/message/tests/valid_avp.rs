@@ -1422,7 +1422,7 @@ fn sequencing_required() {
             nr: 5,
             avps: vec![
                 AVP::MessageType(types::MessageType::IncomingCallConnected),
-                AVP::SequencingRequired(types::SequencingRequired::default())
+                AVP::SequencingRequired(types::SequencingRequired::default()),
             ],
         }))
     );

@@ -4,8 +4,8 @@ mod tests;
 mod flags;
 use flags::*;
 
-use crate::avp::AVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, AVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ControlMessage {
@@ -17,12 +17,20 @@ pub struct ControlMessage {
     pub avps: Vec<AVP>,
 }
 
+impl ControlMessage {
+    pub fn get_dynamic_length(&self) -> u16 {
+        self.avps.iter().map(|avp| avp.get_length()).sum::<u16>()
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub struct DataMessage<'a> {
+    pub is_prioritized: bool,
     pub length: Option<u16>,
     pub tunnel_id: u16,
     pub session_id: u16,
     pub ns_nr: Option<(u16, u16)>,
+    pub offset: Option<u16>,
     pub data: &'a [u8],
 }
 
@@ -60,6 +68,61 @@ pub struct ValidationOptions {
 impl<'a> Message<'a> {
     const PROTOCOL_VERSION: u8 = 2;
 
+    /// # Summary
+    /// Write a `Message` using a mutable `Writer`.
+    /// # Safety
+    /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
+    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+        match self {
+            Message::Control(control) => {
+                let flags = Flags::new(
+                    MessageFlagType::Control,
+                    true,
+                    true,
+                    false,
+                    false,
+                    Self::PROTOCOL_VERSION,
+                );
+                flags.write(writer);
+
+                const FIXED_LENGTH: u16 = 12;
+                let dynamic_length = control.get_dynamic_length();
+                writer.write_u16_be_unchecked(FIXED_LENGTH + dynamic_length);
+                writer.write_u16_be_unchecked(control.tunnel_id);
+                writer.write_u16_be_unchecked(control.session_id);
+                writer.write_u16_be_unchecked(control.ns);
+                writer.write_u16_be_unchecked(control.nr);
+                // @TODO: AVPs
+            }
+            Message::Data(data) => {
+                let flags = Flags::new(
+                    MessageFlagType::Data,
+                    data.length.is_some(),
+                    data.ns_nr.is_some(),
+                    data.offset.is_some(),
+                    data.is_prioritized,
+                    Self::PROTOCOL_VERSION,
+                );
+                flags.write(writer);
+
+                if let Some(length) = data.length {
+                    writer.write_u16_be_unchecked(length);
+                }
+
+                writer.write_u16_be_unchecked(data.tunnel_id);
+                writer.write_u16_be_unchecked(data.session_id);
+                if let Some((ns, nr)) = data.ns_nr {
+                    writer.write_u16_be_unchecked(ns);
+                    writer.write_u16_be_unchecked(nr);
+                }
+                if let Some(offset) = data.offset {
+                    writer.write_u16_be_unchecked(offset);
+                }
+                writer.write_bytes_unchecked(data.data);
+            }
+        }
+    }
+
     fn try_read_data_message(
         flags: Flags,
         mut reader: Box<dyn Reader<'a> + 'a>,
@@ -71,7 +134,7 @@ impl<'a> Message<'a> {
         if flags.has_ns_nr() {
             minimal_length += 4;
         }
-        if flags.has_offset_size() {
+        if flags.has_offset() {
             minimal_length += 4;
         }
         if reader.len() < minimal_length {
@@ -96,7 +159,7 @@ impl<'a> Message<'a> {
             None
         };
 
-        if flags.has_offset_size() {
+        if flags.has_offset() {
             let offset_size = unsafe { reader.read_u16_be_unchecked() as usize };
             if reader.len() < offset_size {
                 return Err("Invalid offset size encountered");
@@ -107,10 +170,12 @@ impl<'a> Message<'a> {
         let data = reader.peek_bytes(reader.len())?;
 
         Ok(Message::Data(DataMessage {
+            is_prioritized: false,
             length: maybe_length,
             tunnel_id,
             session_id,
             ns_nr: maybe_ns_nr,
+            offset: None,
             data,
         }))
     }
@@ -125,7 +190,7 @@ impl<'a> Message<'a> {
                 return Err("Control message with forbidden Priority bit encountered");
             }
 
-            if flags.has_offset_size() {
+            if flags.has_offset() {
                 return Err("Control message with forbidden Offset fields encountered");
             }
         }

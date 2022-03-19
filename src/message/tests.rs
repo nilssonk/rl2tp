@@ -2,6 +2,7 @@ use crate::common::SliceReader;
 use crate::message::*;
 
 mod valid_avp;
+mod write_read;
 
 #[test]
 fn try_read_data_valid() {
@@ -18,10 +19,12 @@ fn try_read_data_valid() {
     assert_eq!(
         m,
         Ok(Message::Data(DataMessage {
+            is_prioritized: false,
             length: None,
             tunnel_id: 0,
             session_id: 0,
             ns_nr: None,
+            offset: None,
             data: &input[6..]
         }))
     );

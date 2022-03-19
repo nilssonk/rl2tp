@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use crate::common::{Reader, ResultStr};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Debug, PartialEq)]
 pub enum MessageFlagType {
@@ -9,12 +9,43 @@ pub enum MessageFlagType {
     Data,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Flags {
     data: u16,
 }
 
 impl Flags {
+    pub fn new(
+        message_type: MessageFlagType,
+        has_length: bool,
+        has_ns_nr: bool,
+        has_offset: bool,
+        is_prioritized: bool,
+        version: u8,
+    ) -> Self {
+        let mut result = Self::default();
+        result.set_type(message_type);
+        if has_length {
+            result.set_length();
+        }
+        if has_ns_nr {
+            result.set_ns_nr();
+        }
+        if has_offset {
+            result.set_offset();
+        }
+        if is_prioritized {
+            result.set_prioritized();
+        }
+        result.set_version(version);
+
+        result
+    }
+
+    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+        writer.write_u16_be_unchecked(self.data);
+    }
+
     pub fn read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < 2 {
             return Err("Incomplete flag section encountered");
@@ -27,6 +58,11 @@ impl Flags {
         (self.data >> i) & 0x1 != 0
     }
 
+    fn set_bit(&mut self, i: i8) {
+        let value: u16 = 0x1 << i;
+        self.data |= value;
+    }
+
     pub fn get_type(&self) -> MessageFlagType {
         if self.get_bit(8) {
             MessageFlagType::Control
@@ -35,8 +71,18 @@ impl Flags {
         }
     }
 
+    pub fn set_type(&mut self, message_type: MessageFlagType) {
+        if let MessageFlagType::Control = message_type {
+            self.set_bit(8)
+        }
+    }
+
     pub fn has_length(&self) -> bool {
         self.get_bit(9)
+    }
+
+    pub fn set_length(&mut self) {
+        self.set_bit(9);
     }
 
     pub fn reserved_bits_ok(&self) -> bool {
@@ -49,15 +95,36 @@ impl Flags {
         self.get_bit(12)
     }
 
-    pub fn has_offset_size(&self) -> bool {
+    pub fn set_ns_nr(&mut self) {
+        self.set_bit(12);
+    }
+
+    pub fn has_offset(&self) -> bool {
         self.get_bit(14)
+    }
+
+    pub fn set_offset(&mut self) {
+        self.set_bit(14);
     }
 
     pub fn is_prioritized(&self) -> bool {
         self.get_bit(15)
     }
 
+    pub fn set_prioritized(&mut self) {
+        self.set_bit(15);
+    }
+
     pub fn get_version(&self) -> u8 {
         ((self.data >> 4) & 0xf) as u8
+    }
+
+    pub fn set_version(&mut self, version: u8) {
+        assert!(
+            version <= 0xf,
+            "Version must be at most 0xf to not be truncated"
+        );
+        self.data &= 0xff0f;
+        self.data |= ((version & 0xf) as u16) << 4;
     }
 }
