@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MinimumBps {
@@ -28,5 +28,11 @@ impl From<u32> for MinimumBps {
 impl QueryableAVP for MinimumBps {
     fn get_length(&self) -> u16 {
         Self::LENGTH
+    }
+}
+
+impl WritableAVP for MinimumBps {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

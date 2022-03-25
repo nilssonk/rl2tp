@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Q931CauseCode {
@@ -48,5 +48,11 @@ impl QueryableAVP for Q931CauseCode {
         }
 
         length
+    }
+}
+
+impl WritableAVP for Q931CauseCode {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

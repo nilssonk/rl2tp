@@ -3,7 +3,7 @@ use flags::Flags;
 
 pub mod types;
 
-use crate::common::{Reader, ResultStr, SliceReader};
+use crate::common::{Reader, ResultStr, SliceReader, Writer};
 use enum_dispatch::enum_dispatch;
 use phf::phf_map;
 
@@ -55,6 +55,11 @@ pub enum AVP {
 #[enum_dispatch(AVP)]
 pub trait QueryableAVP {
     fn get_length(&self) -> u16;
+}
+
+#[enum_dispatch(AVP)]
+pub trait WritableAVP {
+    unsafe fn write(&self, writer: &mut dyn Writer);
 }
 
 use AVP::*;

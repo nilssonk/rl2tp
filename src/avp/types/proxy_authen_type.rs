@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
@@ -34,5 +34,11 @@ impl ProxyAuthenType {
 impl QueryableAVP for ProxyAuthenType {
     fn get_length(&self) -> u16 {
         Self::LENGTH
+    }
+}
+
+impl WritableAVP for ProxyAuthenType {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

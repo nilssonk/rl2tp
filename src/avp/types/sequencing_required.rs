@@ -1,4 +1,5 @@
-use crate::avp::QueryableAVP;
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::Writer;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SequencingRequired {}
@@ -6,5 +7,11 @@ pub struct SequencingRequired {}
 impl QueryableAVP for SequencingRequired {
     fn get_length(&self) -> u16 {
         0
+    }
+}
+
+impl WritableAVP for SequencingRequired {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

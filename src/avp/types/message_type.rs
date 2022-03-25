@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 use phf::phf_map;
 
@@ -59,5 +59,11 @@ impl MessageType {
 impl QueryableAVP for MessageType {
     fn get_length(&self) -> u16 {
         Self::LENGTH
+    }
+}
+
+impl WritableAVP for MessageType {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

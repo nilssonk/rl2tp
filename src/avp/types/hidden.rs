@@ -1,4 +1,5 @@
-use crate::avp::QueryableAVP;
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::Writer;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Hidden {
@@ -10,5 +11,11 @@ impl QueryableAVP for Hidden {
         assert!(self.data.len() <= u16::MAX as usize);
 
         self.data.len() as u16
+    }
+}
+
+impl WritableAVP for Hidden {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }
