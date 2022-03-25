@@ -7,8 +7,10 @@ pub struct TieBreaker {
 }
 
 impl TieBreaker {
+    const LENGTH: u16 = 8;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 8 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete TieBreaker AVP encountered");
         }
 
@@ -25,6 +27,6 @@ impl From<u64> for TieBreaker {
 
 impl QueryableAVP for TieBreaker {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
