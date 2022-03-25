@@ -9,8 +9,10 @@ pub struct Q931CauseCode {
 }
 
 impl Q931CauseCode {
+    const FIXED_LENGTH: u16 = 3;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 3 {
+        if reader.len() < Self::FIXED_LENGTH as usize {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }
 
@@ -37,6 +39,12 @@ impl Q931CauseCode {
 
 impl QueryableAVP for Q931CauseCode {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        if let Some(value) = &self.advisory {
+            assert!(value.len() <= (u16::MAX - Self::FIXED_LENGTH) as usize);
+
+            Self::FIXED_LENGTH + value.len() as u16
+        } else {
+            Self::FIXED_LENGTH
+        }
     }
 }
