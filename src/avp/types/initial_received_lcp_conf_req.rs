@@ -20,6 +20,8 @@ impl InitialReceivedLcpConfReq {
 
 impl QueryableAVP for InitialReceivedLcpConfReq {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        assert!(self.data.len() <= u16::MAX as usize);
+
+        self.data.len() as u16
     }
 }
