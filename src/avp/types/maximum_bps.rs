@@ -7,8 +7,10 @@ pub struct MaximumBps {
 }
 
 impl MaximumBps {
+    const LENGTH: u16 = 4;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 4 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete MaximumBps AVP encountered");
         }
 
@@ -25,6 +27,6 @@ impl From<u32> for MaximumBps {
 
 impl QueryableAVP for MaximumBps {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
