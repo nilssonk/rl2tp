@@ -7,8 +7,10 @@ pub struct ChallengeResponse {
 }
 
 impl ChallengeResponse {
+    const LENGTH: u16 = 16;
+
     pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 16 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }
 
@@ -20,6 +22,6 @@ impl ChallengeResponse {
 
 impl QueryableAVP for ChallengeResponse {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
