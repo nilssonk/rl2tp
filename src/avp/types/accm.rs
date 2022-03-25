@@ -8,8 +8,10 @@ pub struct Accm {
 }
 
 impl Accm {
+    const LENGTH: u16 = 10;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 10 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete Accm AVP encountered");
         }
 
@@ -28,6 +30,6 @@ impl Accm {
 
 impl QueryableAVP for Accm {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
