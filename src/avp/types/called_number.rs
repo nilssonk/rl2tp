@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CalledNumber {
@@ -25,5 +25,11 @@ impl QueryableAVP for CalledNumber {
         assert!(self.value.len() <= u16::MAX as usize);
 
         self.value.len() as u16
+    }
+}
+
+impl WritableAVP for CalledNumber {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct LastSentLcpConfReq {
@@ -23,5 +23,11 @@ impl QueryableAVP for LastSentLcpConfReq {
         assert!(self.data.len() <= u16::MAX as usize);
 
         self.data.len() as u16
+    }
+}
+
+impl WritableAVP for LastSentLcpConfReq {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }

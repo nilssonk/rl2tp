@@ -4,7 +4,7 @@ mod tests;
 mod flags;
 use flags::*;
 
-use crate::avp::{QueryableAVP, AVP};
+use crate::avp::{QueryableAVP, WritableAVP, AVP};
 use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -121,7 +121,9 @@ impl<'a> Message<'a> {
                 writer.write_u16_be_unchecked(control.session_id);
                 writer.write_u16_be_unchecked(control.ns);
                 writer.write_u16_be_unchecked(control.nr);
-                // @TODO: AVPs
+                for avp in control.avps.iter() {
+                    avp.write(writer);
+                }
             }
             Message::Data(data) => {
                 let flags = Flags::new(
