@@ -55,7 +55,6 @@ impl Header {
     /// Write a `Header` using a mutable `Writer`.
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
-    #[allow(dead_code)] // Remove upon first use
     pub unsafe fn write(&self, writer: &mut dyn Writer) {
         let wire_length = Self::LENGTH + self.payload_length;
 

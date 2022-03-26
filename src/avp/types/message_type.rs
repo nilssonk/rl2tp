@@ -1,3 +1,4 @@
+use crate::avp::header::{Flags, Header};
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -23,7 +24,7 @@ pub enum MessageType {
 
 use MessageType::*;
 
-static MESSAGE_TYPES: phf::Map<u16, MessageType> = phf_map! {
+static MESSAGE_CODE_TO_TYPE: phf::Map<u16, MessageType> = phf_map! {
     1u16 => StartControlConnectionRequest,
     2u16 => StartControlConnectionReply,
     3u16 => StartControlConnectionConnected,
@@ -41,6 +42,7 @@ static MESSAGE_TYPES: phf::Map<u16, MessageType> = phf_map! {
 };
 
 impl MessageType {
+    const ATTRIBUTE_TYPE: u16 = 0;
     const LENGTH: u16 = 2;
 
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
@@ -49,21 +51,49 @@ impl MessageType {
         }
         let id = unsafe { reader.read_u16_be_unchecked() };
 
-        match MESSAGE_TYPES.get(&id) {
+        match MESSAGE_CODE_TO_TYPE.get(&id) {
             Some(&t) => Ok(t),
             None => Err("Unknown MessageType AVP encountered"),
+        }
+    }
+
+    const fn get_code(&self) -> u16 {
+        match self {
+            StartControlConnectionRequest => 1u16,
+            StartControlConnectionReply => 2u16,
+            StartControlConnectionConnected => 3u16,
+            StopControlConnectionNotification => 4u16,
+            Hello => 6u16,
+            OutgoingCallRequest => 7u16,
+            OutgoingCallReply => 8u16,
+            OutgoingCallConnected => 9u16,
+            IncomingCallRequest => 10u16,
+            IncomingCallReply => 11u16,
+            IncomingCallConnected => 12u16,
+            CallDisconnectNotify => 14u16,
+            WanErrorNotify => 15u16,
+            SetLinkInfo => 16u16,
         }
     }
 }
 
 impl QueryableAVP for MessageType {
     fn get_length(&self) -> u16 {
-        Self::LENGTH
+        Header::LENGTH + Self::LENGTH
     }
 }
 
 impl WritableAVP for MessageType {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        let flags = Flags::new(true, false);
+        let header = Header {
+            flags,
+            payload_length: Self::LENGTH,
+            vendor_id: 0,
+            attribute_type: Self::ATTRIBUTE_TYPE,
+        };
+        header.write(writer);
+
+        writer.write_u16_be_unchecked(self.get_code())
     }
 }
