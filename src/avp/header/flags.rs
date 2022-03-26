@@ -1,12 +1,19 @@
 #[cfg(test)]
 mod tests;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Flags {
     data: u8,
 }
 
 impl Flags {
+    #[allow(dead_code)] // Remove upon first use
+    pub fn new(is_mandatory: bool, is_hidden: bool) -> Self {
+        Self {
+            data: is_mandatory as u8 | (is_hidden as u8) << 1,
+        }
+    }
+
     pub fn from(input: u8) -> Self {
         Self { data: input & 0x3f }
     }
