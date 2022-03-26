@@ -1,3 +1,4 @@
+use crate::avp::header::{Flags, Header};
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -7,6 +8,7 @@ pub struct AssignedTunnelId {
 }
 
 impl AssignedTunnelId {
+    const ATTRIBUTE_TYPE: u16 = 9;
     const LENGTH: u16 = 2;
 
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
@@ -27,12 +29,20 @@ impl From<u16> for AssignedTunnelId {
 
 impl QueryableAVP for AssignedTunnelId {
     fn get_length(&self) -> u16 {
-        Self::LENGTH
+        Header::LENGTH + Self::LENGTH
     }
 }
 
 impl WritableAVP for AssignedTunnelId {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        let header = Header {
+            flags: Flags::new(true, false),
+            payload_length: Self::LENGTH,
+            vendor_id: 0,
+            attribute_type: Self::ATTRIBUTE_TYPE,
+        };
+        header.write(writer);
+
+        writer.write_u16_be_unchecked(self.value);
     }
 }
