@@ -28,5 +28,6 @@ io_tests![
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected),
 accm => AVP::Accm(types::Accm {
     send_accm: [0x01, 0x02, 0x03, 0x04],
-    receive_accm: [0x05, 0x06, 0x07, 0x08],
-})];
+    receive_accm: [0x05, 0x06, 0x07, 0x08]}),
+assigned_session_id => AVP::AssignedSessionId(types::AssignedSessionId{value: 0x1337})
+];
