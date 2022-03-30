@@ -7,8 +7,10 @@ pub struct AssignedTunnelId {
 }
 
 impl AssignedTunnelId {
+    const LENGTH: u16 = 2;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 2 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete AssignedTunnelId AVP encountered");
         }
 
@@ -25,6 +27,6 @@ impl From<u16> for AssignedTunnelId {
 
 impl QueryableAVP for AssignedTunnelId {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
