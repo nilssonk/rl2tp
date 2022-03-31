@@ -7,12 +7,14 @@ pub struct BearerType {
 }
 
 impl BearerType {
+    const LENGTH: u16 = 4;
+
     pub fn from_raw(data: u32) -> Self {
         Self { data }
     }
 
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 4 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete BearerType AVP encountered");
         }
 
@@ -31,6 +33,6 @@ impl BearerType {
 
 impl QueryableAVP for BearerType {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
