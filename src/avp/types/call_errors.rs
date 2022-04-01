@@ -12,8 +12,10 @@ pub struct CallErrors {
 }
 
 impl CallErrors {
+    const LENGTH: u16 = 26;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        if reader.len() < 26 {
+        if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete CallErrors AVP encountered");
         }
 
@@ -40,6 +42,6 @@ impl CallErrors {
 
 impl QueryableAVP for CallErrors {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        Self::LENGTH
     }
 }
