@@ -22,6 +22,8 @@ impl CalledNumber {
 
 impl QueryableAVP for CalledNumber {
     fn get_length(&self) -> u16 {
-        unimplemented!();
+        assert!(self.value.len() <= u16::MAX as usize);
+
+        self.value.len() as u16
     }
 }
