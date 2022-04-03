@@ -1,5 +1,5 @@
+use crate::avp::header::{Flags, Header};
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::avp::header::{Header, Flags};
 use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -39,7 +39,7 @@ impl WritableAVP for AssignedTunnelId {
             flags: Flags::new(true, false),
             payload_length: Self::LENGTH,
             vendor_id: 0,
-            attribute_type: Self::ATTRIBUTE_TYPE
+            attribute_type: Self::ATTRIBUTE_TYPE,
         };
         header.write(writer);
 

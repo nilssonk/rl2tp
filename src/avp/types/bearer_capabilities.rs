@@ -1,5 +1,5 @@
+use crate::avp::header::{Flags, Header};
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::avp::header::{Header, Flags};
 use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
