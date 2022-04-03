@@ -31,5 +31,6 @@ accm => AVP::Accm(types::Accm {
     receive_accm: [0x05, 0x06, 0x07, 0x08]}),
 assigned_session_id => AVP::AssignedSessionId(types::AssignedSessionId{value: 0x1337}),
 assigned_tunnel_id => AVP::AssignedTunnelId(types::AssignedTunnelId{value: 0x1337}),
-bearer_capabilities => AVP::BearerCapabilities(types::BearerCapabilities::new(true, true))
+bearer_capabilities => AVP::BearerCapabilities(types::BearerCapabilities::new(true, true)),
+bearer_type => AVP::BearerType(types::BearerType::new(true, true))
 ];
