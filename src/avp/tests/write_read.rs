@@ -32,5 +32,13 @@ assigned_session_id => AVP::AssignedSessionId(types::AssignedSessionId{value: 0x
 assigned_tunnel_id => AVP::AssignedTunnelId(types::AssignedTunnelId{value: 0x1337}),
 bearer_capabilities => AVP::BearerCapabilities(types::BearerCapabilities::new(true, true)),
 bearer_type => AVP::BearerType(types::BearerType::new(true, true)),
+call_errors => AVP::CallErrors(types::CallErrors{
+    crc_errors: 10,
+    framing_errors: 11,
+    hardware_overruns: 12,
+    buffer_overruns: 13,
+    timeout_errors: 14,
+    alignment_errors: 15
+}),
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected)
 ];
