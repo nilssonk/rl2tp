@@ -1,4 +1,4 @@
-use crate::avp::header::{Flags, Header};
+use crate::avp::header::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -48,12 +48,8 @@ impl QueryableAVP for BearerCapabilities {
 
 impl WritableAVP for BearerCapabilities {
     unsafe fn write(&self, writer: &mut dyn Writer) {
-        let header = Header {
-            flags: Flags::new(true, false),
-            payload_length: Self::LENGTH,
-            vendor_id: 0,
-            attribute_type: Self::ATTRIBUTE_TYPE,
-        };
+        let header =
+            Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
         header.write(writer);
 
         writer.write_u32_be_unchecked(self.data);
