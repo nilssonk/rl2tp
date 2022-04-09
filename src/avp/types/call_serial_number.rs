@@ -1,3 +1,4 @@
+use crate::avp::header::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -7,6 +8,7 @@ pub struct CallSerialNumber {
 }
 
 impl CallSerialNumber {
+    const ATTRIBUTE_TYPE: u16 = 15;
     const LENGTH: u16 = 4;
 
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
@@ -27,12 +29,16 @@ impl From<u32> for CallSerialNumber {
 
 impl QueryableAVP for CallSerialNumber {
     fn get_length(&self) -> u16 {
-        Self::LENGTH
+        Header::LENGTH + Self::LENGTH
     }
 }
 
 impl WritableAVP for CallSerialNumber {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        let header =
+            Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
+        header.write(writer);
+
+        writer.write_u32_be_unchecked(self.value);
     }
 }
