@@ -42,5 +42,6 @@ call_errors => AVP::CallErrors(types::CallErrors{
 }),
 call_serial_number => AVP::CallSerialNumber(types::CallSerialNumber{value: 0x1337}),
 called_number => AVP::CalledNumber(types::CalledNumber{value: "TestingNumber".to_owned()}),
+calling_number => AVP::CallingNumber(types::CallingNumber{value: "TestingNumber".to_owned()}),
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected)
 ];
