@@ -1,33 +1,44 @@
+use crate::avp::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Challenge {
-    pub data: Vec<u8>,
+    pub value: Vec<u8>,
 }
 
 impl Challenge {
+    const ATTRIBUTE_TYPE: u16 = 11;
+
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete Challenge AVP encountered");
         }
 
         Ok(Self {
-            data: reader.read_bytes(reader.len())?,
+            value: reader.read_bytes(reader.len())?,
         })
     }
 }
 
 impl QueryableAVP for Challenge {
     fn get_length(&self) -> u16 {
-        assert!(self.data.len() <= u16::MAX as usize);
+        assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
 
-        self.data.len() as u16
+        Header::LENGTH + self.value.len() as u16
     }
 }
 
 impl WritableAVP for Challenge {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
+
+        let header = Header::with_payload_length_and_attribute_type(
+            self.value.len() as u16,
+            Self::ATTRIBUTE_TYPE,
+        );
+        header.write(writer);
+
+        writer.write_bytes_unchecked(&self.value);
     }
 }
