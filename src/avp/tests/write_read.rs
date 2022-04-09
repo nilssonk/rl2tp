@@ -40,5 +40,6 @@ call_errors => AVP::CallErrors(types::CallErrors{
     buffer_overruns: 13,
     timeout_errors: 14,
     alignment_errors: 15
-})
+}),
+call_serial_number => AVP::CallSerialNumber(types::CallSerialNumber{value: 0x1337})
 ];
