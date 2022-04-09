@@ -17,7 +17,7 @@ pub enum ProxyAuthenType {
 impl ProxyAuthenType {
     const LENGTH: u16 = 2;
 
-    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete ProxyAuthenType AVP encountered");
         }

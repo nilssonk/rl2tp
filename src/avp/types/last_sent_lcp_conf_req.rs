@@ -7,7 +7,7 @@ pub struct LastSentLcpConfReq {
 }
 
 impl LastSentLcpConfReq {
-    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete LastSentLcpConfReq AVP encountered");
         }

@@ -22,7 +22,7 @@ impl BearerCapabilities {
         Self { data }
     }
 
-    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete BearerCapabilities AVP encountered");
         }

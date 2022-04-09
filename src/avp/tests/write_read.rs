@@ -12,8 +12,8 @@ macro_rules! io_tests {
             unsafe { $input.write(&mut w) };
 
             // Deserialize to output
-            let r = Box::new(SliceReader::from(&w.data));
-            let avps = AVP::try_read_greedy(r);
+            let mut r = SliceReader::from(&w.data);
+            let avps = AVP::try_read_greedy(&mut r);
 
             // Select first and only AVP, assert successful deserialization
             let output = avps.into_iter().next().unwrap().unwrap();
