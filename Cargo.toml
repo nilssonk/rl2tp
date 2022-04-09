@@ -7,8 +7,10 @@ license = "MIT"
 homepage = "https://github.com/nilssonk/rl2tp"
 repository = "https://github.com/nilssonk/rl2tp"
 edition = "2021"
+autobenches = false
 
 [features]
+benchmarks = ["dep:criterion", "dep:rand"]
 fail-on-warnings = []
 
 [dependencies]
@@ -16,3 +18,10 @@ enum_dispatch = "0.3"
 md5 = "0.7"
 num_enum = "0.5"
 phf = {version = "0.10", features=["macros"]}
+# feature benchmarks
+criterion = {version = "0.3", optional = true }
+rand = {version = "0.8", optional = true, features=["small_rng"]}
+
+[[bench]]
+name = "avp_decode"
+harness = false
