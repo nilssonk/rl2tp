@@ -41,5 +41,6 @@ call_errors => AVP::CallErrors(types::CallErrors{
     timeout_errors: 14,
     alignment_errors: 15
 }),
-call_serial_number => AVP::CallSerialNumber(types::CallSerialNumber{value: 0x1337})
+call_serial_number => AVP::CallSerialNumber(types::CallSerialNumber{value: 0x1337}),
+called_number => AVP::CalledNumber(types::CalledNumber{value: "TestingNumber".to_owned()})
 ];

@@ -1,3 +1,4 @@
+use crate::avp::header::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -7,6 +8,8 @@ pub struct CalledNumber {
 }
 
 impl CalledNumber {
+    const ATTRIBUTE_TYPE: u16 = 21;
+
     pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete CalledNumber AVP encountered");
@@ -22,14 +25,22 @@ impl CalledNumber {
 
 impl QueryableAVP for CalledNumber {
     fn get_length(&self) -> u16 {
-        assert!(self.value.len() <= u16::MAX as usize);
+        assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
 
-        self.value.len() as u16
+        Header::LENGTH + self.value.len() as u16
     }
 }
 
 impl WritableAVP for CalledNumber {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
+
+        let header = Header::with_payload_length_and_attribute_type(
+            self.value.len() as u16,
+            Self::ATTRIBUTE_TYPE,
+        );
+        header.write(writer);
+
+        writer.write_bytes_unchecked(self.value.as_bytes());
     }
 }
