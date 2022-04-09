@@ -10,7 +10,7 @@ pub struct CalledNumber {
 impl CalledNumber {
     const ATTRIBUTE_TYPE: u16 = 21;
 
-    pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete CalledNumber AVP encountered");
         }

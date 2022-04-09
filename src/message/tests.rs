@@ -9,7 +9,7 @@ fn try_read_data_valid() {
     // Data message
     let input = vec![0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0xff];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -35,7 +35,7 @@ fn try_read_data_invalid_version() {
     // Data message with invalid version
     let input = vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::No,
             version: ValidateVersion::Yes,
@@ -63,7 +63,7 @@ fn try_read_control_valid() {
         0x00, 0x01, // Type 1 (StartControlConnectionRequest)
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -99,7 +99,7 @@ fn try_read_control_invalid_priority() {
         0xbe, 0xef,
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::No,
             version: ValidateVersion::No,

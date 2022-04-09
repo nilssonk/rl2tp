@@ -11,7 +11,7 @@ pub struct RandomVector {
 impl RandomVector {
     const LENGTH: u16 = G_LENGTH;
 
-    pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete Random Vector AVP payload encountered");
         }

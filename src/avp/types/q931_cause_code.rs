@@ -11,7 +11,7 @@ pub struct Q931CauseCode {
 impl Q931CauseCode {
     const FIXED_LENGTH: u16 = 3;
 
-    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH as usize {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }

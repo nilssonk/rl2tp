@@ -19,9 +19,8 @@ fn empty_control() {
 
     assert_eq!(w.data.len(), TOTAL_LENGTH);
 
-    let r = Box::new(SliceReader::from(&w.data));
     let out_msg = Message::try_read(
-        r,
+        &mut SliceReader::from(&w.data),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -52,9 +51,8 @@ fn empty_data() {
 
     assert_eq!(w.data.len(), total_length);
 
-    let r = Box::new(SliceReader::from(&w.data));
     let out_msg = Message::try_read(
-        r,
+        &mut SliceReader::from(&w.data),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,

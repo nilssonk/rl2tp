@@ -19,7 +19,7 @@ fn message_type() {
         0x00, 0x01, // Type 1 (StartControlConnectionRequest)
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -65,7 +65,7 @@ fn random_vector() {
         0xbe, 0xef,
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -115,7 +115,7 @@ fn result_code() {
         0x54, 0x65, 0x73, 0x74, 0x20, 0x65, 0x72, 0x72, 0x6f, 0x72, // "Test error"
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -166,7 +166,7 @@ fn protocol_version() {
         0xef, // Revision
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -215,7 +215,7 @@ fn framing_capabilities() {
         0x00, 0x00, 0x00, 0xc0, // Async and sync framing supported
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -275,7 +275,7 @@ fn bearer_capabilities() {
         0x00, 0x00, 0x00, 0xc0, // Digital and analog access supported
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -335,7 +335,7 @@ fn tie_breaker() {
         0xde, 0xad, 0xbe, 0xef, 0xf0, 0x0d, 0xfa, 0xde, // Tie breaker value
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -381,7 +381,7 @@ fn firmware_revision() {
         0xf0, 0x0d, // Firmware Revision
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -428,7 +428,7 @@ fn host_name() {
         0xbe, 0xef,
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -477,7 +477,7 @@ fn vendor_name() {
         0xbe, 0xef,
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -525,7 +525,7 @@ fn assigned_tunnel_id() {
         0xde, 0xad, // Assigned Tunnel ID
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -571,7 +571,7 @@ fn receive_window_size() {
         0xde, 0xad, // Receive Window Size
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -617,7 +617,7 @@ fn challenge() {
         0xde, 0xad, 0xbe, 0xef, // Challenge
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -666,7 +666,7 @@ fn challenge_response() {
         0xef, // Challenge Response
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -720,7 +720,7 @@ fn q931_cause_code() {
         0x54, 0x65, 0x73, 0x74, 0x20, 0x65, 0x72, 0x72, 0x6f, 0x72, // "Test error"
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -770,7 +770,7 @@ fn assigned_session_id() {
         0xde, 0xad, // Assigned Session ID
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -816,7 +816,7 @@ fn call_serial_number() {
         0xde, 0xad, 0xbe, 0xef, // Call Serial Number
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -862,7 +862,7 @@ fn minimum_bps() {
         0xde, 0xad, 0xbe, 0xef, // Minimum BPS
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -908,7 +908,7 @@ fn maximum_bps() {
         0xde, 0xad, 0xbe, 0xef, // MaximumBps
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -954,7 +954,7 @@ fn bearer_type() {
         0x00, 0x00, 0x00, 0xc0, // Digital and analog access requested
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1014,7 +1014,7 @@ fn framing_type() {
         0x00, 0x00, 0x00, 0xc0, // Digital and analog framing requested
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1074,7 +1074,7 @@ fn called_number() {
         0x54, 0x65, 0x73, 0x74, 0x20, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, // Called Number
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1122,7 +1122,7 @@ fn calling_number() {
         0x54, 0x65, 0x73, 0x74, 0x20, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, // Calling Number
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1170,7 +1170,7 @@ fn sub_address() {
         0x54, 0x65, 0x73, 0x74, 0x20, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, // Sub-Address
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1218,7 +1218,7 @@ fn tx_connect_speed() {
         0xde, 0xad, 0xbe, 0xef, // Tx Connect Speed
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1264,7 +1264,7 @@ fn rx_connect_speed() {
         0xde, 0xad, 0xbe, 0xef, // Rx Connect Speed
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1310,7 +1310,7 @@ fn physical_channel_id() {
         0xde, 0xad, 0xbe, 0xef, // Physical Channel ID
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1358,7 +1358,7 @@ fn private_group_id() {
         0xde, 0xad, 0xbe, 0xef, // Private Group ID
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1405,7 +1405,7 @@ fn sequencing_required() {
         0x00, 0x27, // Attribute Type (Sequencing Required)
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1451,7 +1451,7 @@ fn initial_received_lcp_conf_req() {
         0xde, 0xad, 0xbe, 0xef, // Initial Received LCP CONFREQ
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1499,7 +1499,7 @@ fn last_sent_lcp_conf_req() {
         0xde, 0xad, 0xbe, 0xef, // Last Sent LCP CONFREQ
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1547,7 +1547,7 @@ fn last_received_lcp_conf_req() {
         0xde, 0xad, 0xbe, 0xef, // Last Received LCP CONFREQ
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1595,7 +1595,7 @@ fn proxy_authen_type() {
         0x00, 0x05, // MicrosoftChapVersion1
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1641,7 +1641,7 @@ fn proxy_authen_name() {
         0xde, 0xad, 0xbe, 0xef, // Proxy Authen Name
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1689,7 +1689,7 @@ fn proxy_authen_challenge() {
         0xde, 0xad, 0xbe, 0xef, // Proxy Authen Challenge
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1737,7 +1737,7 @@ fn proxy_authen_id() {
         0x00, 0xff, // Proxy Authen ID
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1783,7 +1783,7 @@ fn proxy_authen_response() {
         0xde, 0xad, 0xbe, 0xef, // Proxy Authen Response
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1838,7 +1838,7 @@ fn call_errors() {
         0x11, 0x22, 0x33, 0x44, // Alignment Errors
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,
@@ -1894,7 +1894,7 @@ fn accm() {
         0xf0, 0x0d, 0xfa, 0xde, // Receive ACCM
     ];
     let m = Message::try_read(
-        Box::new(SliceReader::from(&input)),
+        &mut SliceReader::from(&input),
         ValidationOptions {
             reserved: ValidateReserved::Yes,
             version: ValidateVersion::Yes,

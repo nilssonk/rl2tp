@@ -61,8 +61,8 @@ fn avp_decode(c: &mut Criterion) {
             &test_case,
             |b, data| {
                 b.iter(|| {
-                    let reader = Box::new(SliceReader::from(data));
-                    AVP::try_read_greedy(reader);
+                    let mut reader = SliceReader::from(data);
+                    AVP::try_read_greedy(&mut reader);
                 });
             },
         );
