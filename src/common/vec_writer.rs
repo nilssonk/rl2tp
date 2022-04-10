@@ -19,6 +19,9 @@ impl Writer for VecWriter {
     fn len(&self) -> usize {
         self.data.len()
     }
+    fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
 
     unsafe fn write_bytes_unchecked(&mut self, bytes: &[u8]) {
         self.data.extend_from_slice(bytes);
