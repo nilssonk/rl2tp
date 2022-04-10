@@ -7,7 +7,6 @@ pub struct Flags {
 }
 
 impl Flags {
-    #[allow(dead_code)] // Remove upon first use
     pub fn new(is_mandatory: bool, is_hidden: bool) -> Self {
         Self {
             data: is_mandatory as u8 | (is_hidden as u8) << 1,
@@ -22,7 +21,6 @@ impl Flags {
         (self.data >> i) & 0x1 != 0
     }
 
-    #[allow(dead_code)]
     pub fn is_mandatory(&self) -> bool {
         self.get_bit(0)
     }

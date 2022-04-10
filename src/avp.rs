@@ -63,6 +63,10 @@ pub trait QueryableAVP {
 
 #[enum_dispatch(AVP)]
 pub trait WritableAVP {
+    /// # Summary
+    /// Write a `WritableAVP` using a `Writer`.
+    /// # Safety
+    /// This function is marked as unsafe because it offers no error handling mechanism.
     unsafe fn write(&self, writer: &mut dyn Writer);
 }
 
