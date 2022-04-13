@@ -1,5 +1,5 @@
-use crate::avp::QueryableAVP;
-use crate::common::{Reader, ResultStr};
+use crate::avp::{QueryableAVP, WritableAVP};
+use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct AssignedSessionId {
@@ -28,5 +28,11 @@ impl From<u16> for AssignedSessionId {
 impl QueryableAVP for AssignedSessionId {
     fn get_length(&self) -> u16 {
         Self::LENGTH
+    }
+}
+
+impl WritableAVP for AssignedSessionId {
+    unsafe fn write(&self, _writer: &mut dyn Writer) {
+        unimplemented!();
     }
 }
