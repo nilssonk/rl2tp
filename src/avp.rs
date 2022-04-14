@@ -1,11 +1,12 @@
-mod flags;
-use flags::Flags;
+mod header;
+use header::Header;
 
 pub mod types;
 
-use crate::common::{Reader, ResultStr, SliceReader, Writer};
 use enum_dispatch::enum_dispatch;
 use phf::phf_map;
+
+use crate::common::{Reader, ResultStr, SliceReader, Writer};
 
 #[enum_dispatch]
 #[derive(Clone, Debug, PartialEq)]
@@ -107,8 +108,6 @@ static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
     39u16 => |reader| Ok(SequencingRequired(types::SequencingRequired::default())),
 };
 
-const N_HEADER_OCTETS: usize = 6;
-const N_FLAG_LENGTH_VENDOR_OCTETS: usize = 4;
 const ATTRIBUTE_TYPE_SIZE: usize = 2;
 
 impl AVP {
@@ -180,65 +179,34 @@ impl AVP {
 
     pub fn try_read_greedy<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> Vec<ResultStr<Self>> {
         let mut result = Vec::new();
-        while !reader.is_empty() {
-            // Note: Subsequent unsafe code depends on this check
-            if reader.len() < N_HEADER_OCTETS {
-                result.push(Err("Incomplete AVP header encountered"));
+        while let Some(header) = Header::try_read(reader.as_mut()) {
+            if header.payload_length as usize > reader.len() {
+                result.push(Err("AVP with invalid length field encountered"));
                 break;
             }
+            if header.vendor_id != 0 {
+                result.push(Err("AVP with unsupported vendor ID encountered"));
+                reader.skip_bytes(header.payload_length as usize);
+                continue;
+            }
 
-            let (flags, length, vendor_id) =
-                unsafe { Self::read_flags_length_vendor_unchecked(reader.as_mut()) };
-
-            let payload_length = length as usize - N_FLAG_LENGTH_VENDOR_OCTETS;
-
-            let avp = if vendor_id != 0 {
-                Err("AVP with unsupported vendor ID encountered")
-            } else if payload_length > reader.len() {
-                Err("AVP with invalid length field encountered")
-            } else if flags.is_hidden() {
+            let avp = if header.flags.is_hidden() {
                 // Hidden AVP
                 let hidden_data = reader
-                    .subreader(length as usize)
-                    .read_bytes(reader.len())
+                    .read_bytes(header.payload_length as usize)
                     .unwrap_or_default();
                 Ok(Self::Hidden(types::Hidden { data: hidden_data }))
             } else {
                 // Regular AVP
-                unsafe { Self::decode(reader.subreader(payload_length)) }
+                let subreader = reader.subreader(header.payload_length as usize);
+                AVP_CODES.get(&header.attribute_type).map_or_else(
+                    || Err("Unknown AVP encountered"),
+                    |constructor| constructor(subreader),
+                )
             };
             result.push(avp);
         }
 
         result
-    }
-
-    unsafe fn read_flags_length_vendor_unchecked(reader: &mut dyn Reader) -> (Flags, u16, u16) {
-        assert!(reader.len() >= N_FLAG_LENGTH_VENDOR_OCTETS);
-
-        // Flags and length share the first 2 octets
-        let octet1 = reader.read_u8_unchecked();
-        let octet2 = reader.read_u8_unchecked();
-        let flags = Flags::from(octet1);
-        let msb = (octet1 >> 6) as u16;
-        let lsb = octet2 as u16;
-        let length = msb << 8 | lsb;
-
-        // The second 2 octets are the Vendor ID
-        let vendor_id = reader.read_u16_be_unchecked();
-
-        (flags, length, vendor_id)
-    }
-
-    unsafe fn decode<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
-        // The first 4 octets have been peeled off and we are guaranteed to have at least 6
-        assert!(reader.len() >= ATTRIBUTE_TYPE_SIZE);
-
-        let attribute_type = reader.read_u16_be_unchecked();
-
-        AVP_CODES.get(&attribute_type).map_or_else(
-            || Err("Unknown AVP encountered"),
-            |constructor| constructor(reader),
-        )
     }
 }

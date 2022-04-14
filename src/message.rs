@@ -1,38 +1,17 @@
 #[cfg(test)]
 mod tests;
 
+mod control_message;
+pub use control_message::ControlMessage;
+
+mod data_message;
+pub use data_message::DataMessage;
+
 mod flags;
-use flags::*;
+use flags::{Flags, MessageFlagType};
 
-use crate::avp::{QueryableAVP, WritableAVP, AVP};
+use crate::avp::AVP;
 use crate::common::{Reader, ResultStr, Writer};
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ControlMessage {
-    pub length: u16,
-    pub tunnel_id: u16,
-    pub session_id: u16,
-    pub ns: u16,
-    pub nr: u16,
-    pub avps: Vec<AVP>,
-}
-
-impl ControlMessage {
-    pub fn get_dynamic_length(&self) -> u16 {
-        self.avps.iter().map(|avp| avp.get_length()).sum::<u16>()
-    }
-}
-
-#[derive(Debug, PartialEq)]
-pub struct DataMessage<'a> {
-    pub is_prioritized: bool,
-    pub length: Option<u16>,
-    pub tunnel_id: u16,
-    pub session_id: u16,
-    pub ns_nr: Option<(u16, u16)>,
-    pub offset: Option<u16>,
-    pub data: &'a [u8],
-}
 
 #[derive(Debug, PartialEq)]
 pub enum Message<'a> {
@@ -103,54 +82,8 @@ impl<'a> Message<'a> {
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
     pub unsafe fn write(&self, writer: &mut dyn Writer) {
         match self {
-            Message::Control(control) => {
-                let flags = Flags::new(
-                    MessageFlagType::Control,
-                    true,
-                    true,
-                    false,
-                    false,
-                    Self::PROTOCOL_VERSION,
-                );
-                flags.write(writer);
-
-                const FIXED_LENGTH: u16 = 12;
-                let dynamic_length = control.get_dynamic_length();
-                writer.write_u16_be_unchecked(FIXED_LENGTH + dynamic_length);
-                writer.write_u16_be_unchecked(control.tunnel_id);
-                writer.write_u16_be_unchecked(control.session_id);
-                writer.write_u16_be_unchecked(control.ns);
-                writer.write_u16_be_unchecked(control.nr);
-                for avp in control.avps.iter() {
-                    avp.write(writer);
-                }
-            }
-            Message::Data(data) => {
-                let flags = Flags::new(
-                    MessageFlagType::Data,
-                    data.length.is_some(),
-                    data.ns_nr.is_some(),
-                    data.offset.is_some(),
-                    data.is_prioritized,
-                    Self::PROTOCOL_VERSION,
-                );
-                flags.write(writer);
-
-                if let Some(length) = data.length {
-                    writer.write_u16_be_unchecked(length);
-                }
-
-                writer.write_u16_be_unchecked(data.tunnel_id);
-                writer.write_u16_be_unchecked(data.session_id);
-                if let Some((ns, nr)) = data.ns_nr {
-                    writer.write_u16_be_unchecked(ns);
-                    writer.write_u16_be_unchecked(nr);
-                }
-                if let Some(offset) = data.offset {
-                    writer.write_u16_be_unchecked(offset);
-                }
-                writer.write_bytes_unchecked(data.data);
-            }
+            Message::Control(control) => control.write(Self::PROTOCOL_VERSION, writer),
+            Message::Data(data) => data.write(Self::PROTOCOL_VERSION, writer),
         }
     }
 
