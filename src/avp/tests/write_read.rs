@@ -1,7 +1,6 @@
-// use crate::avp::*;
-// use crate::common::{SliceReader, VecWriter};
+use crate::avp::*;
+use crate::common::{SliceReader, VecWriter};
 
-#[allow(unused_macros)] // Remove upon first use
 macro_rules! io_tests {
     [$($name:ident => $input:expr),+] => {
         $(
@@ -24,3 +23,9 @@ macro_rules! io_tests {
     )+
     }
 }
+
+io_tests![
+accm => AVP::Accm(types::Accm {
+    send_accm: [0x01, 0x02, 0x03, 0x04],
+    receive_accm: [0x05, 0x06, 0x07, 0x08],
+})];

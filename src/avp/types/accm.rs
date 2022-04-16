@@ -1,3 +1,4 @@
+use crate::avp::header::{Flags, Header};
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -8,6 +9,7 @@ pub struct Accm {
 }
 
 impl Accm {
+    const ATTRIBUTE_TYPE: u16 = 35;
     const LENGTH: u16 = 10;
 
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
@@ -30,12 +32,24 @@ impl Accm {
 
 impl QueryableAVP for Accm {
     fn get_length(&self) -> u16 {
-        Self::LENGTH
+        Header::LENGTH + Self::LENGTH
     }
 }
 
 impl WritableAVP for Accm {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        let header = Header {
+            flags: Flags::new(true, false),
+            payload_length: Self::LENGTH,
+            vendor_id: 0,
+            attribute_type: Self::ATTRIBUTE_TYPE,
+        };
+        header.write(writer);
+
+        // Reserved
+        writer.write_bytes_unchecked(&[0x00, 0x00]);
+
+        writer.write_bytes_unchecked(&self.send_accm);
+        writer.write_bytes_unchecked(&self.receive_accm);
     }
 }
