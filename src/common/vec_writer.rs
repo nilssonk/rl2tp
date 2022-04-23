@@ -9,7 +9,6 @@ pub struct VecWriter {
 }
 
 impl VecWriter {
-    #[allow(dead_code)] // Remove on first use
     pub fn new() -> Self {
         Default::default()
     }
@@ -18,6 +17,9 @@ impl VecWriter {
 impl Writer for VecWriter {
     fn len(&self) -> usize {
         self.data.len()
+    }
+    fn is_empty(&self) -> bool {
+        self.data.is_empty()
     }
 
     unsafe fn write_bytes_unchecked(&mut self, bytes: &[u8]) {
