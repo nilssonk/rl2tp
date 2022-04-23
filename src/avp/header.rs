@@ -17,6 +17,18 @@ pub struct Header {
 impl Header {
     pub const LENGTH: u16 = 6;
 
+    pub fn with_payload_length_and_attribute_type(
+        payload_length: u16,
+        attribute_type: u16,
+    ) -> Self {
+        Self {
+            flags: Flags::new(true, false),
+            payload_length,
+            vendor_id: 0,
+            attribute_type,
+        }
+    }
+
     /// # Summary
     /// Attempt to read a `Header` using a `Reader`. Fails if there isn't enough data.
     pub fn try_read(reader: &mut dyn Reader) -> Option<Self> {
