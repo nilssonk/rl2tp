@@ -1,3 +1,4 @@
+use crate::avp::header::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -12,6 +13,7 @@ pub struct CallErrors {
 }
 
 impl CallErrors {
+    const ATTRIBUTE_TYPE: u16 = 34;
     const LENGTH: u16 = 26;
 
     pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
@@ -42,12 +44,24 @@ impl CallErrors {
 
 impl QueryableAVP for CallErrors {
     fn get_length(&self) -> u16 {
-        Self::LENGTH
+        Header::LENGTH + Self::LENGTH
     }
 }
 
 impl WritableAVP for CallErrors {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        let header =
+            Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
+        header.write(writer);
+
+        // Reserved
+        writer.write_bytes_unchecked(&[0x00, 0x00]);
+
+        writer.write_u32_be_unchecked(self.crc_errors);
+        writer.write_u32_be_unchecked(self.framing_errors);
+        writer.write_u32_be_unchecked(self.hardware_overruns);
+        writer.write_u32_be_unchecked(self.buffer_overruns);
+        writer.write_u32_be_unchecked(self.timeout_errors);
+        writer.write_u32_be_unchecked(self.alignment_errors);
     }
 }
