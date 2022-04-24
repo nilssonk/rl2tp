@@ -45,5 +45,6 @@ called_number => AVP::CalledNumber(types::CalledNumber{value: "TestingNumber".to
 calling_number => AVP::CallingNumber(types::CallingNumber{value: "TestingNumber".to_owned()}),
 challenge => AVP::Challenge(types::Challenge{value: vec![0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08]}),
 challenge_response => AVP::ChallengeResponse(types::ChallengeResponse{data: [0x00,0x01, 0x02, 0x03, 0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f]}),
+firmware_revision => AVP::FirmwareRevision(types::FirmwareRevision{value: 0x1337}),
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected)
 ];
