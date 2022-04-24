@@ -10,7 +10,7 @@ edition = "2021"
 autobenches = false
 
 [features]
-benchmarks = ["dep:criterion", "dep:rand"]
+benchmarks = ["dep:criterion", "dep:once_cell", "dep:rand"]
 fail-on-warnings = []
 
 [dependencies]
@@ -20,8 +20,10 @@ num_enum = "0.5"
 phf = {version = "0.10", features=["macros"]}
 # feature benchmarks
 criterion = {version = "0.3", optional = true }
+once_cell = {version = "1.10", optional = true}
 rand = {version = "0.8", optional = true, features=["small_rng"]}
 
 [[bench]]
-name = "avp_decode"
+name = "avp"
 harness = false
+
