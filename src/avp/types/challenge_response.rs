@@ -13,7 +13,7 @@ impl ChallengeResponse {
     const ATTRIBUTE_TYPE: u16 = 13;
     const LENGTH: u16 = CHALLENGE_RESPONSE_LENGTH;
 
-    pub fn try_read<'a>(reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }

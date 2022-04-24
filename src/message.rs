@@ -49,11 +49,11 @@ impl<'a> Message<'a> {
 
     /// # Summary
     /// Attempt to read a `Message` using a `Reader`. User-supplied ValidationOptions offer a way to ignore certain protocol mandates.
-    pub fn try_read(
-        mut reader: Box<dyn Reader<'a> + 'a>,
+    pub fn try_read<'b>(
+        reader: &'b mut dyn Reader<'a>,
         validation_options: ValidationOptions,
     ) -> ResultStr<Self> {
-        let flags = Flags::read(reader.as_mut())?;
+        let flags = Flags::read(reader)?;
 
         if let ValidateVersion::Yes = validation_options.version {
             let version = flags.get_version();
@@ -87,10 +87,7 @@ impl<'a> Message<'a> {
         }
     }
 
-    fn try_read_data_message(
-        flags: Flags,
-        mut reader: Box<dyn Reader<'a> + 'a>,
-    ) -> ResultStr<Self> {
+    fn try_read_data_message(flags: Flags, reader: &mut dyn Reader<'a>) -> ResultStr<Self> {
         let mut minimal_length = 4;
         if flags.has_length() {
             minimal_length += 2;
@@ -147,7 +144,7 @@ impl<'a> Message<'a> {
     fn try_read_control_message(
         flags: Flags,
         validation_options: ValidationOptions,
-        mut reader: Box<dyn Reader<'a> + 'a>,
+        reader: &mut dyn Reader,
     ) -> ResultStr<Self> {
         if let ValidateUnused::Yes = validation_options.unused {
             if flags.is_prioritized() {

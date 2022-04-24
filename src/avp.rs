@@ -7,7 +7,6 @@ use header::Header;
 pub mod types;
 
 use enum_dispatch::enum_dispatch;
-use phf::phf_map;
 
 use crate::common::{Reader, ResultStr, SliceReader, Writer};
 
@@ -72,48 +71,50 @@ pub trait WritableAVP {
 
 use AVP::*;
 
-type DecodeFunction = for<'a> fn(Box<dyn Reader<'a> + 'a>) -> ResultStr<AVP>;
-static AVP_CODES: phf::Map<u16, DecodeFunction> = phf_map! {
-    0u16 => |reader| Ok(MessageType(types::MessageType::try_read(reader)?)),
-    1u16 => |reader| Ok(ResultCode(types::ResultCode::try_read(reader)?)),
-    2u16 => |reader| Ok(ProtocolVersion(types::ProtocolVersion::try_read(reader)?)),
-    3u16 => |reader| Ok(FramingCapabilities(types::FramingCapabilities::try_read(reader)?)),
-    4u16 => |reader| Ok(BearerCapabilities(types::BearerCapabilities::try_read(reader)?)),
-    5u16 => |reader| Ok(TieBreaker(types::TieBreaker::try_read(reader)?)),
-    6u16 => |reader| Ok(FirmwareRevision(types::FirmwareRevision::try_read(reader)?)),
-    7u16 => |reader| Ok(HostName(types::HostName::try_read(reader)?)),
-    8u16 => |reader| Ok(VendorName(types::VendorName::try_read(reader)?)),
-    9u16 => |reader| Ok(AssignedTunnelId(types::AssignedTunnelId::try_read(reader)?)),
-    10u16 => |reader| Ok(ReceiveWindowSize(types::ReceiveWindowSize::try_read(reader)?)),
-    11u16 => |reader| Ok(Challenge(types::Challenge::try_read(reader)?)),
-    12u16 => |reader| Ok(Q931CauseCode(types::Q931CauseCode::try_read(reader)?)),
-    13u16 => |reader| Ok(ChallengeResponse(types::ChallengeResponse::try_read(reader)?)),
-    14u16 => |reader| Ok(AssignedSessionId(types::AssignedSessionId::try_read(reader)?)),
-    15u16 => |reader| Ok(CallSerialNumber(types::CallSerialNumber::try_read(reader)?)),
-    16u16 => |reader| Ok(MinimumBps(types::MinimumBps::try_read(reader)?)),
-    17u16 => |reader| Ok(MaximumBps(types::MaximumBps::try_read(reader)?)),
-    18u16 => |reader| Ok(BearerType(types::BearerType::try_read(reader)?)),
-    19u16 => |reader| Ok(FramingType(types::FramingType::try_read(reader)?)),
-    21u16 => |reader| Ok(CalledNumber(types::CalledNumber::try_read(reader)?)),
-    22u16 => |reader| Ok(CallingNumber(types::CallingNumber::try_read(reader)?)),
-    23u16 => |reader| Ok(SubAddress(types::SubAddress::try_read(reader)?)),
-    24u16 => |reader| Ok(TxConnectSpeed(types::TxConnectSpeed::try_read(reader)?)),
-    25u16 => |reader| Ok(PhysicalChannelId(types::PhysicalChannelId::try_read(reader)?)),
-    26u16 => |reader| Ok(InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq::try_read(reader)?)),
-    27u16 => |reader| Ok(LastSentLcpConfReq(types::LastSentLcpConfReq::try_read(reader)?)),
-    28u16 => |reader| Ok(LastReceivedLcpConfReq(types::LastReceivedLcpConfReq::try_read(reader)?)),
-    29u16 => |reader| Ok(ProxyAuthenType(types::ProxyAuthenType::try_read(reader)?)),
-    30u16 => |reader| Ok(ProxyAuthenName(types::ProxyAuthenName::try_read(reader)?)),
-    31u16 => |reader| Ok(ProxyAuthenChallenge(types::ProxyAuthenChallenge::try_read(reader)?)),
-    32u16 => |reader| Ok(ProxyAuthenId(types::ProxyAuthenId::try_read(reader)?)),
-    33u16 => |reader| Ok(ProxyAuthenResponse(types::ProxyAuthenResponse::try_read(reader)?)),
-    34u16 => |reader| Ok(CallErrors(types::CallErrors::try_read(reader)?)),
-    35u16 => |reader| Ok(Accm(types::Accm::try_read(reader)?)),
-    36u16 => |reader| Ok(RandomVector(types::RandomVector::try_read(reader)?)),
-    37u16 => |reader| Ok(PrivateGroupId(types::PrivateGroupId::try_read(reader)?)),
-    38u16 => |reader| Ok(RxConnectSpeed(types::RxConnectSpeed::try_read(reader)?)),
-    39u16 => |reader| Ok(SequencingRequired(types::SequencingRequired::default())),
-};
+fn decode_avp(attribute_type: u16, reader: &mut dyn Reader) -> ResultStr<AVP> {
+    Ok(match attribute_type {
+        0u16 => MessageType(types::MessageType::try_read(reader)?),
+        1u16 => ResultCode(types::ResultCode::try_read(reader)?),
+        2u16 => ProtocolVersion(types::ProtocolVersion::try_read(reader)?),
+        3u16 => FramingCapabilities(types::FramingCapabilities::try_read(reader)?),
+        4u16 => BearerCapabilities(types::BearerCapabilities::try_read(reader)?),
+        5u16 => TieBreaker(types::TieBreaker::try_read(reader)?),
+        6u16 => FirmwareRevision(types::FirmwareRevision::try_read(reader)?),
+        7u16 => HostName(types::HostName::try_read(reader)?),
+        8u16 => VendorName(types::VendorName::try_read(reader)?),
+        9u16 => AssignedTunnelId(types::AssignedTunnelId::try_read(reader)?),
+        10u16 => ReceiveWindowSize(types::ReceiveWindowSize::try_read(reader)?),
+        11u16 => Challenge(types::Challenge::try_read(reader)?),
+        12u16 => Q931CauseCode(types::Q931CauseCode::try_read(reader)?),
+        13u16 => ChallengeResponse(types::ChallengeResponse::try_read(reader)?),
+        14u16 => AssignedSessionId(types::AssignedSessionId::try_read(reader)?),
+        15u16 => CallSerialNumber(types::CallSerialNumber::try_read(reader)?),
+        16u16 => MinimumBps(types::MinimumBps::try_read(reader)?),
+        17u16 => MaximumBps(types::MaximumBps::try_read(reader)?),
+        18u16 => BearerType(types::BearerType::try_read(reader)?),
+        19u16 => FramingType(types::FramingType::try_read(reader)?),
+        21u16 => CalledNumber(types::CalledNumber::try_read(reader)?),
+        22u16 => CallingNumber(types::CallingNumber::try_read(reader)?),
+        23u16 => SubAddress(types::SubAddress::try_read(reader)?),
+        24u16 => TxConnectSpeed(types::TxConnectSpeed::try_read(reader)?),
+        25u16 => PhysicalChannelId(types::PhysicalChannelId::try_read(reader)?),
+        26u16 => InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq::try_read(reader)?),
+        27u16 => LastSentLcpConfReq(types::LastSentLcpConfReq::try_read(reader)?),
+        28u16 => LastReceivedLcpConfReq(types::LastReceivedLcpConfReq::try_read(reader)?),
+        29u16 => ProxyAuthenType(types::ProxyAuthenType::try_read(reader)?),
+        30u16 => ProxyAuthenName(types::ProxyAuthenName::try_read(reader)?),
+        31u16 => ProxyAuthenChallenge(types::ProxyAuthenChallenge::try_read(reader)?),
+        32u16 => ProxyAuthenId(types::ProxyAuthenId::try_read(reader)?),
+        33u16 => ProxyAuthenResponse(types::ProxyAuthenResponse::try_read(reader)?),
+        34u16 => CallErrors(types::CallErrors::try_read(reader)?),
+        35u16 => Accm(types::Accm::try_read(reader)?),
+        36u16 => RandomVector(types::RandomVector::try_read(reader)?),
+        37u16 => PrivateGroupId(types::PrivateGroupId::try_read(reader)?),
+        38u16 => RxConnectSpeed(types::RxConnectSpeed::try_read(reader)?),
+        39u16 => SequencingRequired(types::SequencingRequired::default()),
+        _ => Err("Unknown AVP encountered")?,
+    })
+}
 
 const ATTRIBUTE_TYPE_SIZE: usize = 2;
 
@@ -173,20 +174,16 @@ impl AVP {
                     chunk_data[j] ^= intermediate[j];
                 }
 
-                let reader = Box::new(SliceReader::from(chunk_data));
-
-                AVP_CODES.get(&attribute_type).map_or_else(
-                    || Err("Unknown hidden AVP encountered"),
-                    |constructor| constructor(reader),
-                )
+                let mut reader = SliceReader::from(chunk_data);
+                decode_avp(attribute_type, &mut reader)
             }
             _ => Ok(self),
         }
     }
 
-    pub fn try_read_greedy<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> Vec<ResultStr<Self>> {
+    pub fn try_read_greedy(reader: &mut dyn Reader) -> Vec<ResultStr<Self>> {
         let mut result = Vec::new();
-        while let Some(header) = Header::try_read(reader.as_mut()) {
+        while let Some(header) = Header::try_read(reader) {
             if header.payload_length as usize > reader.len() {
                 result.push(Err("AVP with invalid length field encountered"));
                 break;
@@ -205,11 +202,8 @@ impl AVP {
                 Ok(Self::Hidden(types::Hidden { data: hidden_data }))
             } else {
                 // Regular AVP
-                let subreader = reader.subreader(header.payload_length as usize);
-                AVP_CODES.get(&header.attribute_type).map_or_else(
-                    || Err("Unknown AVP encountered"),
-                    |constructor| constructor(subreader),
-                )
+                let mut subreader = reader.subreader(header.payload_length as usize);
+                decode_avp(header.attribute_type, subreader.as_mut())
             };
             result.push(avp);
         }

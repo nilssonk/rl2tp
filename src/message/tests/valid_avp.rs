@@ -9,7 +9,7 @@ macro_rules! read_tests {
         fn $name() {
             let data = $input;
             let result = Message::try_read(
-                Box::new(SliceReader::from(&data)),
+                &mut SliceReader::from(&data),
                 ValidationOptions {
                     reserved: ValidateReserved::Yes,
                     version: ValidateVersion::Yes,
@@ -27,7 +27,7 @@ macro_rules! read_tests_extended {
         #[test]
         fn $name() {
             let data = $input;
-            let mut result = Message::try_read(Box::new(SliceReader::from(&data)),
+            let mut result = Message::try_read(&mut SliceReader::from(&data),
                 ValidationOptions {
                     reserved: ValidateReserved::Yes,
                     version: ValidateVersion::Yes,

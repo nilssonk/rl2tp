@@ -9,7 +9,7 @@ pub struct TieBreaker {
 impl TieBreaker {
     const LENGTH: u16 = 8;
 
-    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete TieBreaker AVP encountered");
         }

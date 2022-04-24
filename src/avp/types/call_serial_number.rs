@@ -11,7 +11,7 @@ impl CallSerialNumber {
     const ATTRIBUTE_TYPE: u16 = 15;
     const LENGTH: u16 = 4;
 
-    pub fn try_read<'a>(mut reader: Box<dyn Reader<'a> + 'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete CallSerialNumber AVP encountered");
         }
