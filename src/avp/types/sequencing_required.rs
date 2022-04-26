@@ -5,8 +5,8 @@ use crate::common::Writer;
 pub struct SequencingRequired {}
 
 impl QueryableAVP for SequencingRequired {
-    fn get_length(&self) -> u16 {
-        0
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (0, 0)
     }
 }
 

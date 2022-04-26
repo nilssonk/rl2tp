@@ -26,8 +26,8 @@ impl From<u32> for MinimumBps {
 }
 
 impl QueryableAVP for MinimumBps {
-    fn get_length(&self) -> u16 {
-        Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, 0)
     }
 }
 

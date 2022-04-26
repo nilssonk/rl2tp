@@ -3,14 +3,14 @@ use crate::common::Writer;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Hidden {
-    pub data: Vec<u8>,
+    pub value: Vec<u8>,
 }
 
 impl QueryableAVP for Hidden {
-    fn get_length(&self) -> u16 {
-        assert!(self.data.len() <= u16::MAX as usize);
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        assert!(self.value.len() <= u16::MAX as usize);
 
-        self.data.len() as u16
+        (self.value.len() as u16, 0)
     }
 }
 

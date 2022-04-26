@@ -32,8 +32,8 @@ impl FramingType {
 }
 
 impl QueryableAVP for FramingType {
-    fn get_length(&self) -> u16 {
-        Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, 0)
     }
 }
 

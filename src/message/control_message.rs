@@ -1,4 +1,4 @@
-use crate::avp::{QueryableAVP, WritableAVP, AVP};
+use crate::avp::AVP;
 use crate::common::Writer;
 use crate::message::flags::{Flags, MessageFlagType};
 

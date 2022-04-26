@@ -1,4 +1,3 @@
-use crate::avp::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -24,23 +23,15 @@ impl CallingNumber {
 }
 
 impl QueryableAVP for CallingNumber {
-    fn get_length(&self) -> u16 {
-        assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        assert!(self.value.len() <= u16::MAX as usize);
 
-        Header::LENGTH + self.value.len() as u16
+        (self.value.len() as u16, Self::ATTRIBUTE_TYPE)
     }
 }
 
 impl WritableAVP for CallingNumber {
     unsafe fn write(&self, writer: &mut dyn Writer) {
-        assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
-
-        let header = Header::with_payload_length_and_attribute_type(
-            self.value.len() as u16,
-            Self::ATTRIBUTE_TYPE,
-        );
-        header.write(writer);
-
         writer.write_bytes_unchecked(self.value.as_bytes());
     }
 }

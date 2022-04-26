@@ -21,10 +21,10 @@ impl SubAddress {
 }
 
 impl QueryableAVP for SubAddress {
-    fn get_length(&self) -> u16 {
+    fn get_length_attribute_type(&self) -> (u16, u16) {
         assert!(self.value.len() <= u16::MAX as usize);
 
-        self.value.len() as u16
+        (self.value.len() as u16, 0)
     }
 }
 

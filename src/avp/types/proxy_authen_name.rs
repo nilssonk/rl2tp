@@ -3,7 +3,7 @@ use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ProxyAuthenName {
-    pub data: Vec<u8>,
+    pub value: Vec<u8>,
 }
 
 impl ProxyAuthenName {
@@ -13,16 +13,16 @@ impl ProxyAuthenName {
         }
 
         Ok(Self {
-            data: reader.read_bytes(reader.len())?,
+            value: reader.read_bytes(reader.len())?,
         })
     }
 }
 
 impl QueryableAVP for ProxyAuthenName {
-    fn get_length(&self) -> u16 {
-        assert!(self.data.len() <= u16::MAX as usize);
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        assert!(self.value.len() <= u16::MAX as usize);
 
-        self.data.len() as u16
+        (self.value.len() as u16, 0)
     }
 }
 

@@ -5,7 +5,7 @@ const G_LENGTH: u16 = 4;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct PhysicalChannelId {
-    pub data: [u8; G_LENGTH as usize],
+    pub value: [u8; G_LENGTH as usize],
 }
 
 impl PhysicalChannelId {
@@ -17,7 +17,7 @@ impl PhysicalChannelId {
         }
 
         Ok(Self {
-            data: unsafe {
+            value: unsafe {
                 reader
                     .peek_bytes(Self::LENGTH as usize)?
                     .try_into()
@@ -28,8 +28,8 @@ impl PhysicalChannelId {
 }
 
 impl QueryableAVP for PhysicalChannelId {
-    fn get_length(&self) -> u16 {
-        Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, 0)
     }
 }
 

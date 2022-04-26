@@ -101,7 +101,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::RandomVector(types::RandomVector {
-                data: [0xde, 0xad, 0xbe, 0xef]
+                value: [0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -259,7 +259,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::HostName(types::HostName {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -291,7 +291,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::VendorName(types::VendorName {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -414,7 +414,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::ChallengeResponse(types::ChallengeResponse {
-                data: [
+                value: [
                     0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef,
                     0xde, 0xad, 0xbe, 0xef
                 ]
@@ -751,7 +751,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallRequest),
             AVP::PhysicalChannelId(types::PhysicalChannelId {
-                data: [0xde, 0xad, 0xbe, 0xef]
+                value: [0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -782,7 +782,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::PrivateGroupId(types::PrivateGroupId {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -841,7 +841,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -872,7 +872,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::LastSentLcpConfReq(types::LastSentLcpConfReq {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -903,7 +903,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::LastReceivedLcpConfReq(types::LastReceivedLcpConfReq {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -963,7 +963,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::ProxyAuthenName(types::ProxyAuthenName {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -994,7 +994,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::ProxyAuthenChallenge(types::ProxyAuthenChallenge {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
@@ -1054,7 +1054,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::ProxyAuthenResponse(types::ProxyAuthenResponse {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },

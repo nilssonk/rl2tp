@@ -5,7 +5,7 @@ const G_LENGTH: u16 = 4;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RandomVector {
-    pub data: [u8; G_LENGTH as usize],
+    pub value: [u8; G_LENGTH as usize],
 }
 
 impl RandomVector {
@@ -17,14 +17,14 @@ impl RandomVector {
         }
 
         Ok(Self {
-            data: unsafe { reader.peek_bytes(4)?.try_into().unwrap_unchecked() },
+            value: unsafe { reader.peek_bytes(4)?.try_into().unwrap_unchecked() },
         })
     }
 }
 
 impl QueryableAVP for RandomVector {
-    fn get_length(&self) -> u16 {
-        Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, 0)
     }
 }
 

@@ -1,4 +1,3 @@
-use crate::avp::header::{Flags, Header};
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -78,22 +77,13 @@ impl MessageType {
 }
 
 impl QueryableAVP for MessageType {
-    fn get_length(&self) -> u16 {
-        Header::LENGTH + Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, Self::ATTRIBUTE_TYPE)
     }
 }
 
 impl WritableAVP for MessageType {
     unsafe fn write(&self, writer: &mut dyn Writer) {
-        let flags = Flags::new(true, false);
-        let header = Header {
-            flags,
-            payload_length: Self::LENGTH,
-            vendor_id: 0,
-            attribute_type: Self::ATTRIBUTE_TYPE,
-        };
-        header.write(writer);
-
         writer.write_u16_be_unchecked(self.get_code())
     }
 }

@@ -1,4 +1,3 @@
-use crate::avp::header::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -31,17 +30,13 @@ impl Accm {
 }
 
 impl QueryableAVP for Accm {
-    fn get_length(&self) -> u16 {
-        Header::LENGTH + Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, Self::ATTRIBUTE_TYPE)
     }
 }
 
 impl WritableAVP for Accm {
     unsafe fn write(&self, writer: &mut dyn Writer) {
-        let header =
-            Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
-        header.write(writer);
-
         // Reserved
         writer.write_bytes_unchecked(&[0x00, 0x00]);
 

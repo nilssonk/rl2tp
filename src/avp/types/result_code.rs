@@ -52,7 +52,8 @@ impl ResultCode {
 }
 
 impl QueryableAVP for ResultCode {
-    fn get_length(&self) -> u16 {
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        const ATTRIBUTE_TYPE: u16 = 0;
         let mut length = Self::FIXED_LENGTH;
 
         if self.error.is_some() {
@@ -65,7 +66,7 @@ impl QueryableAVP for ResultCode {
             }
         }
 
-        length
+        (length, ATTRIBUTE_TYPE)
     }
 }
 

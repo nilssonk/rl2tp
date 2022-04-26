@@ -38,13 +38,15 @@ impl Q931CauseCode {
 }
 
 impl QueryableAVP for Q931CauseCode {
-    fn get_length(&self) -> u16 {
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        const ATTRIBUTE_TYPE: u16 = 0;
+
         if let Some(value) = &self.advisory {
             assert!(value.len() <= (u16::MAX - Self::FIXED_LENGTH) as usize);
 
-            Self::FIXED_LENGTH + value.len() as u16
+            (Self::FIXED_LENGTH + value.len() as u16, ATTRIBUTE_TYPE)
         } else {
-            Self::FIXED_LENGTH
+            (Self::FIXED_LENGTH, ATTRIBUTE_TYPE)
         }
     }
 }

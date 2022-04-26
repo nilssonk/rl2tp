@@ -56,12 +56,12 @@ pub enum AVP {
 }
 
 #[enum_dispatch(AVP)]
-pub trait QueryableAVP {
-    fn get_length(&self) -> u16;
+pub(crate) trait QueryableAVP {
+    fn get_length_attribute_type(&self) -> (u16, u16);
 }
 
 #[enum_dispatch(AVP)]
-pub trait WritableAVP {
+pub(crate) trait WritableAVP {
     /// # Summary
     /// Write a `WritableAVP` using a `Writer`.
     /// # Safety
@@ -123,12 +123,12 @@ impl AVP {
         match self {
             Self::Hidden(mut hidden) => {
                 // The first 4 octets have been peeled off and we are guaranteed to have at least 6
-                assert!(hidden.data.len() >= ATTRIBUTE_TYPE_SIZE);
+                assert!(hidden.value.len() >= ATTRIBUTE_TYPE_SIZE);
                 let attribute_type =
-                    unsafe { SliceReader::from(&hidden.data).read_u16_be_unchecked() };
+                    unsafe { SliceReader::from(&hidden.value).read_u16_be_unchecked() };
 
                 const CHUNK_SIZE: usize = 16;
-                let chunk_data = &mut hidden.data[ATTRIBUTE_TYPE_SIZE..];
+                let chunk_data = &mut hidden.value[ATTRIBUTE_TYPE_SIZE..];
                 let n_chunks = chunk_data.len() / CHUNK_SIZE;
 
                 if chunk_data.is_empty() {
@@ -199,7 +199,7 @@ impl AVP {
                 let hidden_data = reader
                     .read_bytes(header.payload_length as usize)
                     .unwrap_or_default();
-                Ok(Self::Hidden(types::Hidden { data: hidden_data }))
+                Ok(Self::Hidden(types::Hidden { value: hidden_data }))
             } else {
                 // Regular AVP
                 let mut subreader = reader.subreader(header.payload_length as usize);
@@ -209,5 +209,18 @@ impl AVP {
         }
 
         result
+    }
+
+    pub fn get_length(&self) -> u16 {
+        let (length, _) = QueryableAVP::get_length_attribute_type(self);
+        length
+    }
+
+    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+        let (length, attribute_type) = QueryableAVP::get_length_attribute_type(self);
+        let header = Header::with_payload_length_and_attribute_type(length, attribute_type);
+        header.write(writer);
+
+        WritableAVP::write(self, writer);
     }
 }

@@ -26,8 +26,8 @@ impl From<u16> for ReceiveWindowSize {
 }
 
 impl QueryableAVP for ReceiveWindowSize {
-    fn get_length(&self) -> u16 {
-        Self::LENGTH
+    fn get_length_attribute_type(&self) -> (u16, u16) {
+        (Self::LENGTH, 0)
     }
 }
 
