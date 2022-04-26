@@ -1,3 +1,4 @@
+use crate::avp::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -7,6 +8,7 @@ pub struct FirmwareRevision {
 }
 
 impl FirmwareRevision {
+    const ATTRIBUTE_TYPE: u16 = 6;
     const LENGTH: u16 = 2;
 
     pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
@@ -27,12 +29,16 @@ impl From<u16> for FirmwareRevision {
 
 impl QueryableAVP for FirmwareRevision {
     fn get_length(&self) -> u16 {
-        Self::LENGTH
+        Header::LENGTH + Self::LENGTH
     }
 }
 
 impl WritableAVP for FirmwareRevision {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut dyn Writer) {
+        let header =
+            Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
+        header.write(writer);
+
+        writer.write_u16_be_unchecked(self.value);
     }
 }

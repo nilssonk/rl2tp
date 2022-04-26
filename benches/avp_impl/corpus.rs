@@ -33,6 +33,7 @@ pub static AVP_CORPUS: Lazy<Mutex<Vec<AVP>>> = Lazy::new(|| {
         AVP::Challenge(types::Challenge {
             value: vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08],
         }),
+        AVP::FirmwareRevision(types::FirmwareRevision { value: 0x1337 }),
         AVP::MessageType(types::MessageType::OutgoingCallRequest),
     ])
 });
