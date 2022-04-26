@@ -13,7 +13,7 @@ impl ChallengeResponse {
     const ATTRIBUTE_TYPE: u16 = 13;
     const LENGTH: u16 = CHALLENGE_RESPONSE_LENGTH;
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }
@@ -31,7 +31,7 @@ impl QueryableAVP for ChallengeResponse {
 }
 
 impl WritableAVP for ChallengeResponse {
-    unsafe fn write(&self, writer: &mut dyn Writer) {
+    unsafe fn write(&self, writer: &mut impl Writer) {
         let header =
             Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
         header.write(writer);

@@ -10,7 +10,7 @@ pub struct CalledNumber {
 impl CalledNumber {
     const ATTRIBUTE_TYPE: u16 = 21;
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete CalledNumber AVP encountered");
         }
@@ -32,7 +32,7 @@ impl QueryableAVP for CalledNumber {
 }
 
 impl WritableAVP for CalledNumber {
-    unsafe fn write(&self, writer: &mut dyn Writer) {
+    unsafe fn write(&self, writer: &mut impl Writer) {
         assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
 
         let header = Header::with_payload_length_and_attribute_type(

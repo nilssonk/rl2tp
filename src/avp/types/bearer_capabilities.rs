@@ -22,7 +22,7 @@ impl BearerCapabilities {
         Self { data }
     }
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete BearerCapabilities AVP encountered");
         }
@@ -47,7 +47,7 @@ impl QueryableAVP for BearerCapabilities {
 }
 
 impl WritableAVP for BearerCapabilities {
-    unsafe fn write(&self, writer: &mut dyn Writer) {
+    unsafe fn write(&self, writer: &mut impl Writer) {
         let header =
             Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
         header.write(writer);

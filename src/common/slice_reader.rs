@@ -31,8 +31,8 @@ impl<'a> Reader<'a> for SliceReader<'a> {
         self.data.len()
     }
 
-    fn subreader(&mut self, length: usize) -> Box<dyn Reader<'a> + 'a> {
-        let new_reader = Box::new(SliceReader::from(&self.data[..length]));
+    fn subreader(&mut self, length: usize) -> Self {
+        let new_reader = SliceReader::from(&self.data[..length]);
         self.data = &self.data[length..];
         new_reader
     }

@@ -15,7 +15,7 @@ impl QueryableAVP for Hidden {
 }
 
 impl WritableAVP for Hidden {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }

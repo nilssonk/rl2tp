@@ -42,11 +42,11 @@ impl Flags {
         result
     }
 
-    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+    pub unsafe fn write(&self, writer: &mut impl Writer) {
         writer.write_u16_be_unchecked(self.data);
     }
 
-    pub fn read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < 2 {
             return Err("Incomplete flag section encountered");
         }

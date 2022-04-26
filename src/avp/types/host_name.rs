@@ -7,7 +7,7 @@ pub struct HostName {
 }
 
 impl HostName {
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete HostName AVP encountered");
         }
@@ -27,7 +27,7 @@ impl QueryableAVP for HostName {
 }
 
 impl WritableAVP for HostName {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }

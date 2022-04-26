@@ -13,7 +13,7 @@ impl FramingCapabilities {
         Self { data }
     }
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete FramingCapabilities AVP encountered");
         }
@@ -38,7 +38,7 @@ impl QueryableAVP for FramingCapabilities {
 }
 
 impl WritableAVP for FramingCapabilities {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }

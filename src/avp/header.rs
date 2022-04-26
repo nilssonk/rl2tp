@@ -31,7 +31,7 @@ impl Header {
 
     /// # Summary
     /// Attempt to read a `Header` using a `Reader`. Fails if there isn't enough data.
-    pub fn try_read(reader: &mut dyn Reader) -> Option<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Option<Self> {
         // Note: Subsequent unsafe code depends on this check
         if reader.len() < Self::LENGTH as usize {
             return None;
@@ -67,7 +67,7 @@ impl Header {
     /// Write a `Header` using a mutable `Writer`.
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
-    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+    pub unsafe fn write(&self, writer: &mut impl Writer) {
         let wire_length = Self::LENGTH + self.payload_length;
 
         // Length split

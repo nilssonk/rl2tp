@@ -9,7 +9,7 @@ pub struct TieBreaker {
 impl TieBreaker {
     const LENGTH: u16 = 8;
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete TieBreaker AVP encountered");
         }
@@ -32,7 +32,7 @@ impl QueryableAVP for TieBreaker {
 }
 
 impl WritableAVP for TieBreaker {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }
