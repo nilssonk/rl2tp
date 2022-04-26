@@ -17,6 +17,7 @@ pub struct Header {
 impl Header {
     pub const LENGTH: u16 = 6;
 
+    #[inline]
     pub fn with_payload_length_and_attribute_type(
         payload_length: u16,
         attribute_type: u16,
