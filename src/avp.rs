@@ -218,6 +218,38 @@ impl AVP {
     /// This function is marked as unsafe because it offers no error handling mechanism.
     #[inline]
     pub unsafe fn write(&self, writer: &mut impl Writer) {
+        const VENDOR_ID: u16 = 0;
+        const IS_MANDATORY: bool = true;
+        // @TODO: Support hidden
+        const IS_HIDDEN: bool = false;
+
+        // Save header position
+        let start_position = writer.len();
+
+        // Dummy octets to be overwritten
+        writer.write_bytes_unchecked(&[0, 0]);
+
+        // Write rest of header
+        writer.write_u16_be_unchecked(VENDOR_ID);
+
+        // Write payload
         WritableAVP::write(self, writer);
+
+        // Get total length
+        let end_position = writer.len();
+        let length = end_position - start_position;
+
+        // Length split
+        let msb = ((length >> 8) & 0x3) as u8;
+        let lsb = length as u8;
+
+        let m_bit = IS_MANDATORY as u8;
+        let h_bit = (IS_HIDDEN as u8) << 1;
+        let octet1 = (msb << 6) | m_bit | h_bit;
+        let octet2 = lsb;
+
+        // Oerwrite dummy octets
+        assert!(length <= u16::MAX as usize);
+        writer.write_bytes_unchecked_at(&[octet1, octet2], start_position);
     }
 }

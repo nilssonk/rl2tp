@@ -20,8 +20,6 @@ impl ProxyAuthenName {
 
 impl QueryableAVP for ProxyAuthenName {
     fn get_length(&self) -> u16 {
-        assert!(self.data.len() <= u16::MAX as usize);
-
         self.data.len() as u16
     }
 }

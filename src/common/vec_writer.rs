@@ -32,6 +32,16 @@ impl Writer for VecWriter {
     }
 
     #[inline]
+    unsafe fn write_bytes_unchecked_at(&mut self, bytes: &[u8], offset: usize) {
+        assert!(offset + bytes.len() <= self.data.len());
+        std::ptr::copy_nonoverlapping(
+            bytes.as_ptr(),
+            self.data[offset..].as_mut_ptr(),
+            bytes.len(),
+        );
+    }
+
+    #[inline]
     unsafe fn write_u8_unchecked(&mut self, value: u8) {
         self.data.push(value);
     }
