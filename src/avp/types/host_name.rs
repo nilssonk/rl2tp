@@ -27,6 +27,7 @@ impl QueryableAVP for HostName {
 }
 
 impl WritableAVP for HostName {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

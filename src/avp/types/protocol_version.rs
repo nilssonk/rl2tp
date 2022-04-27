@@ -28,6 +28,7 @@ impl QueryableAVP for ProtocolVersion {
 }
 
 impl WritableAVP for ProtocolVersion {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

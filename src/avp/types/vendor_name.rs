@@ -27,6 +27,7 @@ impl QueryableAVP for VendorName {
 }
 
 impl WritableAVP for VendorName {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

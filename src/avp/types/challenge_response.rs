@@ -31,6 +31,7 @@ impl QueryableAVP for ChallengeResponse {
 }
 
 impl WritableAVP for ChallengeResponse {
+    #[inline]
     unsafe fn write(&self, writer: &mut impl Writer) {
         let header =
             Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);

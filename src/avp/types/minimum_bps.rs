@@ -32,6 +32,7 @@ impl QueryableAVP for MinimumBps {
 }
 
 impl WritableAVP for MinimumBps {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

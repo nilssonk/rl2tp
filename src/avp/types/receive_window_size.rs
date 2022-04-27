@@ -32,6 +32,7 @@ impl QueryableAVP for ReceiveWindowSize {
 }
 
 impl WritableAVP for ReceiveWindowSize {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

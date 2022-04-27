@@ -30,6 +30,7 @@ impl QueryableAVP for Challenge {
 }
 
 impl WritableAVP for Challenge {
+    #[inline]
     unsafe fn write(&self, writer: &mut impl Writer) {
         assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
 

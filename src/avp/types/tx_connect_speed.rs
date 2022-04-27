@@ -32,6 +32,7 @@ impl QueryableAVP for TxConnectSpeed {
 }
 
 impl WritableAVP for TxConnectSpeed {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

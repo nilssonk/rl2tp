@@ -27,6 +27,7 @@ impl QueryableAVP for PrivateGroupId {
 }
 
 impl WritableAVP for PrivateGroupId {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

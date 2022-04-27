@@ -70,6 +70,7 @@ impl QueryableAVP for ResultCode {
 }
 
 impl WritableAVP for ResultCode {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

@@ -34,6 +34,7 @@ impl QueryableAVP for AssignedTunnelId {
 }
 
 impl WritableAVP for AssignedTunnelId {
+    #[inline]
     unsafe fn write(&self, writer: &mut impl Writer) {
         let header =
             Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);

@@ -38,6 +38,7 @@ impl QueryableAVP for FramingType {
 }
 
 impl WritableAVP for FramingType {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

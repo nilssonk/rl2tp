@@ -11,6 +11,7 @@ impl QueryableAVP for SequencingRequired {
 }
 
 impl WritableAVP for SequencingRequired {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
