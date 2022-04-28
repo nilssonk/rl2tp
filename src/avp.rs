@@ -56,16 +56,12 @@ pub enum AVP {
 }
 
 #[enum_dispatch(AVP)]
-pub trait QueryableAVP {
+pub(crate) trait QueryableAVP {
     fn get_length(&self) -> u16;
 }
 
 #[enum_dispatch(AVP)]
-pub trait WritableAVP {
-    /// # Summary
-    /// Write a `WritableAVP` using a `Writer`.
-    /// # Safety
-    /// This function is marked as unsafe because it offers no error handling mechanism.
+pub(crate) trait WritableAVP {
     unsafe fn write(&self, writer: &mut dyn Writer);
 }
 
@@ -209,5 +205,19 @@ impl AVP {
         }
 
         result
+    }
+
+    #[inline]
+    pub fn get_length(&self) -> u16 {
+        QueryableAVP::get_length(self)
+    }
+
+    /// # Summary
+    /// Write an `AVP` using a `Writer`.
+    /// # Safety
+    /// This function is marked as unsafe because it offers no error handling mechanism.
+    #[inline]
+    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+        WritableAVP::write(self, writer);
     }
 }
