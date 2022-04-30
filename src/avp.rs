@@ -62,12 +62,12 @@ pub(crate) trait QueryableAVP {
 
 #[enum_dispatch(AVP)]
 pub(crate) trait WritableAVP {
-    unsafe fn write(&self, writer: &mut dyn Writer);
+    unsafe fn write(&self, writer: &mut impl Writer);
 }
 
 use AVP::*;
 
-fn decode_avp(attribute_type: u16, reader: &mut dyn Reader) -> ResultStr<AVP> {
+fn decode_avp<'a, 'b>(attribute_type: u16, reader: &'b mut impl Reader<'a>) -> ResultStr<AVP> {
     Ok(match attribute_type {
         0u16 => MessageType(types::MessageType::try_read(reader)?),
         1u16 => ResultCode(types::ResultCode::try_read(reader)?),
@@ -177,7 +177,7 @@ impl AVP {
         }
     }
 
-    pub fn try_read_greedy(reader: &mut dyn Reader) -> Vec<ResultStr<Self>> {
+    pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
         let mut result = Vec::new();
         while let Some(header) = Header::try_read(reader) {
             if header.payload_length as usize > reader.len() {
@@ -199,7 +199,7 @@ impl AVP {
             } else {
                 // Regular AVP
                 let mut subreader = reader.subreader(header.payload_length as usize);
-                decode_avp(header.attribute_type, subreader.as_mut())
+                decode_avp(header.attribute_type, &mut subreader)
             };
             result.push(avp);
         }
@@ -217,7 +217,7 @@ impl AVP {
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.
     #[inline]
-    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+    pub unsafe fn write(&self, writer: &mut impl Writer) {
         WritableAVP::write(self, writer);
     }
 }

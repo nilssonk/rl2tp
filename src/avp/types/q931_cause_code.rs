@@ -11,7 +11,7 @@ pub struct Q931CauseCode {
 impl Q931CauseCode {
     const FIXED_LENGTH: u16 = 3;
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH as usize {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }
@@ -50,7 +50,7 @@ impl QueryableAVP for Q931CauseCode {
 }
 
 impl WritableAVP for Q931CauseCode {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }

@@ -17,7 +17,7 @@ pub enum ProxyAuthenType {
 impl ProxyAuthenType {
     const LENGTH: u16 = 2;
 
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH as usize {
             return Err("Incomplete ProxyAuthenType AVP encountered");
         }
@@ -38,7 +38,7 @@ impl QueryableAVP for ProxyAuthenType {
 }
 
 impl WritableAVP for ProxyAuthenType {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }

@@ -50,7 +50,7 @@ impl<'a> Message<'a> {
     /// # Summary
     /// Attempt to read a `Message` using a `Reader`. User-supplied ValidationOptions offer a way to ignore certain protocol mandates.
     pub fn try_read<'b>(
-        reader: &'b mut dyn Reader<'a>,
+        reader: &'b mut impl Reader<'a>,
         validation_options: ValidationOptions,
     ) -> ResultStr<Self> {
         let flags = Flags::read(reader)?;
@@ -80,14 +80,14 @@ impl<'a> Message<'a> {
     /// Write a `Message` using a mutable `Writer`.
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
-    pub unsafe fn write(&self, writer: &mut dyn Writer) {
+    pub unsafe fn write(&self, writer: &mut impl Writer) {
         match self {
             Message::Control(control) => control.write(Self::PROTOCOL_VERSION, writer),
             Message::Data(data) => data.write(Self::PROTOCOL_VERSION, writer),
         }
     }
 
-    fn try_read_data_message(flags: Flags, reader: &mut dyn Reader<'a>) -> ResultStr<Self> {
+    fn try_read_data_message<'b>(flags: Flags, reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         let mut minimal_length = 4;
         if flags.has_length() {
             minimal_length += 2;
@@ -141,10 +141,10 @@ impl<'a> Message<'a> {
         }))
     }
 
-    fn try_read_control_message(
+    fn try_read_control_message<'b>(
         flags: Flags,
         validation_options: ValidationOptions,
-        reader: &mut dyn Reader,
+        reader: &'b mut impl Reader<'a>,
     ) -> ResultStr<Self> {
         if let ValidateUnused::Yes = validation_options.unused {
             if flags.is_prioritized() {

@@ -7,7 +7,7 @@ pub struct ProxyAuthenChallenge {
 }
 
 impl ProxyAuthenChallenge {
-    pub fn try_read(reader: &mut dyn Reader) -> ResultStr<Self> {
+    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete ProxyAuthenChallenge AVP encountered");
         }
@@ -27,7 +27,7 @@ impl QueryableAVP for ProxyAuthenChallenge {
 }
 
 impl WritableAVP for ProxyAuthenChallenge {
-    unsafe fn write(&self, _writer: &mut dyn Writer) {
+    unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
 }

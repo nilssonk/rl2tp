@@ -21,7 +21,7 @@ impl ControlMessage {
     /// Write a `ControlMessage` using a mutable `Writer`.
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
-    pub unsafe fn write(&self, protocol_version: u8, writer: &mut dyn Writer) {
+    pub unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
         let flags = Flags::new(
             MessageFlagType::Control,
             true,

@@ -4,7 +4,9 @@ pub trait Reader<'a> {
     fn is_empty(&self) -> bool;
     fn len(&self) -> usize;
 
-    fn subreader(&mut self, length: usize) -> Box<dyn Reader<'a> + 'a>;
+    fn subreader(&mut self, length: usize) -> Self
+    where
+        Self: Sized;
 
     fn peek_bytes(&self, length: usize) -> ResultStr<&'a [u8]>;
 
