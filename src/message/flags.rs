@@ -42,10 +42,12 @@ impl Flags {
         result
     }
 
+    #[inline]
     pub unsafe fn write(&self, writer: &mut impl Writer) {
         writer.write_u16_be_unchecked(self.data);
     }
 
+    #[inline]
     pub fn read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < 2 {
             return Err("Incomplete flag section encountered");
@@ -54,15 +56,18 @@ impl Flags {
         Ok(Self { data })
     }
 
+    #[inline]
     fn get_bit(&self, i: i8) -> bool {
         (self.data >> i) & 0x1 != 0
     }
 
+    #[inline]
     fn set_bit(&mut self, i: i8) {
         let value: u16 = 0x1 << i;
         self.data |= value;
     }
 
+    #[inline]
     pub fn get_type(&self) -> MessageFlagType {
         if self.get_bit(8) {
             MessageFlagType::Control
@@ -71,54 +76,66 @@ impl Flags {
         }
     }
 
+    #[inline]
     pub fn set_type(&mut self, message_type: MessageFlagType) {
         if let MessageFlagType::Control = message_type {
             self.set_bit(8)
         }
     }
 
+    #[inline]
     pub fn has_length(&self) -> bool {
         self.get_bit(9)
     }
 
+    #[inline]
     pub fn set_length(&mut self) {
         self.set_bit(9);
     }
 
+    #[inline]
     pub fn reserved_bits_ok(&self) -> bool {
         [0, 1, 2, 3, 10, 11, 13]
             .into_iter()
             .all(|i| !self.get_bit(i))
     }
 
+    #[inline]
     pub fn has_ns_nr(&self) -> bool {
         self.get_bit(12)
     }
 
+    #[inline]
     pub fn set_ns_nr(&mut self) {
         self.set_bit(12);
     }
 
+    #[inline]
     pub fn has_offset(&self) -> bool {
         self.get_bit(14)
     }
 
+    #[inline]
     pub fn set_offset(&mut self) {
         self.set_bit(14);
     }
 
+    #[inline]
     pub fn is_prioritized(&self) -> bool {
         self.get_bit(15)
     }
 
+    #[inline]
     pub fn set_prioritized(&mut self) {
         self.set_bit(15);
     }
 
+    #[inline]
     pub fn get_version(&self) -> u8 {
         ((self.data >> 4) & 0xf) as u8
     }
 
+    #[inline]
     pub fn set_version(&mut self, version: u8) {
         assert!(
             version <= 0xf,
