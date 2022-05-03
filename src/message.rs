@@ -10,7 +10,6 @@ pub use data_message::DataMessage;
 mod flags;
 use flags::{Flags, MessageFlagType};
 
-use crate::avp::AVP;
 use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Debug, PartialEq)]
@@ -69,10 +68,12 @@ impl<'a> Message<'a> {
         }
 
         match flags.get_type() {
-            MessageFlagType::Data => Self::try_read_data_message(flags, reader),
-            MessageFlagType::Control => {
-                Self::try_read_control_message(flags, validation_options, reader)
-            }
+            MessageFlagType::Data => Ok(Message::Data(DataMessage::try_read(flags, reader)?)),
+            MessageFlagType::Control => Ok(Message::Control(ControlMessage::try_read(
+                flags,
+                validation_options,
+                reader,
+            )?)),
         }
     }
 
@@ -80,127 +81,11 @@ impl<'a> Message<'a> {
     /// Write a `Message` using a mutable `Writer`.
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
+    #[inline]
     pub unsafe fn write(&self, writer: &mut impl Writer) {
         match self {
             Message::Control(control) => control.write(Self::PROTOCOL_VERSION, writer),
             Message::Data(data) => data.write(Self::PROTOCOL_VERSION, writer),
         }
-    }
-
-    fn try_read_data_message<'b>(flags: Flags, reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        let mut minimal_length = 4;
-        if flags.has_length() {
-            minimal_length += 2;
-        }
-        if flags.has_ns_nr() {
-            minimal_length += 4;
-        }
-        if flags.has_offset() {
-            minimal_length += 4;
-        }
-        if reader.len() < minimal_length {
-            return Err("Incomplete data message header encountered");
-        }
-
-        let maybe_length = if flags.has_length() {
-            let length = unsafe { reader.read_u16_be_unchecked() };
-            Some(length)
-        } else {
-            None
-        };
-
-        let tunnel_id = unsafe { reader.read_u16_be_unchecked() };
-        let session_id = unsafe { reader.read_u16_be_unchecked() };
-
-        let maybe_ns_nr = if flags.has_ns_nr() {
-            let ns = unsafe { reader.read_u16_be_unchecked() };
-            let nr = unsafe { reader.read_u16_be_unchecked() };
-            Some((ns, nr))
-        } else {
-            None
-        };
-
-        if flags.has_offset() {
-            let offset_size = unsafe { reader.read_u16_be_unchecked() as usize };
-            if reader.len() < offset_size {
-                return Err("Invalid offset size encountered");
-            }
-            reader.skip_bytes(offset_size);
-        }
-
-        let data = reader.peek_bytes(reader.len())?;
-
-        Ok(Message::Data(DataMessage {
-            is_prioritized: false,
-            length: maybe_length,
-            tunnel_id,
-            session_id,
-            ns_nr: maybe_ns_nr,
-            offset: None,
-            data,
-        }))
-    }
-
-    fn try_read_control_message<'b>(
-        flags: Flags,
-        validation_options: ValidationOptions,
-        reader: &'b mut impl Reader<'a>,
-    ) -> ResultStr<Self> {
-        if let ValidateUnused::Yes = validation_options.unused {
-            if flags.is_prioritized() {
-                return Err("Control message with forbidden Priority bit encountered");
-            }
-
-            if flags.has_offset() {
-                return Err("Control message with forbidden Offset fields encountered");
-            }
-        }
-
-        if !flags.has_length() {
-            return Err("Control message without required Length field encountered");
-        }
-        if !flags.has_ns_nr() {
-            return Err("Control message without required Sequence fields encountered");
-        }
-
-        const FIXED_LENGTH_MINUS_FLAGS: usize = 10;
-        if reader.len() < FIXED_LENGTH_MINUS_FLAGS {
-            return Err("Incomplete control message header encountered");
-        }
-
-        let length = unsafe { reader.read_u16_be_unchecked() };
-        let tunnel_id = unsafe { reader.read_u16_be_unchecked() };
-        let session_id = unsafe { reader.read_u16_be_unchecked() };
-        let ns = unsafe { reader.read_u16_be_unchecked() };
-        let nr = unsafe { reader.read_u16_be_unchecked() };
-
-        let avp_and_err = AVP::try_read_greedy(reader);
-
-        if let Some(first) = avp_and_err.first() {
-            match first {
-                Ok(AVP::MessageType(_)) => (),
-                _ => return Err("First AVP is not a MessageType AVP"),
-            }
-        }
-
-        if avp_and_err.iter().any(|x| {
-            println!("{:?}", x);
-            x.is_err()
-        }) {
-            // @TODO: Better error reporting
-            // @TODO: Allow errors?
-            return Err("AVP errors detected in control message");
-        }
-
-        let avps = avp_and_err.into_iter().filter_map(|x| x.ok()).collect();
-
-        Ok(Message::Control(ControlMessage {
-            length,
-            tunnel_id,
-            session_id,
-            ns,
-            nr,
-            avps,
-        }))
     }
 }

@@ -1,5 +1,6 @@
-use crate::common::Writer;
+use crate::common::{Reader, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
+use crate::message::*;
 
 #[derive(Debug, PartialEq)]
 pub struct DataMessage<'a> {
@@ -13,11 +14,61 @@ pub struct DataMessage<'a> {
 }
 
 impl<'a> DataMessage<'a> {
-    /// # Summary
-    /// Write a `DataMessage` using a mutable `Writer`.
-    /// # Safety
-    /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
-    pub unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
+    pub(crate) fn try_read<'b>(flags: Flags, reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+        let mut minimal_length = 4;
+        if flags.has_length() {
+            minimal_length += 2;
+        }
+        if flags.has_ns_nr() {
+            minimal_length += 4;
+        }
+        if flags.has_offset() {
+            minimal_length += 4;
+        }
+        if reader.len() < minimal_length {
+            return Err("Incomplete data message header encountered");
+        }
+
+        let maybe_length = if flags.has_length() {
+            let length = unsafe { reader.read_u16_be_unchecked() };
+            Some(length)
+        } else {
+            None
+        };
+
+        let tunnel_id = unsafe { reader.read_u16_be_unchecked() };
+        let session_id = unsafe { reader.read_u16_be_unchecked() };
+
+        let maybe_ns_nr = if flags.has_ns_nr() {
+            let ns = unsafe { reader.read_u16_be_unchecked() };
+            let nr = unsafe { reader.read_u16_be_unchecked() };
+            Some((ns, nr))
+        } else {
+            None
+        };
+
+        if flags.has_offset() {
+            let offset_size = unsafe { reader.read_u16_be_unchecked() as usize };
+            if reader.len() < offset_size {
+                return Err("Invalid offset size encountered");
+            }
+            reader.skip_bytes(offset_size);
+        }
+
+        let data = reader.peek_bytes(reader.len())?;
+
+        Ok(DataMessage {
+            is_prioritized: false,
+            length: maybe_length,
+            tunnel_id,
+            session_id,
+            ns_nr: maybe_ns_nr,
+            offset: None,
+            data,
+        })
+    }
+
+    pub(crate) unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
         let flags = Flags::new(
             MessageFlagType::Data,
             self.length.is_some(),
