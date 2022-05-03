@@ -29,6 +29,7 @@ impl QueryableAVP for RandomVector {
 }
 
 impl WritableAVP for RandomVector {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

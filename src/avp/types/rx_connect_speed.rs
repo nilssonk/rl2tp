@@ -32,6 +32,7 @@ impl QueryableAVP for RxConnectSpeed {
 }
 
 impl WritableAVP for RxConnectSpeed {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

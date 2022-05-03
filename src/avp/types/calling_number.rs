@@ -32,6 +32,7 @@ impl QueryableAVP for CallingNumber {
 }
 
 impl WritableAVP for CallingNumber {
+    #[inline]
     unsafe fn write(&self, writer: &mut impl Writer) {
         assert!(self.value.len() <= (u16::MAX - Header::LENGTH) as usize);
 

@@ -34,6 +34,7 @@ impl QueryableAVP for PhysicalChannelId {
 }
 
 impl WritableAVP for PhysicalChannelId {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

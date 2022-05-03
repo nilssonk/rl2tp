@@ -32,6 +32,7 @@ impl QueryableAVP for MaximumBps {
 }
 
 impl WritableAVP for MaximumBps {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

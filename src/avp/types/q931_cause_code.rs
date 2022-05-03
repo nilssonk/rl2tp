@@ -50,6 +50,7 @@ impl QueryableAVP for Q931CauseCode {
 }
 
 impl WritableAVP for Q931CauseCode {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

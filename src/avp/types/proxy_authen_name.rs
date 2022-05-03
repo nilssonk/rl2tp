@@ -27,6 +27,7 @@ impl QueryableAVP for ProxyAuthenName {
 }
 
 impl WritableAVP for ProxyAuthenName {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

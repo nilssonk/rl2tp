@@ -27,6 +27,7 @@ impl QueryableAVP for ProxyAuthenResponse {
 }
 
 impl WritableAVP for ProxyAuthenResponse {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

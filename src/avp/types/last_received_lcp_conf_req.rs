@@ -27,6 +27,7 @@ impl QueryableAVP for LastReceivedLcpConfReq {
 }
 
 impl WritableAVP for LastReceivedLcpConfReq {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }

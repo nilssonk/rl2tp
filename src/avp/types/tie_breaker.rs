@@ -32,6 +32,7 @@ impl QueryableAVP for TieBreaker {
 }
 
 impl WritableAVP for TieBreaker {
+    #[inline]
     unsafe fn write(&self, _writer: &mut impl Writer) {
         unimplemented!();
     }
