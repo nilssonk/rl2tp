@@ -9,6 +9,12 @@ pub trait Writer {
     unsafe fn write_bytes_unchecked(&mut self, bytes: &[u8]);
 
     /// # Summary
+    /// Write a slice of u8 at a given offset.
+    /// # Safety
+    /// This function is marked as unsafe because it offers no error handling mechanism.
+    unsafe fn write_bytes_unchecked_at(&mut self, bytes: &[u8], offset: usize);
+
+    /// # Summary
     /// Write an u8.
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.

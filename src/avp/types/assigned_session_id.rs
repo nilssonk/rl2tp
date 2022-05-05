@@ -1,4 +1,3 @@
-use crate::avp::header::Header;
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
@@ -29,17 +28,14 @@ impl From<u16> for AssignedSessionId {
 
 impl QueryableAVP for AssignedSessionId {
     fn get_length(&self) -> u16 {
-        Header::LENGTH + Self::LENGTH
+        Self::LENGTH
     }
 }
 
 impl WritableAVP for AssignedSessionId {
     #[inline]
     unsafe fn write(&self, writer: &mut impl Writer) {
-        let header =
-            Header::with_payload_length_and_attribute_type(Self::LENGTH, Self::ATTRIBUTE_TYPE);
-        header.write(writer);
-
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
         writer.write_u16_be_unchecked(self.value);
     }
 }
