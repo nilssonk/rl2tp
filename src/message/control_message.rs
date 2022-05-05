@@ -14,11 +14,6 @@ pub struct ControlMessage {
 }
 
 impl ControlMessage {
-    #[inline]
-    fn get_dynamic_length(&self) -> u16 {
-        self.avps.iter().map(|avp| avp.get_length()).sum::<u16>()
-    }
-
     pub(crate) fn try_read<'a, 'b>(
         flags: Flags,
         validation_options: ValidationOptions,
@@ -83,6 +78,7 @@ impl ControlMessage {
     }
 
     pub(crate) unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
+        let start_position = writer.len();
         let flags = Flags::new(
             MessageFlagType::Control,
             true,
@@ -93,15 +89,29 @@ impl ControlMessage {
         );
         flags.write(writer);
 
-        const FIXED_LENGTH: u16 = 12;
-        let dynamic_length = self.get_dynamic_length();
-        writer.write_u16_be_unchecked(FIXED_LENGTH + dynamic_length);
+        // Save length field position
+        let length_position = writer.len();
+
+        // Dummy octets to be overwritten
+        writer.write_bytes_unchecked(&[0, 0]);
+
+        // Write rest of header
         writer.write_u16_be_unchecked(self.tunnel_id);
         writer.write_u16_be_unchecked(self.session_id);
         writer.write_u16_be_unchecked(self.ns);
         writer.write_u16_be_unchecked(self.nr);
+
+        // Write payload
         for avp in self.avps.iter() {
             avp.write(writer);
         }
+
+        // Get total length
+        let end_position = writer.len();
+        let length = end_position - start_position;
+
+        // Overwrite dummy octets
+        assert!(length <= u16::MAX as usize);
+        writer.write_bytes_unchecked_at(&(length as u16).to_be_bytes(), length_position);
     }
 }
