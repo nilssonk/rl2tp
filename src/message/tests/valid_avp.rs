@@ -1024,7 +1024,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::ProxyAuthenId(0xff.into())
+            AVP::ProxyAuthenId(types::ProxyAuthenId{value:0xff})
         ],
     },
     proxy_authen_response:
