@@ -56,5 +56,6 @@ maximum_bps => AVP::MaximumBps(types::MaximumBps{value:0x13371337}),
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected),
 minimum_bps => AVP::MinimumBps(types::MinimumBps{value:0x13371337}),
 physical_channel_id => AVP::PhysicalChannelId(types::PhysicalChannelId{value:[0xde,0xad,0xbe,0xef]}),
-private_group_id => AVP::PrivateGroupId(types::PrivateGroupId{value:vec![0xde,0xad,0xbe,0xef]})
+private_group_id => AVP::PrivateGroupId(types::PrivateGroupId{value:vec![0xde,0xad,0xbe,0xef]}),
+protocol_version => AVP::ProtocolVersion(types::ProtocolVersion{version: 0xf0, revision: 0x0d})
 ];
