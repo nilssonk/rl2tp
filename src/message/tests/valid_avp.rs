@@ -259,7 +259,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::HostName(types::HostName {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
