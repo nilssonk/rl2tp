@@ -59,5 +59,6 @@ physical_channel_id => AVP::PhysicalChannelId(types::PhysicalChannelId{value:[0x
 private_group_id => AVP::PrivateGroupId(types::PrivateGroupId{value:vec![0xde,0xad,0xbe,0xef]}),
 protocol_version => AVP::ProtocolVersion(types::ProtocolVersion{version: 0xf0, revision: 0x0d}),
 proxy_authen_challenge => AVP::ProxyAuthenChallenge(types::ProxyAuthenChallenge{value:vec![0xde,0xad,0xbe,0xef]}),
-proxy_authen_name => AVP::ProxyAuthenName(types::ProxyAuthenName{value:vec![0xde,0xad,0xbe,0xef]})
+proxy_authen_name => AVP::ProxyAuthenName(types::ProxyAuthenName{value:vec![0xde,0xad,0xbe,0xef]}),
+proxy_authen_response => AVP::ProxyAuthenResponse(types::ProxyAuthenResponse{value:vec![0xde,0xad,0xbe,0xef]})
 ];
