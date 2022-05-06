@@ -1165,7 +1165,7 @@ read_tests_extended![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::FramingCapabilities(types::FramingCapabilities::from_raw(0x000000c0))
+            AVP::FramingCapabilities(types::FramingCapabilities::new(true,true))
         ],
     } => |avp: AVP| {
         match avp {
