@@ -751,7 +751,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallRequest),
             AVP::PhysicalChannelId(types::PhysicalChannelId {
-                data: [0xde, 0xad, 0xbe, 0xef]
+                value: [0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },

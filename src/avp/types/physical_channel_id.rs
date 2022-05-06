@@ -5,10 +5,11 @@ const G_LENGTH: usize = 4;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct PhysicalChannelId {
-    pub data: [u8; G_LENGTH],
+    pub value: [u8; G_LENGTH],
 }
 
 impl PhysicalChannelId {
+    const ATTRIBUTE_TYPE: u16 = 25;
     const LENGTH: usize = G_LENGTH;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
@@ -16,14 +17,14 @@ impl PhysicalChannelId {
             return Err("Incomplete PhysicalChannelId payload encountered");
         }
 
-        Ok(Self {
-            data: unsafe {
-                reader
-                    .peek_bytes(Self::LENGTH)?
-                    .try_into()
-                    .unwrap_unchecked()
-            },
-        })
+        let value = unsafe {
+            reader
+                .peek_bytes(Self::LENGTH)?
+                .try_into()
+                .unwrap_unchecked()
+        };
+
+        Ok(Self { value })
     }
 }
 
@@ -35,7 +36,8 @@ impl QueryableAVP for PhysicalChannelId {
 
 impl WritableAVP for PhysicalChannelId {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes_unchecked(&self.value);
     }
 }
