@@ -64,5 +64,12 @@ proxy_authen_response => AVP::ProxyAuthenResponse(types::ProxyAuthenResponse{val
 proxy_authen_type => AVP::ProxyAuthenType(types::ProxyAuthenType::TextualUserNamePasswordExchange),
 q931_cause_code => AVP::Q931CauseCode(types::Q931CauseCode{cause_code: 0xdead, cause_msg:0xff, advisory: Some("test advisory".to_owned())}),
 random_vector => AVP::RandomVector(types::RandomVector{value: [0xde,0xad,0xbe,0xef]}),
-receive_window_size => AVP::ReceiveWindowSize(types::ReceiveWindowSize{value: 0x1337})
+receive_window_size => AVP::ReceiveWindowSize(types::ReceiveWindowSize{value: 0x1337}),
+result_code => AVP::ResultCode(types::ResultCode{
+    code: types::result_code::StopCcnCode::GeneralError.into(),
+    error: Some(types::result_code::Error{
+        error_type: types::result_code::ErrorType::Generic,
+        error_message: Some(String::from("Test error"))
+    })
+})
 ];

@@ -11,10 +11,10 @@ pub use error::*;
 pub struct ResultCode {
     pub code: CodeValue,
     pub error: Option<Error>,
-    pub error_message: Option<String>,
 }
 
 impl ResultCode {
+    const ATTRIBUTE_TYPE: u16 = 1;
     const FIXED_LENGTH: usize = 2;
     const ERROR_LENGTH: usize = 2;
 
@@ -26,28 +26,13 @@ impl ResultCode {
         let code_raw = unsafe { reader.read_u16_be_unchecked() };
         let code = CodeValue::from(code_raw);
 
-        let mut maybe_error: Option<Error> = None;
-        let mut maybe_error_message: Option<String> = None;
-        if reader.len() >= Self::ERROR_LENGTH {
-            let error_raw = unsafe { reader.read_u16_be_unchecked() };
-            maybe_error = error_raw.try_into().ok();
-            if maybe_error.is_none() {
-                return Err("Invalid ResultCode error encountered");
-            }
+        let error = if reader.len() >= Self::ERROR_LENGTH as usize {
+            Some(unsafe { Error::try_read(reader)? })
+        } else {
+            None
+        };
 
-            if !reader.is_empty() {
-                maybe_error_message = match std::str::from_utf8(reader.peek_bytes(reader.len())?) {
-                    Ok(s) => Some(s.to_owned()),
-                    Err(_) => return Err("Invalid ResultCode error message encountered"),
-                }
-            }
-        }
-
-        Ok(Self {
-            code,
-            error: maybe_error,
-            error_message: maybe_error_message,
-        })
+        Ok(Self { code, error })
     }
 }
 
@@ -55,11 +40,11 @@ impl QueryableAVP for ResultCode {
     fn get_length(&self) -> usize {
         let mut length = Self::FIXED_LENGTH;
 
-        if self.error.is_some() {
+        if let Some(error) = &self.error {
             length += Self::ERROR_LENGTH;
 
-            if let Some(value) = &self.error_message {
-                length += value.len()
+            if let Some(message) = &error.error_message {
+                length += message.len()
             }
         }
 
@@ -69,7 +54,15 @@ impl QueryableAVP for ResultCode {
 
 impl WritableAVP for ResultCode {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be_unchecked(self.code.into());
+        if let Some(error) = &self.error {
+            writer.write_u16_be_unchecked(error.error_type.into());
+
+            if let Some(message) = &error.error_message {
+                writer.write_bytes_unchecked(message.as_bytes());
+            }
+        }
     }
 }

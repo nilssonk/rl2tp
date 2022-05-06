@@ -48,6 +48,12 @@ impl CodeValue {
     }
 }
 
+impl From<CodeValue> for u16 {
+    fn from(value: CodeValue) -> Self {
+        value.value
+    }
+}
+
 impl From<u16> for CodeValue {
     fn from(value: u16) -> Self {
         Self { value }
