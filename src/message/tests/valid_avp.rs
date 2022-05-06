@@ -101,7 +101,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::RandomVector(types::RandomVector {
-                data: [0xde, 0xad, 0xbe, 0xef]
+                value: [0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
