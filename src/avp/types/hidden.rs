@@ -3,18 +3,20 @@ use crate::common::Writer;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Hidden {
-    pub data: Vec<u8>,
+    pub attribute_type: u16,
+    pub value: Vec<u8>,
 }
 
 impl QueryableAVP for Hidden {
     fn get_length(&self) -> usize {
-        self.data.len()
+        self.value.len()
     }
 }
 
 impl WritableAVP for Hidden {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(self.attribute_type);
+        writer.write_bytes_unchecked(&self.value);
     }
 }
