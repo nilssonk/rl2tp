@@ -137,7 +137,7 @@ read_tests![
                 code: types::result_code::StopCcnCode::GeneralError.into(),
                 error: Some(types::result_code::Error{
                     error_type: types::result_code::ErrorType::Generic,
-                    error_message: Some(String::from("Test error"))
+                    error_message: Some("Test error".to_owned())
                 }),
             })
         ],
@@ -268,7 +268,7 @@ read_tests![
     vendor_name:
     vec![
         0x13, 0x20, // Flags
-        0x00, 0x1e, // Length
+        0x00, 0x25, // Length
         0x00, 0x02, // Tunnel ID
         0x00, 0x03, // Session ID
         0x00, 0x04, // Ns
@@ -279,13 +279,12 @@ read_tests![
         0x00, 0x00, // Attribute Type (Message Type)
         0x00, 0x01, // Type 1 (StartControlConnectionRequest)
         // AVP Payload
-        0x00, 0x0a, // Flags and Length
+        0x00, 0x11, // Flags and Length
         0x00, 0x00, // Vendor ID
         0x00, 0x08, // Attribute Type (Vendor Name)
-        0xde, 0xad, // Vendor Name
-        0xbe, 0xef,
+        0x54, 0x65, 0x73, 0x74, 0x20, 0x76, 0x65, 0x6e, 0x64, 0x6f, 0x72 // "Test vendor"
     ] => ControlMessage {
-        length: 30,
+        length: 37,
         tunnel_id: 2,
         session_id: 3,
         ns: 4,
@@ -293,7 +292,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
             AVP::VendorName(types::VendorName {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: "Test vendor".to_owned()
             })
         ],
     },

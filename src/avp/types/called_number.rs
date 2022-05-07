@@ -15,7 +15,7 @@ impl CalledNumber {
         }
 
         let value = std::str::from_utf8(reader.peek_bytes(reader.len())?)
-            .map_err(|_| "Parsing CalledNumber advisory message failed")?
+            .map_err(|_| "Parsing CalledNumber AVP value failed")?
             .to_owned();
 
         Ok(Self { value })
