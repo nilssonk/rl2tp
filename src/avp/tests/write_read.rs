@@ -72,5 +72,6 @@ result_code => AVP::ResultCode(types::ResultCode{
         error_message: Some(String::from("Test error"))
     })
 }),
-rx_connect_speed => AVP::RxConnectSpeed(types::RxConnectSpeed{value: 0xdeadbeef})
+rx_connect_speed => AVP::RxConnectSpeed(types::RxConnectSpeed{value: 0xdeadbeef}),
+sequencing_required => AVP::SequencingRequired(types::SequencingRequired{})
 ];
