@@ -71,5 +71,6 @@ result_code => AVP::ResultCode(types::ResultCode{
         error_type: types::result_code::ErrorType::Generic,
         error_message: Some(String::from("Test error"))
     })
-})
+}),
+rx_connect_speed => AVP::RxConnectSpeed(types::RxConnectSpeed{value: 0xdeadbeef})
 ];
