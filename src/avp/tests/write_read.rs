@@ -73,5 +73,6 @@ result_code => AVP::ResultCode(types::ResultCode{
     })
 }),
 rx_connect_speed => AVP::RxConnectSpeed(types::RxConnectSpeed{value: 0xdeadbeef}),
-sequencing_required => AVP::SequencingRequired(types::SequencingRequired{})
+sequencing_required => AVP::SequencingRequired(types::SequencingRequired{}),
+sub_address => AVP::SubAddress(types::SubAddress{value: "subaddress-value".to_owned()})
 ];
