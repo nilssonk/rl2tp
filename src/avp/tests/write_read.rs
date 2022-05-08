@@ -48,5 +48,6 @@ challenge_response => AVP::ChallengeResponse(types::ChallengeResponse{data: [0x0
 firmware_revision => AVP::FirmwareRevision(types::FirmwareRevision{value: 0x1337}),
 framing_capabilities => AVP::FramingCapabilities(types::FramingCapabilities::new(true, true)),
 framing_type => AVP::FramingType(types::FramingType::new(true, true)),
+host_name => AVP::HostName(types::HostName{value: "test-host.com".as_bytes().to_owned() }),
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected)
 ];
