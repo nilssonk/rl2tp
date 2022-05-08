@@ -7,10 +7,15 @@ pub struct FramingType {
 }
 
 impl FramingType {
+    const ATTRIBUTE_TYPE: u16 = 19;
     const LENGTH: u16 = 4;
 
-    pub fn from_raw(data: u32) -> Self {
-        Self { data }
+    pub fn new(analog_request: bool, digital_request: bool) -> Self {
+        let analog_bit = (analog_request as u32) << 6;
+        let digital_bit = (digital_request as u32) << 7;
+        Self {
+            data: analog_bit | digital_bit,
+        }
     }
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
@@ -19,7 +24,7 @@ impl FramingType {
         }
 
         let data = unsafe { reader.read_u32_be_unchecked() };
-        Ok(Self::from_raw(data))
+        Ok(Self { data })
     }
 
     pub fn is_analog_request(&self) -> bool {
@@ -39,7 +44,8 @@ impl QueryableAVP for FramingType {
 
 impl WritableAVP for FramingType {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_u32_be_unchecked(self.data);
     }
 }

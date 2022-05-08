@@ -1276,7 +1276,7 @@ read_tests_extended![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::OutgoingCallRequest),
-            AVP::FramingType(types::FramingType::from_raw(0x000000c0))
+            AVP::FramingType(types::FramingType::new(true, true))
         ],
     } =>
     |avp: AVP|
