@@ -8,7 +8,7 @@ pub struct BearerType {
 
 impl BearerType {
     const ATTRIBUTE_TYPE: u16 = 18;
-    const LENGTH: u16 = 4;
+    const LENGTH: usize = 4;
 
     pub fn new(analog_request: bool, digital_request: bool) -> Self {
         let analog_request_bit = (analog_request as u32) << 6;
@@ -23,7 +23,7 @@ impl BearerType {
     }
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete BearerType AVP encountered");
         }
 
@@ -41,7 +41,7 @@ impl BearerType {
 }
 
 impl QueryableAVP for BearerType {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }

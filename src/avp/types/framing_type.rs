@@ -8,7 +8,7 @@ pub struct FramingType {
 
 impl FramingType {
     const ATTRIBUTE_TYPE: u16 = 19;
-    const LENGTH: u16 = 4;
+    const LENGTH: usize = 4;
 
     pub fn new(analog_request: bool, digital_request: bool) -> Self {
         let analog_bit = (analog_request as u32) << 6;
@@ -19,7 +19,7 @@ impl FramingType {
     }
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete FramingType AVP encountered");
         }
 
@@ -37,7 +37,7 @@ impl FramingType {
 }
 
 impl QueryableAVP for FramingType {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }

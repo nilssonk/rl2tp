@@ -8,7 +8,7 @@ pub struct FramingCapabilities {
 
 impl FramingCapabilities {
     const ATTRIBUTE_TYPE: u16 = 3;
-    const LENGTH: u16 = 4;
+    const LENGTH: usize = 4;
 
     pub fn new(async_framing_supported: bool, sync_framing_supported: bool) -> Self {
         let async_bit = (async_framing_supported as u32) << 6;
@@ -19,7 +19,7 @@ impl FramingCapabilities {
     }
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete FramingCapabilities AVP encountered");
         }
 
@@ -37,7 +37,7 @@ impl FramingCapabilities {
 }
 
 impl QueryableAVP for FramingCapabilities {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }

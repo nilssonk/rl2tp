@@ -8,7 +8,7 @@ pub struct BearerCapabilities {
 
 impl BearerCapabilities {
     const ATTRIBUTE_TYPE: u16 = 4;
-    const LENGTH: u16 = 4;
+    const LENGTH: usize = 4;
 
     pub fn new(digital_access_supported: bool, analog_access_supported: bool) -> Self {
         let da_bit = (digital_access_supported as u32) << 6;
@@ -22,7 +22,7 @@ impl BearerCapabilities {
     }
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete BearerCapabilities AVP encountered");
         }
 
@@ -40,7 +40,7 @@ impl BearerCapabilities {
 }
 
 impl QueryableAVP for BearerCapabilities {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }
