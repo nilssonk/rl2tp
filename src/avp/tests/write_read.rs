@@ -50,5 +50,6 @@ framing_capabilities => AVP::FramingCapabilities(types::FramingCapabilities::new
 framing_type => AVP::FramingType(types::FramingType::new(true, true)),
 host_name => AVP::HostName(types::HostName{value: "test-host.com".as_bytes().to_owned() }),
 initial_received_lcp_conf_req => AVP::InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq{value: vec![0xde,0xad,0xbe,0xef]}),
+last_received_lcp_conf_req => AVP::LastReceivedLcpConfReq(types::LastReceivedLcpConfReq{value:vec![0xde,0xad,0xbe,0xef]}),
 message_type => AVP::MessageType(types::MessageType::IncomingCallConnected)
 ];

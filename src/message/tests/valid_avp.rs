@@ -903,7 +903,7 @@ read_tests![
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
             AVP::LastReceivedLcpConfReq(types::LastReceivedLcpConfReq {
-                data: vec![0xde, 0xad, 0xbe, 0xef]
+                value: vec![0xde, 0xad, 0xbe, 0xef]
             })
         ],
     },
