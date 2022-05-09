@@ -9,7 +9,7 @@ pub struct Q931CauseCode {
 }
 
 impl Q931CauseCode {
-    const FIXED_LENGTH: u16 = 3;
+    const FIXED_LENGTH: usize = 3;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH as usize {
@@ -38,11 +38,9 @@ impl Q931CauseCode {
 }
 
 impl QueryableAVP for Q931CauseCode {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         if let Some(value) = &self.advisory {
-            assert!(value.len() <= (u16::MAX - Self::FIXED_LENGTH) as usize);
-
-            Self::FIXED_LENGTH + value.len() as u16
+            Self::FIXED_LENGTH + value.len()
         } else {
             Self::FIXED_LENGTH
         }

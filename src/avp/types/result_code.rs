@@ -15,11 +15,11 @@ pub struct ResultCode {
 }
 
 impl ResultCode {
-    const FIXED_LENGTH: u16 = 2;
-    const ERROR_LENGTH: u16 = 2;
+    const FIXED_LENGTH: usize = 2;
+    const ERROR_LENGTH: usize = 2;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::FIXED_LENGTH as usize {
+        if reader.len() < Self::FIXED_LENGTH {
             return Err("Incomplete ResultCode AVP payload encountered");
         }
 
@@ -28,7 +28,7 @@ impl ResultCode {
 
         let mut maybe_error: Option<Error> = None;
         let mut maybe_error_message: Option<String> = None;
-        if reader.len() >= Self::ERROR_LENGTH as usize {
+        if reader.len() >= Self::ERROR_LENGTH {
             let error_raw = unsafe { reader.read_u16_be_unchecked() };
             maybe_error = error_raw.try_into().ok();
             if maybe_error.is_none() {
@@ -52,16 +52,14 @@ impl ResultCode {
 }
 
 impl QueryableAVP for ResultCode {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         let mut length = Self::FIXED_LENGTH;
 
         if self.error.is_some() {
             length += Self::ERROR_LENGTH;
 
             if let Some(value) = &self.error_message {
-                assert!(value.len() <= (u16::MAX - length) as usize);
-
-                length += value.len() as u16;
+                length += value.len()
             }
         }
 

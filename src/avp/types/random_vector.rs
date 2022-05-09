@@ -1,7 +1,7 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
-const G_LENGTH: u16 = 4;
+const G_LENGTH: usize = 4;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RandomVector {
@@ -9,10 +9,10 @@ pub struct RandomVector {
 }
 
 impl RandomVector {
-    const LENGTH: u16 = G_LENGTH;
+    const LENGTH: usize = G_LENGTH;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete Random Vector AVP payload encountered");
         }
 
@@ -23,7 +23,7 @@ impl RandomVector {
 }
 
 impl QueryableAVP for RandomVector {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }

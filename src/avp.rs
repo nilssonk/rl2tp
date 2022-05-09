@@ -57,7 +57,7 @@ pub enum AVP {
 
 #[enum_dispatch(AVP)]
 pub(crate) trait QueryableAVP {
-    fn get_length(&self) -> u16;
+    fn get_length(&self) -> usize;
 }
 
 #[enum_dispatch(AVP)]
@@ -208,7 +208,7 @@ impl AVP {
     }
 
     #[inline]
-    pub fn get_length(&self) -> u16 {
+    pub fn get_length(&self) -> usize {
         QueryableAVP::get_length(self)
     }
 

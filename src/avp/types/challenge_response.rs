@@ -1,19 +1,19 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
-const CHALLENGE_RESPONSE_LENGTH: u16 = 16;
+const G_CHALLENGE_RESPONSE_LENGTH: usize = 16;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ChallengeResponse {
-    pub data: [u8; CHALLENGE_RESPONSE_LENGTH as usize],
+    pub data: [u8; G_CHALLENGE_RESPONSE_LENGTH],
 }
 
 impl ChallengeResponse {
     const ATTRIBUTE_TYPE: u16 = 13;
-    const LENGTH: u16 = CHALLENGE_RESPONSE_LENGTH;
+    const LENGTH: usize = G_CHALLENGE_RESPONSE_LENGTH;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }
 
@@ -24,7 +24,7 @@ impl ChallengeResponse {
 }
 
 impl QueryableAVP for ChallengeResponse {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }

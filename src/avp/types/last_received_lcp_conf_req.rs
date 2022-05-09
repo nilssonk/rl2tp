@@ -21,9 +21,8 @@ impl LastReceivedLcpConfReq {
 }
 
 impl QueryableAVP for LastReceivedLcpConfReq {
-    fn get_length(&self) -> u16 {
-        assert!(self.value.len() <= u16::MAX as usize);
-        self.value.len() as u16
+    fn get_length(&self) -> usize {
+        self.value.len()
     }
 }
 

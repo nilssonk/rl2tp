@@ -7,10 +7,10 @@ pub struct ProxyAuthenId {
 }
 
 impl ProxyAuthenId {
-    const LENGTH: u16 = 2;
+    const LENGTH: usize = 2;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete ProxyAuthenId AVP encountered");
         }
 
@@ -27,7 +27,7 @@ impl From<u16> for ProxyAuthenId {
 }
 
 impl QueryableAVP for ProxyAuthenId {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }

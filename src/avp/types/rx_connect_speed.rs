@@ -7,10 +7,10 @@ pub struct RxConnectSpeed {
 }
 
 impl RxConnectSpeed {
-    const LENGTH: u16 = 4;
+    const LENGTH: usize = 4;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        if reader.len() < Self::LENGTH as usize {
+        if reader.len() < Self::LENGTH {
             return Err("Incomplete RxConnectSpeed AVP encountered");
         }
 
@@ -26,7 +26,7 @@ impl From<u32> for RxConnectSpeed {
 }
 
 impl QueryableAVP for RxConnectSpeed {
-    fn get_length(&self) -> u16 {
+    fn get_length(&self) -> usize {
         Self::LENGTH
     }
 }
