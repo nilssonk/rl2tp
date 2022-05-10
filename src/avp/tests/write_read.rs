@@ -53,5 +53,6 @@ initial_received_lcp_conf_req => AVP::InitialReceivedLcpConfReq(types::InitialRe
 last_received_lcp_conf_req => AVP::LastReceivedLcpConfReq(types::LastReceivedLcpConfReq{value:vec![0xde,0xad,0xbe,0xef]}),
 last_sent_lcp_conf_req => AVP::LastSentLcpConfReq(types::LastSentLcpConfReq{value:vec![0xde,0xad,0xbe,0xef]}),
 maximum_bps => AVP::MaximumBps(types::MaximumBps{value:0x13371337}),
-message_type => AVP::MessageType(types::MessageType::IncomingCallConnected)
+message_type => AVP::MessageType(types::MessageType::IncomingCallConnected),
+minimum_bps => AVP::MinimumBps(types::MinimumBps{value:0x13371337})
 ];
