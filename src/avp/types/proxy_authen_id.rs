@@ -7,6 +7,7 @@ pub struct ProxyAuthenId {
 }
 
 impl ProxyAuthenId {
+    const ATTRIBUTE_TYPE: u16 = 32;
     const LENGTH: usize = 2;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
@@ -14,15 +15,11 @@ impl ProxyAuthenId {
             return Err("Incomplete ProxyAuthenId AVP encountered");
         }
 
-        let value = unsafe { reader.read_u16_be_unchecked() };
-        Ok(value.into())
-    }
-}
+        // Reserved
+        reader.skip_bytes(1);
 
-impl From<u16> for ProxyAuthenId {
-    fn from(value: u16) -> Self {
-        let masked = (value & 0xff) as u8;
-        Self { value: masked }
+        let value = unsafe { reader.read_u8_unchecked() };
+        Ok(Self { value })
     }
 }
 
@@ -34,7 +31,8 @@ impl QueryableAVP for ProxyAuthenId {
 
 impl WritableAVP for ProxyAuthenId {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes_unchecked(&[0x00, self.value]);
     }
 }
