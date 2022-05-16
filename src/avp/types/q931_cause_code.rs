@@ -9,6 +9,7 @@ pub struct Q931CauseCode {
 }
 
 impl Q931CauseCode {
+    const ATTRIBUTE_TYPE: u16 = 12;
     const FIXED_LENGTH: usize = 3;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
@@ -49,7 +50,12 @@ impl QueryableAVP for Q931CauseCode {
 
 impl WritableAVP for Q931CauseCode {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be_unchecked(self.cause_code);
+        writer.write_u8_unchecked(self.cause_msg);
+        if let Some(value) = &self.advisory {
+            writer.write_bytes_unchecked(value.as_bytes());
+        }
     }
 }
