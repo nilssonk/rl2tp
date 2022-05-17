@@ -7,6 +7,7 @@ pub struct ReceiveWindowSize {
 }
 
 impl ReceiveWindowSize {
+    const ATTRIBUTE_TYPE: u16 = 10;
     const LENGTH: usize = 2;
 
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
@@ -33,7 +34,8 @@ impl QueryableAVP for ReceiveWindowSize {
 
 impl WritableAVP for ReceiveWindowSize {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be_unchecked(self.value);
     }
 }
