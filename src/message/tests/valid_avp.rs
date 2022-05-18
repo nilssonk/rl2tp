@@ -135,8 +135,10 @@ read_tests![
             AVP::MessageType(types::MessageType::StopControlConnectionNotification),
             AVP::ResultCode(types::ResultCode {
                 code: types::result_code::StopCcnCode::GeneralError.into(),
-                error: Some(types::result_code::Error::Generic),
-                error_message: Some(String::from("Test error"))
+                error: Some(types::result_code::Error{
+                    error_type: types::result_code::ErrorType::Generic,
+                    error_message: Some(String::from("Test error"))
+                }),
             })
         ],
     },
