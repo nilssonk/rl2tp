@@ -79,3 +79,40 @@ tie_breaker => AVP::TieBreaker(types::TieBreaker{value: 0xdeadbeef13371337}),
 tx_connect_speed => AVP::TxConnectSpeed(types::TxConnectSpeed{value: 0xdeadbeef}),
 vendor_name => AVP::VendorName(types::VendorName{value: "test vendor".to_owned()})
 ];
+
+#[test]
+fn hidden() {
+    let secret = "my_super_secret".as_bytes().to_owned();
+    let length_padding = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
+    let alignment_padding = [
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+        0x0f,
+    ];
+    let rv = types::RandomVector {
+        value: [0xde, 0xad, 0xbe, 0xef],
+    };
+    let input = AVP::VendorName(types::VendorName {
+        value: "test vendor".to_owned(),
+    });
+
+    // Serialize input
+    let hidden = input
+        .clone()
+        .hide(&secret, &rv, &length_padding, &alignment_padding);
+    let mut w = VecWriter::new();
+    unsafe { hidden.write(&mut w) };
+
+    println!("{:?}", w.data);
+
+    // Deserialize to output
+    let mut r = SliceReader::from(&w.data);
+    let avps = AVP::try_read_greedy(&mut r);
+
+    // Select first and only AVP, assert successful deserialization
+    let output = avps.into_iter().next().unwrap().unwrap();
+    assert!(matches!(output, AVP::Hidden(_)));
+
+    // Reveal hidden
+    let revealed = output.reveal(&secret, &rv).unwrap();
+    assert_eq!(revealed, input);
+}

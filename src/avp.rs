@@ -8,7 +8,7 @@ pub mod types;
 
 use enum_dispatch::enum_dispatch;
 
-use crate::common::{Reader, ResultStr, SliceReader, Writer};
+use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
 
 #[enum_dispatch]
 #[derive(Clone, Debug, PartialEq)]
@@ -112,69 +112,164 @@ fn decode_avp<'a, 'b>(attribute_type: u16, reader: &'b mut impl Reader<'a>) -> R
     })
 }
 
+const CRYPTO_CHUNK_SIZE: usize = 16;
 const ATTRIBUTE_TYPE_SIZE: usize = 2;
 
 impl AVP {
-    pub fn reveal(self, secret: &[u8], random_vector: &[u8]) -> ResultStr<Self> {
-        match self {
-            Self::Hidden(mut hidden) => {
-                // The first 4 octets have been peeled off and we are guaranteed to have at least 6
-                assert!(hidden.data.len() >= ATTRIBUTE_TYPE_SIZE);
-                let attribute_type =
-                    unsafe { SliceReader::from(&hidden.data).read_u16_be_unchecked() };
+    const LENGTH_BITS: u8 = 10;
+    const MAX_LENGTH: u16 = (1 << Self::LENGTH_BITS) - 1;
 
-                const CHUNK_SIZE: usize = 16;
-                let chunk_data = &mut hidden.data[ATTRIBUTE_TYPE_SIZE..];
-                let n_chunks = chunk_data.len() / CHUNK_SIZE;
+    pub fn hide(
+        self,
+        secret: &[u8],
+        random_vector: &types::RandomVector,
+        length_padding: &[u8],
+        alignment_padding: &[u8; CRYPTO_CHUNK_SIZE],
+    ) -> Self {
+        match &self {
+            Hidden(_) => self,
+            avp => {
+                let mut writer = VecWriter::new();
 
-                if chunk_data.is_empty() {
-                    return Err("Hidden AVP with empty payload encountered");
-                }
+                // The Writer trait is unsafe in general but we know that the VecWriter implementation is safe
+                unsafe { WritableAVP::write(avp, &mut writer) };
+                assert!(writer.len() >= ATTRIBUTE_TYPE_SIZE);
 
-                // The largest size is the size of the final intermediate value
-                let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.len();
+                // Extract Attribute Type
+                let attribute_type_octets: [u8; ATTRIBUTE_TYPE_SIZE] =
+                    writer.data[..ATTRIBUTE_TYPE_SIZE].try_into().unwrap();
+
+                // Get total AVP length
+                let length = writer.data.len() + Header::LENGTH as usize - ATTRIBUTE_TYPE_SIZE;
+
+                // Overwrite Attribute Type with AVP length
+                assert!(length <= Self::MAX_LENGTH as usize);
+                let length_octets = (length as u16).to_be_bytes();
+                unsafe { writer.write_bytes_unchecked_at(&length_octets, 0) };
+
+                let mut input = writer.data;
+
+                // Add random length padding
+                input.extend_from_slice(length_padding);
+
+                let chunk_padding_length = CRYPTO_CHUNK_SIZE - (input.len() % CRYPTO_CHUNK_SIZE);
+
+                // Pad input to chunk size
+                input.extend_from_slice(&alignment_padding[..chunk_padding_length]);
+
+                let n_chunks = input.len() / CRYPTO_CHUNK_SIZE;
+
+                // The largest intermediate buffer size is the size of the final intermediate value
+                let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
                 let mut buffer = Vec::with_capacity(buffer_length);
+
+                // The first intermediate value is MD5(Attribute type + secret + RV)
+                buffer.extend_from_slice(&attribute_type_octets);
+                buffer.extend_from_slice(secret);
+                buffer.extend_from_slice(&random_vector.value);
+                let mut intermediate = md5::compute(&buffer);
+                // Encode with XOR
+                for j in 0..CRYPTO_CHUNK_SIZE {
+                    input[j] ^= intermediate[j];
+                }
 
                 if n_chunks > 1 {
                     // The shared secret is a prefix for all chunks except the first one, so set it once for the entire loop
+                    buffer.clear();
                     buffer.extend_from_slice(secret);
 
-                    // Loop over chunks in reverse order
-                    for i in (1..n_chunks).rev() {
-                        let prev_chunk_start = (i - 1) * CHUNK_SIZE;
-                        let chunk_start = prev_chunk_start + CHUNK_SIZE;
+                    // Loop over chunks
+                    for i in 1..n_chunks {
+                        let prev_chunk_start = (i - 1) * CRYPTO_CHUNK_SIZE;
+                        let chunk_start = prev_chunk_start + CRYPTO_CHUNK_SIZE;
 
                         // Retain only the prefix which is guaranteed to be the shared secret
                         buffer.truncate(secret.len());
 
                         // The intermediate value for a given chunk is MD5(secret + previous chunk)
-                        buffer.extend_from_slice(&chunk_data[prev_chunk_start..chunk_start]);
-                        let intermediate = md5::compute(&buffer);
+                        buffer.extend_from_slice(&input[prev_chunk_start..chunk_start]);
+                        intermediate = md5::compute(&buffer);
 
-                        // Decode with XOR
-                        for j in 0..CHUNK_SIZE {
-                            chunk_data[chunk_start + j] ^= intermediate[j];
+                        // Encode with XOR
+                        for j in 0..CRYPTO_CHUNK_SIZE {
+                            input[chunk_start + j] ^= intermediate[j];
                         }
                     }
                 }
 
-                // The final intermediate value is MD5(Attribute type + secret + RV)
-                buffer.clear();
-                buffer.extend_from_slice(&attribute_type.to_be_bytes());
-                buffer.extend_from_slice(secret);
-                buffer.extend_from_slice(random_vector);
-                let intermediate = md5::compute(&buffer);
-
-                // Decode with XOR
-                for j in 0..CHUNK_SIZE {
-                    chunk_data[j] ^= intermediate[j];
-                }
-
-                let mut reader = SliceReader::from(chunk_data);
-                decode_avp(attribute_type, &mut reader)
+                Hidden(types::Hidden {
+                    attribute_type: u16::from_be_bytes(attribute_type_octets),
+                    value: input,
+                })
             }
-            _ => Ok(self),
         }
+    }
+
+    pub fn reveal(self, secret: &[u8], random_vector: &types::RandomVector) -> ResultStr<Self> {
+        if let Hidden(mut hidden) = self {
+            const CRYPTO_CHUNK_SIZE: usize = 16;
+
+            let chunk_data = &mut hidden.value;
+            let n_chunks = chunk_data.len() / CRYPTO_CHUNK_SIZE;
+
+            if chunk_data.is_empty() {
+                return Err("Hidden AVP with empty payload encountered");
+            }
+
+            // The largest size is the size of the final intermediate value
+            let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
+            let mut buffer = Vec::with_capacity(buffer_length);
+
+            if n_chunks > 1 {
+                // The shared secret is a prefix for all chunks except the first one, so set it once for the entire loop
+                buffer.extend_from_slice(secret);
+
+                // Loop over chunks in reverse order
+                for i in (1..n_chunks).rev() {
+                    let prev_chunk_start = (i - 1) * CRYPTO_CHUNK_SIZE;
+                    let chunk_start = prev_chunk_start + CRYPTO_CHUNK_SIZE;
+
+                    // Retain only the prefix which is guaranteed to be the shared secret
+                    buffer.truncate(secret.len());
+
+                    // The intermediate value for a given chunk is MD5(secret + previous chunk)
+                    buffer.extend_from_slice(&chunk_data[prev_chunk_start..chunk_start]);
+                    let intermediate = md5::compute(&buffer);
+
+                    // Decode with XOR
+                    for j in 0..CRYPTO_CHUNK_SIZE {
+                        chunk_data[chunk_start + j] ^= intermediate[j];
+                    }
+                }
+            }
+
+            // The final intermediate value is MD5(Attribute type + secret + RV)
+            buffer.clear();
+            buffer.extend_from_slice(&hidden.attribute_type.to_be_bytes());
+            buffer.extend_from_slice(secret);
+            buffer.extend_from_slice(&random_vector.value);
+            let intermediate = md5::compute(&buffer);
+
+            // Decode with XOR
+            for j in 0..CRYPTO_CHUNK_SIZE {
+                chunk_data[j] ^= intermediate[j];
+            }
+
+            // Retreive original length, SliceReader implementation of Reader is safe
+            let mut reader = SliceReader::from(chunk_data);
+            let total_length = unsafe { reader.read_u16_be_unchecked() };
+            if !(Header::LENGTH..=Self::MAX_LENGTH).contains(&total_length) {
+                return Err("Invalid original length");
+            }
+            let payload_length = total_length - Header::LENGTH;
+
+            // Decode payload
+            let mut payload_reader = reader.subreader(payload_length as usize);
+
+            return decode_avp(hidden.attribute_type, &mut payload_reader);
+        }
+
+        Ok(self)
     }
 
     pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
@@ -195,7 +290,10 @@ impl AVP {
                 let hidden_data = reader
                     .read_bytes(header.payload_length as usize)
                     .unwrap_or_default();
-                Ok(Self::Hidden(types::Hidden { data: hidden_data }))
+                Ok(Self::Hidden(types::Hidden {
+                    attribute_type: header.attribute_type,
+                    value: hidden_data,
+                }))
             } else {
                 // Regular AVP
                 let mut subreader = reader.subreader(header.payload_length as usize);
@@ -212,6 +310,18 @@ impl AVP {
         QueryableAVP::get_length(self)
     }
 
+    fn make_flags_and_length(is_mandatory: bool, is_hidden: bool, length: usize) -> [u8; 2] {
+        assert!(length <= Self::MAX_LENGTH as usize);
+
+        let msb = ((length >> 8) & 0x3) as u8;
+        let lsb = length as u8;
+        let m_bit = is_mandatory as u8;
+        let h_bit = (is_hidden as u8) << 1;
+        let octet1 = (msb << 6) | m_bit | h_bit;
+        let octet2 = lsb;
+        [octet1, octet2]
+    }
+
     /// # Summary
     /// Write an `AVP` using a `Writer`.
     /// # Safety
@@ -220,8 +330,6 @@ impl AVP {
     pub unsafe fn write(&self, writer: &mut impl Writer) {
         const VENDOR_ID: u16 = 0;
         const IS_MANDATORY: bool = true;
-        // @TODO: Support hidden
-        const IS_HIDDEN: bool = false;
 
         // Save header position
         let start_position = writer.len();
@@ -239,17 +347,11 @@ impl AVP {
         let end_position = writer.len();
         let length = end_position - start_position;
 
-        // Length split
-        let msb = ((length >> 8) & 0x3) as u8;
-        let lsb = length as u8;
+        let is_hidden = matches!(self, Hidden(_));
 
-        let m_bit = IS_MANDATORY as u8;
-        let h_bit = (IS_HIDDEN as u8) << 1;
-        let octet1 = (msb << 6) | m_bit | h_bit;
-        let octet2 = lsb;
+        let flags_and_length = Self::make_flags_and_length(IS_MANDATORY, is_hidden, length);
 
         // Oerwrite dummy octets
-        assert!(length <= u16::MAX as usize);
-        writer.write_bytes_unchecked_at(&[octet1, octet2], start_position);
+        writer.write_bytes_unchecked_at(&flags_and_length, start_position);
     }
 }
