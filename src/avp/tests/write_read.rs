@@ -76,5 +76,6 @@ rx_connect_speed => AVP::RxConnectSpeed(types::RxConnectSpeed{value: 0xdeadbeef}
 sequencing_required => AVP::SequencingRequired(types::SequencingRequired{}),
 sub_address => AVP::SubAddress(types::SubAddress{value: "subaddress-value".to_owned()}),
 tie_breaker => AVP::TieBreaker(types::TieBreaker{value: 0xdeadbeef13371337}),
-tx_connect_speed => AVP::TxConnectSpeed(types::TxConnectSpeed{value: 0xdeadbeef})
+tx_connect_speed => AVP::TxConnectSpeed(types::TxConnectSpeed{value: 0xdeadbeef}),
+vendor_name => AVP::VendorName(types::VendorName{value: "test vendor".to_owned()})
 ];
