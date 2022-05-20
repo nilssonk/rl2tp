@@ -7,6 +7,8 @@ pub struct SubAddress {
 }
 
 impl SubAddress {
+    const ATTRIBUTE_TYPE: u16 = 23;
+
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete SubAddress AVP encountered");
@@ -28,7 +30,8 @@ impl QueryableAVP for SubAddress {
 
 impl WritableAVP for SubAddress {
     #[inline]
-    unsafe fn write(&self, _writer: &mut impl Writer) {
-        unimplemented!();
+    unsafe fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes_unchecked(self.value.as_bytes());
     }
 }
