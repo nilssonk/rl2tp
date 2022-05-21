@@ -10,6 +10,9 @@ use enum_dispatch::enum_dispatch;
 
 use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
 
+#[cfg(feature = "rayon")]
+use rayon::prelude::*;
+
 #[enum_dispatch]
 #[derive(Clone, Debug, PartialEq)]
 pub enum AVP {
@@ -272,8 +275,10 @@ impl AVP {
         Ok(self)
     }
 
+    #[cfg(not(feature = "rayon"))]
     pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
         let mut result = Vec::new();
+
         while let Some(header) = Header::try_read(reader) {
             if header.payload_length as usize > reader.len() {
                 result.push(Err("AVP with invalid length field encountered"));
@@ -300,6 +305,51 @@ impl AVP {
                 decode_avp(header.attribute_type, &mut subreader)
             };
             result.push(avp);
+        }
+
+        result
+    }
+
+    #[cfg(feature = "rayon")]
+    pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
+        let mut inputs = Vec::new();
+        let mut maybe_parse_err = None;
+
+        while let Some(header) = Header::try_read(reader) {
+            if header.payload_length as usize > reader.len() {
+                maybe_parse_err = Some(Err("AVP with invalid length field encountered"));
+                break;
+            }
+            let subreader = reader.subreader(header.payload_length as usize);
+
+            inputs.push((header, subreader));
+        }
+
+        let mut result: Vec<ResultStr<Self>> = inputs
+            .into_par_iter()
+            .chunks(4096)
+            .map(|elems| {
+                elems.into_iter().map(|(header, mut subreader)| {
+                    if header.vendor_id != 0 {
+                        Err("AVP with unsupported vendor ID encountered")
+                    } else if header.flags.is_hidden() {
+                        // Hidden AVP
+                        let hidden_data = subreader.read_bytes(subreader.len()).unwrap_or_default();
+                        Ok(Self::Hidden(types::Hidden {
+                            attribute_type: header.attribute_type,
+                            value: hidden_data,
+                        }))
+                    } else {
+                        // Regular AVP
+                        decode_avp(header.attribute_type, &mut subreader)
+                    }
+                })
+            })
+            .flatten_iter()
+            .collect();
+
+        if let Some(err) = maybe_parse_err {
+            result.push(err);
         }
 
         result

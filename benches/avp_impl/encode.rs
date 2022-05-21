@@ -7,7 +7,7 @@ use rl2tp::common::VecWriter;
 use super::corpus::AVP_CORPUS;
 
 const RNG_SEED: u64 = 0x1337133713371337;
-const TEST_SIZES: [usize; 3] = [64, 128, 256];
+const TEST_SIZES: [usize; 1] = [64];
 
 fn make_test(size: usize, rng: &mut impl Rng) -> Vec<AVP> {
     let mut test_data = Vec::new();

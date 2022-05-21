@@ -1,6 +1,6 @@
 use crate::common::ResultStr;
 
-pub trait Reader<'a> {
+pub trait Reader<'a>: Send {
     fn is_empty(&self) -> bool;
     fn len(&self) -> usize;
 

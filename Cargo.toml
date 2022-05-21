@@ -12,6 +12,7 @@ autobenches = false
 [features]
 benchmarks = ["dep:criterion", "dep:once_cell", "dep:rand"]
 fail-on-warnings = []
+rayon = ["dep:rayon"]
 
 [dependencies]
 enum_dispatch = "0.3"
@@ -22,6 +23,8 @@ phf = { version = "0.10", features = ["macros"] }
 criterion = { version = "0.3", optional = true }
 once_cell = { version = "1.10", optional = true }
 rand = { version = "0.8", optional = true, features = ["small_rng"] }
+# feature rayon
+rayon = { version = "1.5", optional = true }
 
 [[bench]]
 name = "avp"
