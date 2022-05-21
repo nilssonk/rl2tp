@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod tests;
 
+pub mod avp;
+
 mod control_message;
 pub use control_message::ControlMessage;
 

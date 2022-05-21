@@ -1,5 +1,5 @@
-use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use crate::message::avp::{QueryableAVP, WritableAVP};
 
 const G_LENGTH: usize = 4;
 

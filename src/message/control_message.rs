@@ -1,7 +1,7 @@
-use crate::avp::AVP;
 use crate::common::{Reader, ResultStr, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
+use avp::AVP;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ControlMessage {
