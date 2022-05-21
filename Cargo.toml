@@ -17,13 +17,12 @@ fail-on-warnings = []
 enum_dispatch = "0.3"
 md5 = "0.7"
 num_enum = "0.5"
-phf = {version = "0.10", features=["macros"]}
+phf = { version = "0.10", features = ["macros"] }
 # feature benchmarks
-criterion = {version = "0.3", optional = true }
-once_cell = {version = "1.10", optional = true}
-rand = {version = "0.8", optional = true, features=["small_rng"]}
+criterion = { version = "0.3", optional = true }
+once_cell = { version = "1.10", optional = true }
+rand = { version = "0.8", optional = true, features = ["small_rng"] }
 
 [[bench]]
 name = "avp"
 harness = false
-
