@@ -205,6 +205,13 @@ impl AVP {
         }
     }
 
+    /// # Summary
+    /// If this `AVP` is a `Hidden` AVP, then decrypt and depad its content, converting it to an `AVP` of the encapsulated type.
+    ///
+    /// If this `AVP` is _not_ a `Hidden` AVP, then return it unaltered.
+    ///
+    /// * `secret` - A shared secret.
+    /// * `random_vector` - A `RandomVector` AVP received from the same source as the `Hidden` AVP to be revealed.
     pub fn reveal(self, secret: &[u8], random_vector: &types::RandomVector) -> ResultStr<Self> {
         if let Hidden(mut hidden) = self {
             const CRYPTO_CHUNK_SIZE: usize = 16;
