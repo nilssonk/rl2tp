@@ -119,6 +119,15 @@ impl AVP {
     const LENGTH_BITS: u8 = 10;
     const MAX_LENGTH: u16 = (1 << Self::LENGTH_BITS) - 1;
 
+    /// # Summary
+    /// Convert this `AVP` into a `Hidden` AVP using the L2TP-protocol-specified encryption and padding algorithm.
+    ///
+    /// If this `AVP` is _already_ a `Hidden` AVP, then return it unaltered.
+    ///
+    /// * `secret` - A shared secret.
+    /// * `random_vector` - A `RandomVector` AVP to be shared with the receiver.
+    /// * `length_padding` - Random bytes of a random length, used for length padding.
+    /// * `alignment_padding` - Random bytes of length `CRYPTO_CHUNK_SIZE`, used for alignment padding.
     pub fn hide(
         self,
         secret: &[u8],
