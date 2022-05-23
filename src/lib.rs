@@ -5,7 +5,10 @@
 
 #![cfg_attr(feature = "fail-on-warnings", deny(warnings))]
 
-pub mod avp;
 pub mod common;
+
+pub use common::Reader;
+pub use common::Writer;
+
 mod message;
 pub use message::*;
