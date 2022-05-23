@@ -112,11 +112,10 @@ fn decode_avp<'a, 'b>(attribute_type: u16, reader: &'b mut impl Reader<'a>) -> R
     })
 }
 
-const ATTRIBUTE_TYPE_SIZE: usize = 2;
-
 impl AVP {
     pub const CRYPTO_CHUNK_SIZE: usize = 16;
 
+    const ATTRIBUTE_TYPE_SIZE: usize = 2;
     const LENGTH_BITS: u8 = 10;
     const MAX_LENGTH: u16 = (1 << Self::LENGTH_BITS) - 1;
 
@@ -146,14 +145,15 @@ impl AVP {
 
                 // The Writer trait is unsafe in general but we know that the VecWriter implementation is safe
                 unsafe { WritableAVP::write(avp, &mut writer) };
-                assert!(writer.len() >= ATTRIBUTE_TYPE_SIZE);
+                assert!(writer.len() >= Self::ATTRIBUTE_TYPE_SIZE);
 
                 // Extract Attribute Type
-                let attribute_type_octets: [u8; ATTRIBUTE_TYPE_SIZE] =
-                    writer.data[..ATTRIBUTE_TYPE_SIZE].try_into().unwrap();
+                let attribute_type_octets: [u8; Self::ATTRIBUTE_TYPE_SIZE] =
+                    writer.data[..Self::ATTRIBUTE_TYPE_SIZE].try_into().unwrap();
 
                 // Get total AVP length
-                let length = writer.data.len() + Header::LENGTH as usize - ATTRIBUTE_TYPE_SIZE;
+                let length =
+                    writer.data.len() + Header::LENGTH as usize - Self::ATTRIBUTE_TYPE_SIZE;
 
                 // Overwrite Attribute Type with AVP length
                 assert!(length <= Self::MAX_LENGTH as usize);
@@ -173,7 +173,8 @@ impl AVP {
                 let n_chunks = input.len() / chunk_size;
 
                 // The largest intermediate buffer size is the size of the final intermediate value
-                let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
+                let buffer_length =
+                    Self::ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
                 let mut buffer = Vec::with_capacity(buffer_length);
 
                 // The first intermediate value is MD5(Attribute type + secret + RV)
@@ -238,7 +239,8 @@ impl AVP {
             }
 
             // The largest size is the size of the final intermediate value
-            let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
+            let buffer_length =
+                Self::ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
             let mut buffer = Vec::with_capacity(buffer_length);
 
             if n_chunks > 1 {
