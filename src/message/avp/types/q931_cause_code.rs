@@ -1,7 +1,7 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Q931CauseCode {
     pub cause_code: u16,
     pub cause_msg: u8,

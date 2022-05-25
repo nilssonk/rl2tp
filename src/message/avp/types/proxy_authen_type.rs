@@ -3,7 +3,7 @@ use crate::common::{Reader, ResultStr, Writer};
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, Eq, PartialEq)]
 #[repr(u16)]
 pub enum ProxyAuthenType {
     Reserved,

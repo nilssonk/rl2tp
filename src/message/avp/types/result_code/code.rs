@@ -1,7 +1,7 @@
 use crate::common::ResultStr;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, Eq, PartialEq)]
 #[repr(u16)]
 pub enum StopCcnCode {
     Reserved,
@@ -14,7 +14,7 @@ pub enum StopCcnCode {
     FsmError,
 }
 
-#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, Eq, PartialEq)]
 #[repr(u16)]
 pub enum CdnCode {
     Reserved,
@@ -31,7 +31,7 @@ pub enum CdnCode {
     CallNoFramingDetected,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct CodeValue {
     value: u16,
 }

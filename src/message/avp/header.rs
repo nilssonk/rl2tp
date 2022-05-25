@@ -3,7 +3,7 @@ pub(crate) use flags::Flags;
 
 use crate::common::Reader;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Header {
     pub flags: Flags,
     pub payload_length: u16,

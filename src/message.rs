@@ -14,31 +14,31 @@ use flags::{Flags, MessageFlagType};
 
 use crate::common::{Reader, ResultStr, Writer};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Message<'a> {
     Control(ControlMessage),
     Data(DataMessage<'a>),
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ValidateReserved {
     Yes,
     No,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ValidateVersion {
     Yes,
     No,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ValidateUnused {
     Yes,
     No,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ValidationOptions {
     reserved: ValidateReserved,
     version: ValidateVersion,

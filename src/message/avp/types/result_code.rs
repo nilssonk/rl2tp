@@ -7,7 +7,7 @@ pub use code::*;
 mod error;
 pub use error::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResultCode {
     pub code: CodeValue,
     pub error: Option<Error>,

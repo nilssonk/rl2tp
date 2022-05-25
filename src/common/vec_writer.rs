@@ -3,7 +3,7 @@ mod tests;
 
 use crate::common::Writer;
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct VecWriter {
     pub data: Vec<u8>,
 }

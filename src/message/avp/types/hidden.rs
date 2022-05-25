@@ -1,7 +1,7 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::Writer;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Hidden {
     pub attribute_type: u16,
     pub value: Vec<u8>,

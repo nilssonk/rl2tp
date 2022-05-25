@@ -1,7 +1,7 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::Writer;
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct SequencingRequired {}
 
 impl SequencingRequired {
