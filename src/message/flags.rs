@@ -3,13 +3,13 @@ mod tests;
 
 use crate::common::{Reader, ResultStr, Writer};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum MessageFlagType {
     Control,
     Data,
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct Flags {
     data: u16,
 }

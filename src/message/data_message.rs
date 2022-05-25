@@ -2,7 +2,7 @@ use crate::common::{Reader, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct DataMessage<'a> {
     pub is_prioritized: bool,
     pub length: Option<u16>,

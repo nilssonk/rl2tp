@@ -3,7 +3,7 @@ use crate::common::{Reader, ResultStr, Writer};
 
 const G_CHALLENGE_RESPONSE_LENGTH: usize = 16;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ChallengeResponse {
     pub data: [u8; G_CHALLENGE_RESPONSE_LENGTH],
 }

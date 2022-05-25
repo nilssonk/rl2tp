@@ -3,7 +3,7 @@ use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
 use avp::AVP;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ControlMessage {
     pub length: u16,
     pub tunnel_id: u16,

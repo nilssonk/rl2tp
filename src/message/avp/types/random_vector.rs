@@ -3,7 +3,7 @@ use crate::common::{Reader, ResultStr, Writer};
 
 const G_LENGTH: usize = 4;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct RandomVector {
     pub value: [u8; G_LENGTH as usize],
 }

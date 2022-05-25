@@ -1,7 +1,7 @@
 use crate::common::{Reader, ResultStr};
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, Eq, PartialEq)]
 #[repr(u16)]
 pub enum ErrorType {
     Ok,
@@ -15,7 +15,7 @@ pub enum ErrorType {
     UnknownMandatoryAvp,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Error {
     pub error_type: ErrorType,
     pub error_message: Option<String>,

@@ -3,7 +3,7 @@ mod tests;
 
 use crate::common::{Reader, ResultStr};
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SliceReader<'a> {
     data: &'a [u8],
 }

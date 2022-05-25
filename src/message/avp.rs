@@ -11,7 +11,7 @@ use enum_dispatch::enum_dispatch;
 use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
 
 #[enum_dispatch]
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AVP {
     MessageType(types::MessageType),
     RandomVector(types::RandomVector),
