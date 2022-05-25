@@ -123,7 +123,8 @@ impl AVP {
     /// Convert this `AVP` into a `Hidden` AVP using the L2TP-protocol-specified encryption and padding algorithm.
     ///
     /// If this `AVP` is _already_ a `Hidden` AVP, then return it unaltered.
-    ///
+    /// 
+    /// # Parameters
     /// * `secret` - A shared secret.
     /// * `random_vector` - A `RandomVector` AVP to be shared with the receiver.
     /// * `length_padding` - Random bytes of a random length, used for length padding.
@@ -219,6 +220,7 @@ impl AVP {
     ///
     /// If this `AVP` is _not_ a `Hidden` AVP, then return it unaltered.
     ///
+    /// # Parameters
     /// * `secret` - A shared secret.
     /// * `random_vector` - A `RandomVector` AVP received from the same source as the `Hidden` AVP to be revealed.
     pub fn reveal(self, secret: &[u8], random_vector: &types::RandomVector) -> ResultStr<Self> {
@@ -340,6 +342,7 @@ impl AVP {
 
     /// # Summary
     /// Write an `AVP` using a `Writer`.
+    /// 
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.
     #[inline]
