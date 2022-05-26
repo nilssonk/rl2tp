@@ -112,10 +112,11 @@ fn decode_avp<'a, 'b>(attribute_type: u16, reader: &'b mut impl Reader<'a>) -> R
     })
 }
 
-const CRYPTO_CHUNK_SIZE: usize = 16;
 const ATTRIBUTE_TYPE_SIZE: usize = 2;
 
 impl AVP {
+    pub const CRYPTO_CHUNK_SIZE: usize = 16;
+
     const LENGTH_BITS: u8 = 10;
     const MAX_LENGTH: u16 = (1 << Self::LENGTH_BITS) - 1;
 
@@ -134,11 +135,13 @@ impl AVP {
         secret: &[u8],
         random_vector: &types::RandomVector,
         length_padding: &[u8],
-        alignment_padding: &[u8; CRYPTO_CHUNK_SIZE],
+        alignment_padding: &[u8; Self::CRYPTO_CHUNK_SIZE],
     ) -> Self {
         match &self {
             Hidden(_) => self,
             avp => {
+                let chunk_size: usize = Self::CRYPTO_CHUNK_SIZE;
+
                 let mut writer = VecWriter::new();
 
                 // The Writer trait is unsafe in general but we know that the VecWriter implementation is safe
@@ -162,12 +165,12 @@ impl AVP {
                 // Add random length padding
                 input.extend_from_slice(length_padding);
 
-                let chunk_padding_length = CRYPTO_CHUNK_SIZE - (input.len() % CRYPTO_CHUNK_SIZE);
+                let chunk_padding_length = chunk_size - (input.len() % chunk_size);
 
                 // Pad input to chunk size
                 input.extend_from_slice(&alignment_padding[..chunk_padding_length]);
 
-                let n_chunks = input.len() / CRYPTO_CHUNK_SIZE;
+                let n_chunks = input.len() / chunk_size;
 
                 // The largest intermediate buffer size is the size of the final intermediate value
                 let buffer_length = ATTRIBUTE_TYPE_SIZE + secret.len() + random_vector.value.len();
@@ -179,7 +182,7 @@ impl AVP {
                 buffer.extend_from_slice(&random_vector.value);
                 let mut intermediate = md5::compute(&buffer);
                 // Encode with XOR
-                for j in 0..CRYPTO_CHUNK_SIZE {
+                for j in 0..chunk_size {
                     input[j] ^= intermediate[j];
                 }
 
@@ -190,8 +193,8 @@ impl AVP {
 
                     // Loop over chunks
                     for i in 1..n_chunks {
-                        let prev_chunk_start = (i - 1) * CRYPTO_CHUNK_SIZE;
-                        let chunk_start = prev_chunk_start + CRYPTO_CHUNK_SIZE;
+                        let prev_chunk_start = (i - 1) * chunk_size;
+                        let chunk_start = prev_chunk_start + chunk_size;
 
                         // Retain only the prefix which is guaranteed to be the shared secret
                         buffer.truncate(secret.len());
@@ -201,7 +204,7 @@ impl AVP {
                         intermediate = md5::compute(&buffer);
 
                         // Encode with XOR
-                        for j in 0..CRYPTO_CHUNK_SIZE {
+                        for j in 0..chunk_size {
                             input[chunk_start + j] ^= intermediate[j];
                         }
                     }
@@ -225,10 +228,10 @@ impl AVP {
     /// * `random_vector` - A `RandomVector` AVP received from the same source as the `Hidden` AVP to be revealed.
     pub fn reveal(self, secret: &[u8], random_vector: &types::RandomVector) -> ResultStr<Self> {
         if let Hidden(mut hidden) = self {
-            const CRYPTO_CHUNK_SIZE: usize = 16;
+            let chunk_size: usize = Self::CRYPTO_CHUNK_SIZE;
 
             let chunk_data = &mut hidden.value;
-            let n_chunks = chunk_data.len() / CRYPTO_CHUNK_SIZE;
+            let n_chunks = chunk_data.len() / chunk_size;
 
             if chunk_data.is_empty() {
                 return Err("Hidden AVP with empty payload encountered");
@@ -244,8 +247,8 @@ impl AVP {
 
                 // Loop over chunks in reverse order
                 for i in (1..n_chunks).rev() {
-                    let prev_chunk_start = (i - 1) * CRYPTO_CHUNK_SIZE;
-                    let chunk_start = prev_chunk_start + CRYPTO_CHUNK_SIZE;
+                    let prev_chunk_start = (i - 1) * chunk_size;
+                    let chunk_start = prev_chunk_start + chunk_size;
 
                     // Retain only the prefix which is guaranteed to be the shared secret
                     buffer.truncate(secret.len());
@@ -255,7 +258,7 @@ impl AVP {
                     let intermediate = md5::compute(&buffer);
 
                     // Decode with XOR
-                    for j in 0..CRYPTO_CHUNK_SIZE {
+                    for j in 0..chunk_size {
                         chunk_data[chunk_start + j] ^= intermediate[j];
                     }
                 }
@@ -269,7 +272,7 @@ impl AVP {
             let intermediate = md5::compute(&buffer);
 
             // Decode with XOR
-            for j in 0..CRYPTO_CHUNK_SIZE {
+            for j in 0..chunk_size {
                 chunk_data[j] ^= intermediate[j];
             }
 
