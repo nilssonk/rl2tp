@@ -165,7 +165,7 @@ impl AVP {
                 // Add random length padding
                 input.extend_from_slice(length_padding);
 
-                let chunk_padding_length = chunk_size - (input.len() % chunk_size);
+                let chunk_padding_length = (chunk_size - (input.len() % chunk_size)) % chunk_size;
 
                 // Pad input to chunk size
                 input.extend_from_slice(&alignment_padding[..chunk_padding_length]);
@@ -232,11 +232,15 @@ impl AVP {
             let chunk_size: usize = Self::CRYPTO_CHUNK_SIZE;
 
             let chunk_data = &mut hidden.value;
-            let n_chunks = chunk_data.len() / chunk_size;
 
             if chunk_data.is_empty() {
                 return Err("Hidden AVP with empty payload encountered");
             }
+            if chunk_data.len() % chunk_size != 0 {
+                return Err("Hidden AVP with invalid alignment encountered");
+            }
+
+            let n_chunks = chunk_data.len() / chunk_size;
 
             // The largest size is the size of the final intermediate value
             let buffer_length =
