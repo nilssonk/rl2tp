@@ -299,6 +299,10 @@ impl AVP {
         Ok(self)
     }
 
+    /// # Summary
+    /// Try to greedily read a list of `AVP`s using a `Reader`.
+    /// 
+    /// Reading will proceed until the `Reader` is empty or an invalid AVP header length field is encountered.
     pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
         let mut result = Vec::new();
         while let Some(header) = Header::try_read(reader) {
