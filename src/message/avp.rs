@@ -332,6 +332,8 @@ impl AVP {
         result
     }
 
+    /// # Summary
+    /// Get the length of this `AVP`.
     #[inline]
     pub fn get_length(&self) -> usize {
         QueryableAVP::get_length(self)
