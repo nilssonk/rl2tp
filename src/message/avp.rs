@@ -1,3 +1,5 @@
+///! Types and implementations related to L2TP Control Message Attribute Value Pairs.
+
 #[cfg(test)]
 mod tests;
 
@@ -10,6 +12,12 @@ use enum_dispatch::enum_dispatch;
 
 use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
 
+/// # Summary
+/// An `AVP` is a representation of an L2TP Attribute Value Pair, of which one or more may be present in a `ControlMessage`.
+/// 
+/// ## Note
+/// Currently only Attribute Value Pairs defined in the L2TP specification are supported,
+/// although the specification itself purposefully leaves room for user-specified ones.
 #[enum_dispatch]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AVP {
