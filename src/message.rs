@@ -1,3 +1,5 @@
+///! Types and implementations related to L2TP protocol messages.
+
 #[cfg(test)]
 mod tests;
 
@@ -14,6 +16,9 @@ use flags::{Flags, MessageFlagType};
 
 use crate::common::{Reader, ResultStr, Writer};
 
+/// # Summary
+/// A `Message` is a representation of an L2TP protocol message. It can be either a `DataMessage`
+/// or a `ControlMessage` and constitutes the outermost container for the protocol.
 #[derive(Debug, Eq, PartialEq)]
 pub enum Message<'a> {
     Control(ControlMessage),
@@ -49,7 +54,7 @@ impl<'a> Message<'a> {
     const PROTOCOL_VERSION: u8 = 2;
 
     /// # Summary
-    /// Attempt to read a `Message` using a `Reader`. User-supplied ValidationOptions offer a way to ignore certain protocol mandates.
+    /// Attempt to read a `Message` using a `Reader`. User-supplied `ValidationOptions` offer a way to ignore certain protocol mandates.
     pub fn try_read<'b>(
         reader: &'b mut impl Reader<'a>,
         validation_options: ValidationOptions,
@@ -81,6 +86,7 @@ impl<'a> Message<'a> {
 
     /// # Summary
     /// Write a `Message` using a mutable `Writer`.
+    /// 
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
     #[inline]
