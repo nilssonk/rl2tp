@@ -2,6 +2,20 @@ use crate::common::{Reader, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
 
+/// # Summary
+/// A `DataMessage` is a representation of an L2TP data message which is the primary data transfer mechanism of the protocol.
+/// 
+/// # Lifetimes
+/// * `'a` - The lifetime of the borrowed slice of bytes contained in `data`.
+/// 
+/// # Data members
+/// * `is_prioritized` - Indicates whether this is a prioritized message.
+/// * `length` - The optional data length field.
+/// * `tunnel_id` - The tunnel identifier.
+/// * `session_id` - The session identifier.
+/// * `ns_nr` - The optional NS/NR field.
+/// * `offset` - The optional data offset field.
+/// * `data` - A borrowed slice of data belonging to this data message.
 #[derive(Debug, Eq, PartialEq)]
 pub struct DataMessage<'a> {
     pub is_prioritized: bool,
