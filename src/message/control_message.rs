@@ -3,6 +3,16 @@ use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
 use avp::AVP;
 
+/// # Summary
+/// A `ControlMessage` is a representation of an L2TP control message which is the primary link control mechanism of the protocol.
+/// 
+/// # Data members
+/// * `length` - The payload length field.
+/// * `tunnel_id` - The tunnel identifier field.
+/// * `session_id` - The session identifier field.
+/// * `ns` - The NS field.
+/// * `nr` - The NR field.
+/// * `avps` - A collection of Attribute Value Pairs constituting the payload of this message.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ControlMessage {
     pub length: u16,
