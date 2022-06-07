@@ -4,13 +4,13 @@ mod tests;
 use crate::common::{Reader, ResultStr, Writer};
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum MessageFlagType {
+pub(crate) enum MessageFlagType {
     Control,
     Data,
 }
 
 #[derive(Debug, Default, Eq, PartialEq)]
-pub struct Flags {
+pub(crate) struct Flags {
     data: u16,
 }
 
