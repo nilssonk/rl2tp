@@ -15,6 +15,7 @@ pub(crate) struct Flags {
 }
 
 impl Flags {
+    #[inline]
     pub fn new(
         message_type: MessageFlagType,
         has_length: bool,
