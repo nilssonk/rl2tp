@@ -55,6 +55,7 @@ impl<'a> Message<'a> {
 
     /// # Summary
     /// Attempt to read a `Message` using a `Reader`. User-supplied `ValidationOptions` offer a way to ignore certain protocol mandates.
+    #[inline]
     pub fn try_read<'b>(
         reader: &'b mut impl Reader<'a>,
         validation_options: ValidationOptions,

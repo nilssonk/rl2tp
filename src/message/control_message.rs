@@ -24,6 +24,7 @@ pub struct ControlMessage {
 }
 
 impl ControlMessage {
+    #[inline]
     pub(crate) fn try_read<'a, 'b>(
         flags: Flags,
         validation_options: ValidationOptions,

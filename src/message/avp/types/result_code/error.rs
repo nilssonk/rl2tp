@@ -22,6 +22,7 @@ pub struct Error {
 }
 
 impl Error {
+    #[inline]
     pub(crate) unsafe fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         let error_raw = reader.read_u16_be_unchecked();
         let error_type = error_raw
