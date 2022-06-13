@@ -10,6 +10,7 @@ impl FramingType {
     const ATTRIBUTE_TYPE: u16 = 19;
     const LENGTH: usize = 4;
 
+    #[inline]
     pub fn new(analog_request: bool, digital_request: bool) -> Self {
         let analog_bit = (analog_request as u32) << 6;
         let digital_bit = (digital_request as u32) << 7;
@@ -37,6 +38,7 @@ impl FramingType {
 }
 
 impl QueryableAVP for FramingType {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

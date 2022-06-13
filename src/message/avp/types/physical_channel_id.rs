@@ -29,6 +29,7 @@ impl PhysicalChannelId {
 }
 
 impl QueryableAVP for PhysicalChannelId {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

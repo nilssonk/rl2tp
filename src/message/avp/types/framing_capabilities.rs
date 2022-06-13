@@ -10,6 +10,7 @@ impl FramingCapabilities {
     const ATTRIBUTE_TYPE: u16 = 3;
     const LENGTH: usize = 4;
 
+    #[inline]
     pub fn new(async_framing_supported: bool, sync_framing_supported: bool) -> Self {
         let async_bit = (async_framing_supported as u32) << 6;
         let sync_bit = (sync_framing_supported as u32) << 7;
@@ -27,16 +28,19 @@ impl FramingCapabilities {
         Ok(Self { data })
     }
 
+    #[inline]
     pub fn is_async_framing_supported(&self) -> bool {
         ((self.data >> 6) & 0x1) != 0
     }
 
+    #[inline]
     pub fn is_sync_framing_supported(&self) -> bool {
         ((self.data >> 7) & 0x1) != 0
     }
 }
 
 impl QueryableAVP for FramingCapabilities {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

@@ -23,6 +23,7 @@ impl CalledNumber {
 }
 
 impl QueryableAVP for CalledNumber {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

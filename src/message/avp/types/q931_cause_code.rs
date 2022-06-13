@@ -39,6 +39,7 @@ impl Q931CauseCode {
 }
 
 impl QueryableAVP for Q931CauseCode {
+    #[inline]
     fn get_length(&self) -> usize {
         if let Some(value) = &self.advisory {
             Self::FIXED_LENGTH + value.len()

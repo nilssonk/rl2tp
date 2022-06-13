@@ -23,6 +23,7 @@ impl SubAddress {
 }
 
 impl QueryableAVP for SubAddress {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

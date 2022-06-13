@@ -9,6 +9,7 @@ impl SequencingRequired {
 }
 
 impl QueryableAVP for SequencingRequired {
+    #[inline]
     fn get_length(&self) -> usize {
         0
     }

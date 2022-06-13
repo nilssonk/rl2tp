@@ -23,6 +23,7 @@ impl ProtocolVersion {
 }
 
 impl QueryableAVP for ProtocolVersion {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

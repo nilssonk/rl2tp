@@ -21,6 +21,7 @@ impl PrivateGroupId {
 }
 
 impl QueryableAVP for PrivateGroupId {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }
