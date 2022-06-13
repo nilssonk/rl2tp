@@ -83,6 +83,7 @@ impl<'a> DataMessage<'a> {
         })
     }
 
+    #[inline]
     pub(crate) unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
         let flags = Flags::new(
             MessageFlagType::Data,
