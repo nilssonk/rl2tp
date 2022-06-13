@@ -14,7 +14,7 @@ use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
 
 /// # Summary
 /// An `AVP` is a representation of an L2TP Attribute Value Pair, of which one or more may be present in a `ControlMessage`.
-/// 
+///
 /// ## Note
 /// Currently only Attribute Value Pairs defined in the L2TP specification are supported,
 /// although the specification itself purposefully leaves room for user-specified ones.
@@ -131,7 +131,7 @@ impl AVP {
     /// Convert this `AVP` into a `Hidden` AVP using the L2TP-protocol-specified encryption and padding algorithm.
     ///
     /// If this `AVP` is _already_ a `Hidden` AVP, then return it unaltered.
-    /// 
+    ///
     /// # Parameters
     /// * `secret` - A shared secret.
     /// * `random_vector` - A `RandomVector` AVP to be shared with the receiver.
@@ -309,7 +309,7 @@ impl AVP {
 
     /// # Summary
     /// Try to greedily read a list of `AVP`s using a `Reader`.
-    /// 
+    ///
     /// Reading will proceed until the `Reader` is empty or an invalid AVP header length field is encountered.
     #[inline]
     pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
@@ -366,7 +366,7 @@ impl AVP {
 
     /// # Summary
     /// Write an `AVP` using a `Writer`.
-    /// 
+    ///
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.
     #[inline]

@@ -87,7 +87,7 @@ impl<'a> Message<'a> {
 
     /// # Summary
     /// Write a `Message` using a mutable `Writer`.
-    /// 
+    ///
     /// # Safety
     /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
     #[inline]

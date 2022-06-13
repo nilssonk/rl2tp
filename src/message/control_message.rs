@@ -5,7 +5,7 @@ use avp::AVP;
 
 /// # Summary
 /// A `ControlMessage` is a representation of an L2TP control message which is the primary link control mechanism of the protocol.
-/// 
+///
 /// # Data members
 /// * `length` - The payload length field.
 /// * `tunnel_id` - The tunnel identifier field.
