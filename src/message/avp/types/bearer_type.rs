@@ -19,18 +19,13 @@ impl BearerType {
         }
     }
 
-    pub fn from_raw(data: u32) -> Self {
-        Self { data }
-    }
-
-    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete BearerType AVP encountered");
         }
 
         let data = unsafe { reader.read_u32_be_unchecked() };
-        Ok(Self::from_raw(data))
+        Ok(Self { data })
     }
 
     pub fn is_analog_request(&self) -> bool {
