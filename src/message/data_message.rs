@@ -4,10 +4,10 @@ use crate::message::*;
 
 /// # Summary
 /// A `DataMessage` is a representation of an L2TP data message which is the primary data transfer mechanism of the protocol.
-/// 
+///
 /// # Lifetimes
 /// * `'a` - The lifetime of the borrowed slice of bytes contained in `data`.
-/// 
+///
 /// # Data members
 /// * `is_prioritized` - Indicates whether this is a prioritized message.
 /// * `length` - The optional data length field.
