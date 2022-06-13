@@ -28,6 +28,7 @@ pub struct DataMessage<'a> {
 }
 
 impl<'a> DataMessage<'a> {
+    #[inline]
     pub(crate) fn try_read<'b>(flags: Flags, reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         let mut minimal_length = 4;
         if flags.has_length() {
