@@ -18,6 +18,7 @@ impl ResultCode {
     const FIXED_LENGTH: usize = 2;
     const ERROR_LENGTH: usize = 2;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH {
             return Err("Incomplete ResultCode AVP payload encountered");

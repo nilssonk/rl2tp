@@ -9,6 +9,7 @@ pub struct ProxyAuthenResponse {
 impl ProxyAuthenResponse {
     const ATTRIBUTE_TYPE: u16 = 33;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete ProxyAuthenResponse AVP encountered");

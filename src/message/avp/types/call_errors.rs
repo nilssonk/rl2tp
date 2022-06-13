@@ -15,6 +15,7 @@ impl CallErrors {
     const ATTRIBUTE_TYPE: u16 = 34;
     const LENGTH: usize = 26;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete CallErrors AVP encountered");

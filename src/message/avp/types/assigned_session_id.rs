@@ -10,6 +10,7 @@ impl AssignedSessionId {
     const ATTRIBUTE_TYPE: u16 = 14;
     const LENGTH: usize = 2;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete AssignedSessionId AVP encountered");

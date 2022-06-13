@@ -10,6 +10,7 @@ impl MinimumBps {
     const ATTRIBUTE_TYPE: u16 = 16;
     const LENGTH: usize = 4;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete MinimumBps AVP encountered");
