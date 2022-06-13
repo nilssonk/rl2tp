@@ -37,11 +37,13 @@ pub struct CodeValue {
 }
 
 impl CodeValue {
+    #[inline]
     pub fn as_stop_ccn(&self) -> ResultStr<StopCcnCode> {
         let maybe_code = self.value.try_into();
         maybe_code.map_err(|_| "Invalid StopCcnCode")
     }
 
+    #[inline]
     pub fn as_cdn(&self) -> ResultStr<CdnCode> {
         let maybe_code = self.value.try_into();
         maybe_code.map_err(|_| "Invalid CdnCode")
@@ -49,18 +51,21 @@ impl CodeValue {
 }
 
 impl From<CodeValue> for u16 {
+    #[inline]
     fn from(value: CodeValue) -> Self {
         value.value
     }
 }
 
 impl From<u16> for CodeValue {
+    #[inline]
     fn from(value: u16) -> Self {
         Self { value }
     }
 }
 
 impl From<StopCcnCode> for CodeValue {
+    #[inline]
     fn from(value: StopCcnCode) -> Self {
         Self {
             value: value.into(),
@@ -69,6 +74,7 @@ impl From<StopCcnCode> for CodeValue {
 }
 
 impl From<CdnCode> for CodeValue {
+    #[inline]
     fn from(value: CdnCode) -> Self {
         Self {
             value: value.into(),
