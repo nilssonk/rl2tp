@@ -352,6 +352,7 @@ impl AVP {
         QueryableAVP::get_length(self)
     }
 
+    #[inline]
     fn make_flags_and_length(is_mandatory: bool, is_hidden: bool, length: usize) -> [u8; 2] {
         assert!(length <= Self::MAX_LENGTH as usize);
 
