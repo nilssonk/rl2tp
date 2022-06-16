@@ -88,6 +88,7 @@ impl ControlMessage {
         })
     }
 
+    #[inline]
     pub(crate) unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
         let start_position = writer.len();
         let flags = Flags::new(
