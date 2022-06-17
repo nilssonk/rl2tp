@@ -21,12 +21,14 @@ impl CallSerialNumber {
 }
 
 impl From<u32> for CallSerialNumber {
+    #[inline]
     fn from(value: u32) -> Self {
         Self { value }
     }
 }
 
 impl QueryableAVP for CallSerialNumber {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

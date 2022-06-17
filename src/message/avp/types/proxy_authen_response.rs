@@ -21,6 +21,7 @@ impl ProxyAuthenResponse {
 }
 
 impl QueryableAVP for ProxyAuthenResponse {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

@@ -40,6 +40,7 @@ impl BearerCapabilities {
 }
 
 impl QueryableAVP for BearerCapabilities {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

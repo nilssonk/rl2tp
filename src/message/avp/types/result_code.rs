@@ -37,6 +37,7 @@ impl ResultCode {
 }
 
 impl QueryableAVP for ResultCode {
+    #[inline]
     fn get_length(&self) -> usize {
         let mut length = Self::FIXED_LENGTH;
 

@@ -30,6 +30,7 @@ impl Accm {
 }
 
 impl QueryableAVP for Accm {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

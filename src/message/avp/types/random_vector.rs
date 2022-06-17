@@ -24,6 +24,7 @@ impl RandomVector {
 }
 
 impl QueryableAVP for RandomVector {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

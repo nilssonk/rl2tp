@@ -21,6 +21,7 @@ impl LastSentLcpConfReq {
 }
 
 impl QueryableAVP for LastSentLcpConfReq {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

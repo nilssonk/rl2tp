@@ -24,6 +24,7 @@ impl ChallengeResponse {
 }
 
 impl QueryableAVP for ChallengeResponse {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

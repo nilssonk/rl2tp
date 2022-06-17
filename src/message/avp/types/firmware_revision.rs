@@ -21,12 +21,14 @@ impl FirmwareRevision {
 }
 
 impl From<u16> for FirmwareRevision {
+    #[inline]
     fn from(value: u16) -> Self {
         Self { value }
     }
 }
 
 impl QueryableAVP for FirmwareRevision {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

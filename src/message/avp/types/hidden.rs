@@ -8,6 +8,7 @@ pub struct Hidden {
 }
 
 impl QueryableAVP for Hidden {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

@@ -10,6 +10,7 @@ impl BearerType {
     const ATTRIBUTE_TYPE: u16 = 18;
     const LENGTH: usize = 4;
 
+    #[inline]
     pub fn new(analog_request: bool, digital_request: bool) -> Self {
         let analog_request_bit = (analog_request as u32) << 6;
         let digital_request_bit = (digital_request as u32) << 7;
@@ -41,6 +42,7 @@ impl BearerType {
 }
 
 impl QueryableAVP for BearerType {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

@@ -33,6 +33,7 @@ impl ProxyAuthenType {
 }
 
 impl QueryableAVP for ProxyAuthenType {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

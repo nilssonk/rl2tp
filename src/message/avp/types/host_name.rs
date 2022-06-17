@@ -21,6 +21,7 @@ impl HostName {
 }
 
 impl QueryableAVP for HostName {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

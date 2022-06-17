@@ -23,6 +23,7 @@ impl VendorName {
 }
 
 impl QueryableAVP for VendorName {
+    #[inline]
     fn get_length(&self) -> usize {
         self.value.len()
     }

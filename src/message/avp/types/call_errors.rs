@@ -42,6 +42,7 @@ impl CallErrors {
 }
 
 impl QueryableAVP for CallErrors {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

@@ -56,6 +56,7 @@ impl MessageType {
         }
     }
 
+    #[inline]
     const fn get_code(&self) -> u16 {
         match self {
             StartControlConnectionRequest => 1u16,
@@ -77,6 +78,7 @@ impl MessageType {
 }
 
 impl QueryableAVP for MessageType {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

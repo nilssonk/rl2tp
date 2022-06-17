@@ -21,12 +21,14 @@ impl AssignedSessionId {
 }
 
 impl From<u16> for AssignedSessionId {
+    #[inline]
     fn from(value: u16) -> Self {
         Self { value }
     }
 }
 
 impl QueryableAVP for AssignedSessionId {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

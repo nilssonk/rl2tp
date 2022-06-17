@@ -24,6 +24,7 @@ impl ProxyAuthenId {
 }
 
 impl QueryableAVP for ProxyAuthenId {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }

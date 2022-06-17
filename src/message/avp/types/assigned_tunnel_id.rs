@@ -21,12 +21,14 @@ impl AssignedTunnelId {
 }
 
 impl From<u16> for AssignedTunnelId {
+    #[inline]
     fn from(value: u16) -> Self {
         Self { value }
     }
 }
 
 impl QueryableAVP for AssignedTunnelId {
+    #[inline]
     fn get_length(&self) -> usize {
         Self::LENGTH
     }
