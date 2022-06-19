@@ -23,6 +23,7 @@ impl BearerType {
         Self { data }
     }
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete BearerType AVP encountered");

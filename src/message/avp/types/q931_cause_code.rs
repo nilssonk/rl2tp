@@ -12,6 +12,7 @@ impl Q931CauseCode {
     const ATTRIBUTE_TYPE: u16 = 12;
     const FIXED_LENGTH: usize = 3;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH as usize {
             return Err("Incomplete Q931CauseCode AVP encountered");

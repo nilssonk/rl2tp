@@ -9,6 +9,7 @@ pub struct CallingNumber {
 impl CallingNumber {
     const ATTRIBUTE_TYPE: u16 = 22;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete CallingNumber AVP encountered");

@@ -9,6 +9,7 @@ pub struct HostName {
 impl HostName {
     const ATTRIBUTE_TYPE: u16 = 7;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete HostName AVP encountered");

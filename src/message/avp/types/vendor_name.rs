@@ -9,6 +9,7 @@ pub struct VendorName {
 impl VendorName {
     const ATTRIBUTE_TYPE: u16 = 8;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete VendorName AVP encountered");

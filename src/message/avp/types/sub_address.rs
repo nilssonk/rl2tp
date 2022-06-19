@@ -9,6 +9,7 @@ pub struct SubAddress {
 impl SubAddress {
     const ATTRIBUTE_TYPE: u16 = 23;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete SubAddress AVP encountered");

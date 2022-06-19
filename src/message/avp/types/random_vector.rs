@@ -12,6 +12,7 @@ impl RandomVector {
     const ATTRIBUTE_TYPE: u16 = 36;
     const LENGTH: usize = G_LENGTH;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete Random Vector AVP payload encountered");

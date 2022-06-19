@@ -18,6 +18,7 @@ impl ProxyAuthenType {
     const ATTRIBUTE_TYPE: u16 = 29;
     const LENGTH: usize = 2;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete ProxyAuthenType AVP encountered");

@@ -11,6 +11,7 @@ impl Accm {
     const ATTRIBUTE_TYPE: u16 = 35;
     const LENGTH: usize = 10;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete Accm AVP encountered");

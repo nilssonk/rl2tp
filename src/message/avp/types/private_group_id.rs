@@ -9,6 +9,7 @@ pub struct PrivateGroupId {
 impl PrivateGroupId {
     const ATTRIBUTE_TYPE: u16 = 37;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete PrivateGroupId AVP encountered");

@@ -9,6 +9,7 @@ pub struct LastSentLcpConfReq {
 impl LastSentLcpConfReq {
     const ATTRIBUTE_TYPE: u16 = 27;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete LastSentLcpConfReq AVP encountered");

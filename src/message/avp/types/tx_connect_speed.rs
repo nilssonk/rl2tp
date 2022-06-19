@@ -10,6 +10,7 @@ impl TxConnectSpeed {
     const ATTRIBUTE_TYPE: u16 = 24;
     const LENGTH: usize = 4;
 
+    #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete TxConnectSpeed AVP encountered");
