@@ -14,11 +14,9 @@ impl BearerCapabilities {
         let da_bit = (digital_access_supported as u32) << 6;
         let aa_bit = (analog_access_supported as u32) << 7;
 
-        Self::from_raw(da_bit | aa_bit)
-    }
-
-    pub fn from_raw(data: u32) -> Self {
-        Self { data }
+        Self {
+            data: da_bit | aa_bit,
+        }
     }
 
     #[inline]
@@ -28,7 +26,7 @@ impl BearerCapabilities {
         }
 
         let data = unsafe { reader.read_u32_be_unchecked() };
-        Ok(Self::from_raw(data))
+        Ok(Self { data })
     }
 
     pub fn is_analog_access_supported(&self) -> bool {

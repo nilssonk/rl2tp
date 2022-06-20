@@ -1203,7 +1203,7 @@ read_tests_extended![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::BearerCapabilities(types::BearerCapabilities::from_raw(0x000000c0))
+            AVP::BearerCapabilities(types::BearerCapabilities::new(true,true))
         ],
     } => |avp: AVP| {
         match avp {
@@ -1240,7 +1240,7 @@ read_tests_extended![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::OutgoingCallRequest),
-            AVP::BearerType(types::BearerType::from_raw(0x000000c0))
+            AVP::BearerType(types::BearerType::new(true, true))
         ],
     } => |avp: AVP| {
         match avp {
