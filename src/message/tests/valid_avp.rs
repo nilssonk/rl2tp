@@ -8,7 +8,7 @@ macro_rules! read_tests {
         #[test]
         fn $name() {
             let data = $input;
-            let result = Message::try_read(
+            let result = Message::try_read_validate(
                 &mut SliceReader::from(&data),
                 ValidationOptions {
                     reserved: ValidateReserved::Yes,
@@ -27,7 +27,7 @@ macro_rules! read_tests_extended {
         #[test]
         fn $name() {
             let data = $input;
-            let mut result = Message::try_read(&mut SliceReader::from(&data),
+            let mut result = Message::try_read_validate(&mut SliceReader::from(&data),
                 ValidationOptions {
                     reserved: ValidateReserved::Yes,
                     version: ValidateVersion::Yes,

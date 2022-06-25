@@ -45,18 +45,34 @@ pub enum ValidateUnused {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ValidationOptions {
-    reserved: ValidateReserved,
-    version: ValidateVersion,
-    unused: ValidateUnused,
+    pub reserved: ValidateReserved,
+    pub version: ValidateVersion,
+    pub unused: ValidateUnused,
 }
 
 impl<'a> Message<'a> {
     const PROTOCOL_VERSION: u8 = 2;
 
     /// # Summary
+    /// Attempt to read a `Message` using a `Reader`.
+    ///
+    /// Note: Only validation of the protocol version will take place.
+    #[inline]
+    pub fn try_read<'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+        Self::try_read_validate(
+            reader,
+            ValidationOptions {
+                reserved: ValidateReserved::No,
+                version: ValidateVersion::Yes,
+                unused: ValidateUnused::No,
+            },
+        )
+    }
+
+    /// # Summary
     /// Attempt to read a `Message` using a `Reader`. User-supplied `ValidationOptions` offer a way to ignore certain protocol mandates.
     #[inline]
-    pub fn try_read<'b>(
+    pub fn try_read_validate<'b>(
         reader: &'b mut impl Reader<'a>,
         validation_options: ValidationOptions,
     ) -> ResultStr<Self> {
