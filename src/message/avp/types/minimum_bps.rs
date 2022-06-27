@@ -28,6 +28,13 @@ impl From<u32> for MinimumBps {
     }
 }
 
+impl From<MinimumBps> for u32 {
+    #[inline]
+    fn from(value: MinimumBps) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for MinimumBps {
     #[inline]
     fn get_length(&self) -> usize {

@@ -28,6 +28,13 @@ impl From<u64> for TieBreaker {
     }
 }
 
+impl From<TieBreaker> for u64 {
+    #[inline]
+    fn from(value: TieBreaker) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for TieBreaker {
     #[inline]
     fn get_length(&self) -> usize {
