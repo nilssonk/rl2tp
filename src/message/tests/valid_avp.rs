@@ -322,7 +322,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::AssignedTunnelId(types::AssignedTunnelId { value: 0xdead })
+            AVP::AssignedTunnelId(0xdead.into())
         ],
     },
     receive_window_size:
@@ -352,7 +352,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::ReceiveWindowSize(types::ReceiveWindowSize { value: 0xdead })
+            AVP::ReceiveWindowSize(0xdead.into())
         ],
     },
     challenge:
@@ -484,7 +484,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::CallDisconnectNotify),
-            AVP::AssignedSessionId(types::AssignedSessionId { value: 0xdead })
+            AVP::AssignedSessionId(0xdead.into())
         ],
     },
     call_serial_number:
@@ -513,7 +513,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::OutgoingCallRequest),
-            AVP::CallSerialNumber(types::CallSerialNumber { value: 0xdeadbeef })
+            AVP::CallSerialNumber(0xdeadbeef.into())
         ],
     },
     minimum_bps:
@@ -542,7 +542,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::OutgoingCallRequest),
-            AVP::MinimumBps(types::MinimumBps { value: 0xdeadbeef })
+            AVP::MinimumBps(0xdeadbeef.into())
         ],
     },
     maximum_bps:
@@ -571,7 +571,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::OutgoingCallRequest),
-            AVP::MaximumBps(types::MaximumBps { value: 0xdeadbeef })
+            AVP::MaximumBps(0xdeadbeef.into())
         ],
     },
     called_number:
@@ -693,7 +693,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::TxConnectSpeed(types::TxConnectSpeed { value: 0xdeadbeef })
+            AVP::TxConnectSpeed(0xdeadbeef.into())
         ],
     },
     rx_connect_speed:
@@ -722,7 +722,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::RxConnectSpeed(types::RxConnectSpeed { value: 0xdeadbeef })
+            AVP::RxConnectSpeed(0xdeadbeef.into())
         ],
     },
     physical_channel_id:
@@ -1025,7 +1025,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::ProxyAuthenId(types::ProxyAuthenId{value:0xff})
+            AVP::ProxyAuthenId(0xff.into())
         ],
     },
     proxy_authen_response:
