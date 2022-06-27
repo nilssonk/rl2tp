@@ -28,6 +28,13 @@ impl From<u16> for ReceiveWindowSize {
     }
 }
 
+impl From<ReceiveWindowSize> for u16 {
+    #[inline]
+    fn from(value: ReceiveWindowSize) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for ReceiveWindowSize {
     #[inline]
     fn get_length(&self) -> usize {

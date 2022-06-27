@@ -28,6 +28,13 @@ impl From<u16> for AssignedSessionId {
     }
 }
 
+impl From<AssignedSessionId> for u16 {
+    #[inline]
+    fn from(value: AssignedSessionId) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for AssignedSessionId {
     #[inline]
     fn get_length(&self) -> usize {

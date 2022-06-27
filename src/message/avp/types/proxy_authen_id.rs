@@ -31,6 +31,20 @@ impl QueryableAVP for ProxyAuthenId {
     }
 }
 
+impl From<u8> for ProxyAuthenId {
+    #[inline]
+    fn from(value: u8) -> Self {
+        Self { value }
+    }
+}
+
+impl From<ProxyAuthenId> for u8 {
+    #[inline]
+    fn from(value: ProxyAuthenId) -> Self {
+        value.value
+    }
+}
+
 impl WritableAVP for ProxyAuthenId {
     #[inline]
     unsafe fn write(&self, writer: &mut impl Writer) {

@@ -28,6 +28,13 @@ impl From<u32> for TxConnectSpeed {
     }
 }
 
+impl From<TxConnectSpeed> for u32 {
+    #[inline]
+    fn from(value: TxConnectSpeed) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for TxConnectSpeed {
     #[inline]
     fn get_length(&self) -> usize {

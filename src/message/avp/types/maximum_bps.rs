@@ -28,6 +28,13 @@ impl From<u32> for MaximumBps {
     }
 }
 
+impl From<MaximumBps> for u32 {
+    #[inline]
+    fn from(value: MaximumBps) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for MaximumBps {
     #[inline]
     fn get_length(&self) -> usize {
