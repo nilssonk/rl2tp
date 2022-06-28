@@ -21,6 +21,18 @@ impl HostName {
     }
 }
 
+impl From<Vec<u8>> for HostName {
+    fn from(value: Vec<u8>) -> Self {
+        Self { value }
+    }
+}
+
+impl From<HostName> for Vec<u8> {
+    fn from(value: HostName) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for HostName {
     #[inline]
     fn get_length(&self) -> usize {

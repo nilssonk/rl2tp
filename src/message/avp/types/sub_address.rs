@@ -23,6 +23,18 @@ impl SubAddress {
     }
 }
 
+impl From<String> for SubAddress {
+    fn from(value: String) -> Self {
+        Self { value }
+    }
+}
+
+impl From<SubAddress> for String {
+    fn from(value: SubAddress) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for SubAddress {
     #[inline]
     fn get_length(&self) -> usize {

@@ -23,6 +23,18 @@ impl CalledNumber {
     }
 }
 
+impl From<String> for CalledNumber {
+    fn from(value: String) -> Self {
+        Self { value }
+    }
+}
+
+impl From<CalledNumber> for String {
+    fn from(value: CalledNumber) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for CalledNumber {
     #[inline]
     fn get_length(&self) -> usize {

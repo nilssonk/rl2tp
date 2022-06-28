@@ -21,6 +21,18 @@ impl InitialReceivedLcpConfReq {
     }
 }
 
+impl From<Vec<u8>> for InitialReceivedLcpConfReq {
+    fn from(value: Vec<u8>) -> Self {
+        Self { value }
+    }
+}
+
+impl From<InitialReceivedLcpConfReq> for Vec<u8> {
+    fn from(value: InitialReceivedLcpConfReq) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for InitialReceivedLcpConfReq {
     #[inline]
     fn get_length(&self) -> usize {

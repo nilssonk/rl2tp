@@ -100,9 +100,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::RandomVector(types::RandomVector {
-                value: [0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::RandomVector([0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     result_code:
@@ -260,9 +258,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::HostName(types::HostName {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::HostName(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     vendor_name:
@@ -291,9 +287,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::VendorName(types::VendorName {
-                value: "Test vendor".to_owned()
-            })
+            AVP::VendorName("Test vendor".to_owned().into()),
         ],
     },
     assigned_tunnel_id:
@@ -381,9 +375,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::Challenge(types::Challenge {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::Challenge(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     challenge_response:
@@ -414,12 +406,12 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::StartControlConnectionRequest),
-            AVP::ChallengeResponse(types::ChallengeResponse {
-                data: [
-                    0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef,
-                    0xde, 0xad, 0xbe, 0xef
-                ]
-            })
+            AVP::ChallengeResponse(
+                [0xde, 0xad, 0xbe, 0xef,
+                0xde, 0xad, 0xbe, 0xef,
+                0xde, 0xad, 0xbe, 0xef,
+                0xde, 0xad, 0xbe, 0xef].into()
+            ),
         ],
     },
     q931_cause_code:
@@ -600,9 +592,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::OutgoingCallRequest),
-            AVP::CalledNumber(types::CalledNumber {
-                value: "Test number".to_owned()
-            })
+            AVP::CalledNumber("Test number".to_owned().into()),
         ],
     },
     calling_number:
@@ -631,9 +621,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallRequest),
-            AVP::CallingNumber(types::CallingNumber {
-                value: "Test number".to_owned()
-            })
+            AVP::CallingNumber("Test number".to_owned().into()),
         ],
     },
     sub_address:
@@ -662,9 +650,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallRequest),
-            AVP::SubAddress(types::SubAddress {
-                value: "Test address".to_owned()
-            })
+            AVP::SubAddress("Test address".to_owned().into()),
         ],
     },
     tx_connect_speed:
@@ -751,9 +737,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallRequest),
-            AVP::PhysicalChannelId(types::PhysicalChannelId {
-                value: [0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::PhysicalChannelId([0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     private_group_id:
@@ -782,9 +766,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::PrivateGroupId(types::PrivateGroupId {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::PrivateGroupId(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     sequencing_required:
@@ -841,9 +823,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::InitialReceivedLcpConfReq(types::InitialReceivedLcpConfReq {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::InitialReceivedLcpConfReq(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     last_sent_lcp_conf_req:
@@ -872,9 +852,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::LastSentLcpConfReq(types::LastSentLcpConfReq {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::LastSentLcpConfReq(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     last_received_lcp_conf_req:
@@ -903,9 +881,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::LastReceivedLcpConfReq(types::LastReceivedLcpConfReq {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::LastReceivedLcpConfReq(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     proxy_authen_type:
@@ -963,9 +939,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::ProxyAuthenName(types::ProxyAuthenName {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::ProxyAuthenName(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     proxy_authen_challenge:
@@ -994,9 +968,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::ProxyAuthenChallenge(types::ProxyAuthenChallenge {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::ProxyAuthenChallenge(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     proxy_authen_id:
@@ -1054,9 +1026,7 @@ read_tests![
         nr: 5,
         avps: vec![
             AVP::MessageType(types::MessageType::IncomingCallConnected),
-            AVP::ProxyAuthenResponse(types::ProxyAuthenResponse {
-                value: vec![0xde, 0xad, 0xbe, 0xef]
-            })
+            AVP::ProxyAuthenResponse(vec![0xde, 0xad, 0xbe, 0xef].into()),
         ],
     },
     call_errors:
