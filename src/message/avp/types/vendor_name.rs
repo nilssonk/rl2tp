@@ -23,6 +23,18 @@ impl VendorName {
     }
 }
 
+impl From<String> for VendorName {
+    fn from(value: String) -> Self {
+        Self { value }
+    }
+}
+
+impl From<VendorName> for String {
+    fn from(value: VendorName) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for VendorName {
     #[inline]
     fn get_length(&self) -> usize {

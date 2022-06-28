@@ -21,6 +21,18 @@ impl ProxyAuthenName {
     }
 }
 
+impl From<Vec<u8>> for ProxyAuthenName {
+    fn from(value: Vec<u8>) -> Self {
+        Self { value }
+    }
+}
+
+impl From<ProxyAuthenName> for Vec<u8> {
+    fn from(value: ProxyAuthenName) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for ProxyAuthenName {
     #[inline]
     fn get_length(&self) -> usize {

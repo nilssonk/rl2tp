@@ -21,6 +21,18 @@ impl Challenge {
     }
 }
 
+impl From<Vec<u8>> for Challenge {
+    fn from(value: Vec<u8>) -> Self {
+        Self { value }
+    }
+}
+
+impl From<Challenge> for Vec<u8> {
+    fn from(value: Challenge) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for Challenge {
     #[inline]
     fn get_length(&self) -> usize {

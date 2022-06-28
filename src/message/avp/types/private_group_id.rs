@@ -21,6 +21,18 @@ impl PrivateGroupId {
     }
 }
 
+impl From<Vec<u8>> for PrivateGroupId {
+    fn from(value: Vec<u8>) -> Self {
+        Self { value }
+    }
+}
+
+impl From<PrivateGroupId> for Vec<u8> {
+    fn from(value: PrivateGroupId) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for PrivateGroupId {
     #[inline]
     fn get_length(&self) -> usize {

@@ -1,16 +1,16 @@
 use crate::common::{Reader, ResultStr, Writer};
 use crate::message::avp::{QueryableAVP, WritableAVP};
 
-const G_LENGTH: usize = 4;
+const G_PHYSICAL_CHANNEL_ID_LENGTH: usize = 4;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PhysicalChannelId {
-    pub value: [u8; G_LENGTH],
+    pub value: [u8; G_PHYSICAL_CHANNEL_ID_LENGTH],
 }
 
 impl PhysicalChannelId {
     const ATTRIBUTE_TYPE: u16 = 25;
-    const LENGTH: usize = G_LENGTH;
+    const LENGTH: usize = G_PHYSICAL_CHANNEL_ID_LENGTH;
 
     #[inline]
     pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
@@ -26,6 +26,18 @@ impl PhysicalChannelId {
         };
 
         Ok(Self { value })
+    }
+}
+
+impl From<[u8; G_PHYSICAL_CHANNEL_ID_LENGTH]> for PhysicalChannelId {
+    fn from(value: [u8; G_PHYSICAL_CHANNEL_ID_LENGTH]) -> Self {
+        Self { value }
+    }
+}
+
+impl From<PhysicalChannelId> for [u8; G_PHYSICAL_CHANNEL_ID_LENGTH] {
+    fn from(value: PhysicalChannelId) -> Self {
+        value.value
     }
 }
 

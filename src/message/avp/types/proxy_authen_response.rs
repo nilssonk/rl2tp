@@ -21,6 +21,18 @@ impl ProxyAuthenResponse {
     }
 }
 
+impl From<Vec<u8>> for ProxyAuthenResponse {
+    fn from(value: Vec<u8>) -> Self {
+        Self { value }
+    }
+}
+
+impl From<ProxyAuthenResponse> for Vec<u8> {
+    fn from(value: ProxyAuthenResponse) -> Self {
+        value.value
+    }
+}
+
 impl QueryableAVP for ProxyAuthenResponse {
     #[inline]
     fn get_length(&self) -> usize {
