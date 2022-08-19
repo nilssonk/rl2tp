@@ -30,17 +30,17 @@ pub struct DataMessage<'a> {
 impl<'a> DataMessage<'a> {
     #[inline]
     pub(crate) fn try_read<'b>(flags: Flags, reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
-        let mut minimal_length = 4;
+        let mut minimal_length_minus_flags = 4;
         if flags.has_length() {
-            minimal_length += 2;
+            minimal_length_minus_flags += 2;
         }
         if flags.has_ns_nr() {
-            minimal_length += 4;
+            minimal_length_minus_flags += 4;
         }
         if flags.has_offset() {
-            minimal_length += 4;
+            minimal_length_minus_flags += 4;
         }
-        if reader.len() < minimal_length {
+        if reader.len() < minimal_length_minus_flags {
             return Err("Incomplete data message header encountered");
         }
 
@@ -61,7 +61,6 @@ impl<'a> DataMessage<'a> {
         } else {
             None
         };
-
         if flags.has_offset() {
             let offset_size = unsafe { reader.read_u16_be_unchecked() as usize };
             if reader.len() < offset_size {
@@ -70,7 +69,22 @@ impl<'a> DataMessage<'a> {
             reader.skip_bytes(offset_size);
         }
 
-        let data = reader.peek_bytes(reader.len())?;
+        let payload_length;
+        if let Some(length) = maybe_length {
+            let minimal_length = minimal_length_minus_flags + 2;
+            if length as usize > reader.len() + minimal_length {
+                return Err("Incomplete data message payload encountered");
+            }
+            payload_length = length as usize;
+        } else {
+            payload_length = reader.len();
+        }
+
+        if reader.is_empty() {
+            return Err("Empty data message payload encountered");
+        }
+
+        let data = reader.peek_bytes(payload_length)?;
 
         Ok(DataMessage {
             is_prioritized: false,

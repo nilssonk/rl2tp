@@ -58,7 +58,13 @@ impl ControlMessage {
         let ns = unsafe { reader.read_u16_be_unchecked() };
         let nr = unsafe { reader.read_u16_be_unchecked() };
 
-        let avp_and_err = AVP::try_read_greedy(reader);
+        const FIXED_LENGTH: usize = 12;
+        if length as usize > reader.len() + FIXED_LENGTH {
+            return Err("Incomplete control message payload encountered");
+        }
+
+        let mut avp_reader = reader.subreader(length as usize - FIXED_LENGTH as usize);
+        let avp_and_err = AVP::try_read_greedy(&mut avp_reader);
 
         if let Some(first) = avp_and_err.first() {
             match first {
