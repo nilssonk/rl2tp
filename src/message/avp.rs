@@ -11,6 +11,8 @@ pub mod types;
 use enum_dispatch::enum_dispatch;
 
 use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
+use core::borrow::Borrow;
+use std::ops::DerefMut;
 
 /// # Summary
 /// An `AVP` is a representation of an L2TP Attribute Value Pair, of which one or more may be present in a `ControlMessage`.
@@ -75,7 +77,7 @@ pub(crate) trait WritableAVP {
 
 use AVP::*;
 
-fn decode_avp<'a, 'b>(attribute_type: u16, reader: &'b mut impl Reader<'a>) -> ResultStr<AVP> {
+fn decode_avp<T: Borrow<[u8]>>(attribute_type: u16, reader: &mut impl Reader<T>) -> ResultStr<AVP> {
     Ok(match attribute_type {
         0u16 => MessageType(types::MessageType::try_read(reader)?),
         1u16 => ResultCode(types::ResultCode::try_read(reader)?),
@@ -291,7 +293,7 @@ impl AVP {
             }
 
             // Retreive original length, SliceReader implementation of Reader is safe
-            let mut reader = SliceReader::from(chunk_data);
+            let mut reader = SliceReader::from(chunk_data.deref_mut());
             let total_length = unsafe { reader.read_u16_be_unchecked() };
             if !(Header::LENGTH..=Self::MAX_LENGTH).contains(&total_length) {
                 return Err("Invalid original length");
@@ -312,7 +314,7 @@ impl AVP {
     ///
     /// Reading will proceed until the `Reader` is empty or an invalid AVP header length field is encountered.
     #[inline]
-    pub fn try_read_greedy<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Vec<ResultStr<Self>> {
+    pub fn try_read_greedy<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> Vec<ResultStr<Self>> {
         let mut result = Vec::new();
         while let Some(header) = Header::try_read(reader) {
             if header.payload_length as usize > reader.len() {
@@ -328,7 +330,8 @@ impl AVP {
             let avp = if header.flags.is_hidden() {
                 // Hidden AVP
                 let hidden_data = reader
-                    .read_bytes(header.payload_length as usize)
+                    .bytes(header.payload_length as usize)
+                    .map(|x| x.borrow().to_owned())
                     .unwrap_or_default();
                 Ok(Self::Hidden(types::Hidden {
                     attribute_type: header.attribute_type,

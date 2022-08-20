@@ -15,14 +15,15 @@ mod flags;
 use flags::{Flags, MessageFlagType};
 
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 /// # Summary
 /// A `Message` is a representation of an L2TP protocol message. It can be either a `DataMessage`
 /// or a `ControlMessage` and constitutes the outermost container for the protocol.
 #[derive(Debug, Eq, PartialEq)]
-pub enum Message<'a> {
+pub enum Message<T = Vec<u8>> {
     Control(ControlMessage),
-    Data(DataMessage<'a>),
+    Data(DataMessage<T>),
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -50,7 +51,10 @@ pub struct ValidationOptions {
     pub unused: ValidateUnused,
 }
 
-impl<'a> Message<'a> {
+impl<T> Message<T>
+where
+    T: Borrow<[u8]>,
+{
     const PROTOCOL_VERSION: u8 = 2;
 
     /// # Summary
@@ -58,7 +62,7 @@ impl<'a> Message<'a> {
     ///
     /// Note: Only validation of the protocol version will take place.
     #[inline]
-    pub fn try_read<'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         Self::try_read_validate(
             reader,
             ValidationOptions {
@@ -72,8 +76,8 @@ impl<'a> Message<'a> {
     /// # Summary
     /// Attempt to read a `Message` using a `Reader`. User-supplied `ValidationOptions` offer a way to ignore certain protocol mandates.
     #[inline]
-    pub fn try_read_validate<'b>(
-        reader: &'b mut impl Reader<'a>,
+    pub fn try_read_validate(
+        reader: &mut impl Reader<T>,
         validation_options: ValidationOptions,
     ) -> ResultStr<Self> {
         let flags = Flags::read(reader)?;

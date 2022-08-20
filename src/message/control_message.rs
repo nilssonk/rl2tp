@@ -2,6 +2,7 @@ use crate::common::{Reader, ResultStr, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
 use avp::AVP;
+use core::borrow::Borrow;
 
 /// # Summary
 /// A `ControlMessage` is a representation of an L2TP control message which is the primary link control mechanism of the protocol.
@@ -25,10 +26,10 @@ pub struct ControlMessage {
 
 impl ControlMessage {
     #[inline]
-    pub(crate) fn try_read<'a, 'b>(
+    pub(crate) fn try_read<T: Borrow<[u8]>>(
         flags: Flags,
         validation_options: ValidationOptions,
-        reader: &'b mut impl Reader<'a>,
+        reader: &mut impl Reader<T>,
     ) -> ResultStr<Self> {
         if let ValidateUnused::Yes = validation_options.unused {
             if flags.is_prioritized() {

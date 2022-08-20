@@ -1,5 +1,6 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Q931CauseCode {
@@ -13,7 +14,7 @@ impl Q931CauseCode {
     const FIXED_LENGTH: usize = 3;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH as usize {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }
@@ -22,8 +23,9 @@ impl Q931CauseCode {
         let cause_msg = unsafe { reader.read_u8_unchecked() };
 
         let advisory = if !reader.is_empty() {
+            let data = reader.bytes(reader.len())?;
             Some(
-                std::str::from_utf8(reader.peek_bytes(reader.len())?)
+                std::str::from_utf8(data.borrow())
                     .map_err(|_| "Parsing Q931CauseCode advisory message failed")?
                     .to_owned(),
             )

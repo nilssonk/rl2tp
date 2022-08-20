@@ -1,4 +1,5 @@
 use crate::common::{Reader, ResultStr};
+use core::borrow::Borrow;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 #[derive(Clone, Copy, Debug, IntoPrimitive, TryFromPrimitive, Eq, PartialEq)]
@@ -23,16 +24,16 @@ pub struct Error {
 
 impl Error {
     #[inline]
-    pub(crate) unsafe fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub(crate) unsafe fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         let error_raw = reader.read_u16_be_unchecked();
         let error_type = error_raw
             .try_into()
             .map_err(|_| "Invalid ResultCode ErrorType encountered")?;
 
         let error_message = if !reader.is_empty() {
-            let data = reader.peek_bytes(reader.len())?;
+            let data = reader.bytes(reader.len())?;
             Some(
-                std::str::from_utf8(data)
+                std::str::from_utf8(data.borrow())
                     .map_err(|_| "Invalid ResultCode error message encountered")?
                     .to_owned(),
             )

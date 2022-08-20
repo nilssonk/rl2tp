@@ -1,6 +1,6 @@
 use crate::common::ResultStr;
 
-pub trait Reader<'a> {
+pub trait Reader<T> {
     fn is_empty(&self) -> bool;
     fn len(&self) -> usize;
 
@@ -8,9 +8,7 @@ pub trait Reader<'a> {
     where
         Self: Sized;
 
-    fn peek_bytes(&self, length: usize) -> ResultStr<&'a [u8]>;
-
-    fn read_bytes(&mut self, length: usize) -> ResultStr<Vec<u8>>;
+    fn bytes(&mut self, length: usize) -> ResultStr<T>;
 
     /// # Summary
     /// Read an u8

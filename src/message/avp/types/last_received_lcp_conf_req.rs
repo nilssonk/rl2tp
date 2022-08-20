@@ -1,5 +1,6 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LastReceivedLcpConfReq {
@@ -10,13 +11,13 @@ impl LastReceivedLcpConfReq {
     const ATTRIBUTE_TYPE: u16 = 28;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete LastReceivedLcpConfReq AVP encountered");
         }
 
         Ok(Self {
-            value: reader.read_bytes(reader.len())?,
+            value: reader.bytes(reader.len())?.borrow().to_owned(),
         })
     }
 }
