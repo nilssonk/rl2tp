@@ -1,21 +1,28 @@
+/// # Summary
+/// A trait representing an abstract writer.
 pub trait Writer {
-    fn len(&self) -> usize;
+    /// # Summary
+    /// Indicate whether the `Writer` is empty.
     fn is_empty(&self) -> bool;
 
     /// # Summary
-    /// Write a slice of u8.
+    /// Get the number of written bytes.
+    fn len(&self) -> usize;
+
+    /// # Summary
+    /// Write byte slice.
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.
     unsafe fn write_bytes_unchecked(&mut self, bytes: &[u8]);
 
     /// # Summary
-    /// Write a slice of u8 at a given offset.
+    /// Write a byte slice at a given offset.
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.
     unsafe fn write_bytes_unchecked_at(&mut self, bytes: &[u8], offset: usize);
 
     /// # Summary
-    /// Write an u8.
+    /// Write a single u8.
     /// # Safety
     /// This function is marked as unsafe because it offers no error handling mechanism.
     unsafe fn write_u8_unchecked(&mut self, value: u8);
