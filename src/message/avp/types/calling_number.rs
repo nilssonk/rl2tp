@@ -1,5 +1,6 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CallingNumber {
@@ -10,12 +11,13 @@ impl CallingNumber {
     const ATTRIBUTE_TYPE: u16 = 22;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.is_empty() {
             return Err("Incomplete CallingNumber AVP encountered");
         }
 
-        let value = std::str::from_utf8(reader.peek_bytes(reader.len())?)
+        let data = reader.bytes(reader.len())?;
+        let value = std::str::from_utf8(data.borrow())
             .map_err(|_| "Parsing CallingNumber AVP value failed")?
             .to_owned();
 

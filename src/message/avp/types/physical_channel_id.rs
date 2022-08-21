@@ -1,5 +1,6 @@
 use crate::common::{Reader, ResultStr, Writer};
 use crate::message::avp::{QueryableAVP, WritableAVP};
+use core::borrow::Borrow;
 
 const G_PHYSICAL_CHANNEL_ID_LENGTH: usize = 4;
 
@@ -13,14 +14,15 @@ impl PhysicalChannelId {
     const LENGTH: usize = G_PHYSICAL_CHANNEL_ID_LENGTH;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete PhysicalChannelId payload encountered");
         }
 
         let value = unsafe {
             reader
-                .peek_bytes(Self::LENGTH)?
+                .bytes(Self::LENGTH)?
+                .borrow()
                 .try_into()
                 .unwrap_unchecked()
         };

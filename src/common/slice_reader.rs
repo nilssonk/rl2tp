@@ -23,7 +23,7 @@ macro_rules! read_buf_unchecked {
     }};
 }
 
-impl<'a> Reader<'a> for SliceReader<'a> {
+impl<'a> Reader<&'a [u8]> for SliceReader<'a> {
     #[inline]
     fn is_empty(&self) -> bool {
         self.data.is_empty()
@@ -47,17 +47,8 @@ impl<'a> Reader<'a> for SliceReader<'a> {
     }
 
     #[inline]
-    fn peek_bytes(&self, length: usize) -> ResultStr<&'a [u8]> {
-        self.data.get(..length).ok_or("Incomplete data")
-    }
-
-    #[inline]
-    fn read_bytes(&mut self, length: usize) -> ResultStr<Vec<u8>> {
-        let result = self
-            .data
-            .get(..length)
-            .map(|x| x.to_owned())
-            .ok_or("Incomplete data");
+    fn bytes(&mut self, length: usize) -> ResultStr<&'a [u8]> {
+        let result = self.data.get(..length).ok_or("Incomplete data");
         self.data = &self.data[length..];
         result
     }

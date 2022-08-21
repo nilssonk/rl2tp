@@ -1,5 +1,6 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 const G_CHALLENGE_RESPONSE_LENGTH: usize = 16;
 
@@ -13,13 +14,13 @@ impl ChallengeResponse {
     const LENGTH: usize = G_CHALLENGE_RESPONSE_LENGTH;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete ChallengeResponse AVP encountered");
         }
 
         Ok(Self {
-            value: unsafe { reader.peek_bytes(16)?.try_into().unwrap_unchecked() },
+            value: unsafe { reader.bytes(16)?.borrow().try_into().unwrap_unchecked() },
         })
     }
 }

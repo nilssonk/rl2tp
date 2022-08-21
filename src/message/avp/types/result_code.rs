@@ -1,5 +1,6 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 mod code;
 pub use code::*;
@@ -19,7 +20,7 @@ impl ResultCode {
     const ERROR_LENGTH: usize = 2;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < Self::FIXED_LENGTH {
             return Err("Incomplete ResultCode AVP payload encountered");
         }

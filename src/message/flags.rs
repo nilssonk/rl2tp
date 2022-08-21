@@ -49,7 +49,7 @@ impl Flags {
     }
 
     #[inline]
-    pub fn read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < 2 {
             return Err("Incomplete flag section encountered");
         }

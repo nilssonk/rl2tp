@@ -1,6 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct BearerCapabilities {
     data: u32,
@@ -20,7 +19,7 @@ impl BearerCapabilities {
     }
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete BearerCapabilities AVP encountered");
         }

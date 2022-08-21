@@ -1,6 +1,7 @@
 use crate::common::{Reader, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
+use core::borrow::Borrow;
 
 /// # Summary
 /// A `DataMessage` is a representation of an L2TP data message which is the primary data transfer mechanism of the protocol.
@@ -17,19 +18,22 @@ use crate::message::*;
 /// * `offset` - The optional data offset field.
 /// * `data` - A borrowed slice of data belonging to this data message.
 #[derive(Debug, Eq, PartialEq)]
-pub struct DataMessage<'a> {
+pub struct DataMessage<T> {
     pub is_prioritized: bool,
     pub length: Option<u16>,
     pub tunnel_id: u16,
     pub session_id: u16,
     pub ns_nr: Option<(u16, u16)>,
     pub offset: Option<u16>,
-    pub data: &'a [u8],
+    pub data: T,
 }
 
-impl<'a> DataMessage<'a> {
+impl<T> DataMessage<T>
+where
+    T: Borrow<[u8]>,
+{
     #[inline]
-    pub(crate) fn try_read<'b>(flags: Flags, reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub(crate) fn try_read(flags: Flags, reader: &mut impl Reader<T>) -> ResultStr<Self> {
         let mut minimal_length_minus_flags = 4;
         if flags.has_length() {
             minimal_length_minus_flags += 2;
@@ -84,7 +88,7 @@ impl<'a> DataMessage<'a> {
             return Err("Empty data message payload encountered");
         }
 
-        let data = reader.peek_bytes(payload_length)?;
+        let data = reader.bytes(payload_length)?;
 
         Ok(DataMessage {
             is_prioritized: false,
@@ -122,6 +126,6 @@ impl<'a> DataMessage<'a> {
         if let Some(offset) = self.offset {
             writer.write_u16_be_unchecked(offset);
         }
-        writer.write_bytes_unchecked(self.data);
+        writer.write_bytes_unchecked(self.data.borrow());
     }
 }

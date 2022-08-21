@@ -1,5 +1,6 @@
 use crate::avp::{QueryableAVP, WritableAVP};
 use crate::common::{Reader, ResultStr, Writer};
+use core::borrow::Borrow;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Accm {
@@ -12,7 +13,7 @@ impl Accm {
     const LENGTH: usize = 10;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
         if reader.len() < Self::LENGTH {
             return Err("Incomplete Accm AVP encountered");
         }
@@ -20,8 +21,8 @@ impl Accm {
         // Skip reserved
         reader.skip_bytes(2);
 
-        let send_accm = unsafe { reader.read_bytes(4)?.try_into().unwrap_unchecked() };
-        let receive_accm = unsafe { reader.read_bytes(4)?.try_into().unwrap_unchecked() };
+        let send_accm = unsafe { reader.bytes(4)?.borrow().try_into().unwrap_unchecked() };
+        let receive_accm = unsafe { reader.bytes(4)?.borrow().try_into().unwrap_unchecked() };
 
         Ok(Self {
             send_accm,

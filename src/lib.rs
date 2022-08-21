@@ -36,7 +36,7 @@
 //! use rl2tp::{Message, common::VecWriter, avp::{AVP, types::MessageType}};
 //!
 //! let mut w = VecWriter::new();
-//! let msg = Message::Control(rl2tp::ControlMessage {
+//! let msg = Message::<Vec<u8>>::Control(rl2tp::ControlMessage {
 //!     length: 0,
 //!     tunnel_id: 5,
 //!     session_id: 0,
@@ -54,6 +54,7 @@
 //! ```
 //!
 //! use rl2tp::{Message, common::VecWriter};
+//! use core::borrow::Borrow;
 //!
 //! let data = vec![0xde,0xad,0xbe,0xef];
 //!
@@ -65,7 +66,7 @@
 //!     session_id: 0,
 //!     ns_nr: None,
 //!     offset: None,
-//!     data: &data,
+//!     data: data.borrow(),
 //! });
 //! unsafe { msg.write(&mut w) };
 //! ```

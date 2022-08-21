@@ -15,7 +15,7 @@ impl Header {
     pub const LENGTH: u16 = 6;
 
     #[inline]
-    pub fn try_read<'a, 'b>(reader: &'b mut impl Reader<'a>) -> Option<Self> {
+    pub fn try_read<T>(reader: &mut impl Reader<T>) -> Option<Self> {
         // Note: Subsequent unsafe code depends on this check
         if reader.len() < Self::LENGTH as usize {
             return None;
