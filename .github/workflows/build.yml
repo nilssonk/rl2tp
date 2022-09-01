@@ -1,4 +1,4 @@
-name: Build, Lint and Test
+name: Build, Lint and MiriTest
 on: [push]
 jobs:
   Build-Lint-Test:
@@ -11,6 +11,6 @@ jobs:
       - name: Clippy
         run: |
           cargo clippy --features=fail-on-warnings
-      - name: Test
+      - name: MiriTest
         run: |
-          cargo test --features=fail-on-warnings
+          cargo miri test --features=fail-on-warnings
