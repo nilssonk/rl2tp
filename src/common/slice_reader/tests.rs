@@ -10,6 +10,7 @@ fn read_integers() {
     ];
     let mut r = SliceReader::from(&input);
 
+    assert_eq!(r.len(), input.len());
     unsafe {
         assert_eq!(r.read_u8_unchecked(), 0x00);
         assert_eq!(r.read_u16_be_unchecked(), 0x0102);
@@ -26,7 +27,7 @@ fn subreader() {
     ];
     let mut r = SliceReader::from(&input);
     assert!(!r.is_empty());
-    assert_eq!(r.len(), 7);
+    assert_eq!(r.len(), input.len());
 
     let mut r8 = r.subreader(1);
     let mut r16 = r.subreader(2);
