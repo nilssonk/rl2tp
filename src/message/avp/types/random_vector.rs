@@ -6,7 +6,7 @@ const G_RANDOM_VECTOR_LENGTH: usize = 4;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct RandomVector {
-    pub value: [u8; G_RANDOM_VECTOR_LENGTH as usize],
+    pub value: [u8; G_RANDOM_VECTOR_LENGTH],
 }
 
 impl RandomVector {

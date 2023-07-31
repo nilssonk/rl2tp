@@ -15,7 +15,7 @@ impl Q931CauseCode {
 
     #[inline]
     pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
-        if reader.len() < Self::FIXED_LENGTH as usize {
+        if reader.len() < Self::FIXED_LENGTH {
             return Err("Incomplete Q931CauseCode AVP encountered");
         }
 

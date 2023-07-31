@@ -64,7 +64,7 @@ impl ControlMessage {
             return Err("Incomplete control message payload encountered");
         }
 
-        let mut avp_reader = reader.subreader(length as usize - FIXED_LENGTH as usize);
+        let mut avp_reader = reader.subreader(length as usize - FIXED_LENGTH);
         let avp_and_err = AVP::try_read_greedy(&mut avp_reader);
 
         if let Some(first) = avp_and_err.first() {
@@ -75,7 +75,7 @@ impl ControlMessage {
         }
 
         if avp_and_err.iter().any(|x| {
-            println!("{:?}", x);
+            println!("{x:?}");
             x.is_err()
         }) {
             // @TODO: Better error reporting

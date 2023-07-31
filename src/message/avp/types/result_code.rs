@@ -28,7 +28,7 @@ impl ResultCode {
         let code_raw = unsafe { reader.read_u16_be_unchecked() };
         let code = CodeValue::from(code_raw);
 
-        let error = if reader.len() >= Self::ERROR_LENGTH as usize {
+        let error = if reader.len() >= Self::ERROR_LENGTH {
             Some(unsafe { Error::try_read(reader)? })
         } else {
             None
