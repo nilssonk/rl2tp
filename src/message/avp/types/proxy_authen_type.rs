@@ -42,8 +42,8 @@ impl QueryableAVP for ProxyAuthenType {
 
 impl WritableAVP for ProxyAuthenType {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_u16_be_unchecked((*self).into());
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be((*self).into());
     }
 }

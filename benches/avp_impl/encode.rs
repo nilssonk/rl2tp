@@ -31,7 +31,7 @@ pub(crate) fn avp_encode(c: &mut Criterion) {
 
         let mut tmp_writer = VecWriter::new();
         for avp in test_case.iter() {
-            unsafe { avp.write(&mut tmp_writer) };
+            avp.write(&mut tmp_writer);
         }
         group.throughput(Throughput::Bytes(tmp_writer.data.len() as u64));
 
@@ -42,7 +42,7 @@ pub(crate) fn avp_encode(c: &mut Criterion) {
                 b.iter(|| {
                     let mut writer = VecWriter::new();
                     for avp in data.iter() {
-                        unsafe { avp.write(&mut writer) };
+                        avp.write(&mut writer);
                     }
                     writer.data;
                 });

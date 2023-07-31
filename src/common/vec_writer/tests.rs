@@ -11,7 +11,7 @@ fn write_bytes_len() {
 
     let mut w = VecWriter::new();
 
-    unsafe { w.write_bytes_unchecked(&input) };
+    w.write_bytes(&input);
     assert_eq!(w.len(), input.len());
 }
 
@@ -19,16 +19,16 @@ fn write_bytes_len() {
 fn write_integers_len() {
     let mut w = VecWriter::new();
 
-    unsafe { w.write_u8_unchecked(0x00) };
+    w.write_u8(0x00);
     assert_eq!(w.len(), 1);
 
-    unsafe { w.write_u16_be_unchecked(0x0102) };
+    w.write_u16_be(0x0102);
     assert_eq!(w.len(), 3);
 
-    unsafe { w.write_u32_be_unchecked(0x03040506) };
+    w.write_u32_be(0x03040506);
     assert_eq!(w.len(), 7);
 
-    unsafe { w.write_u64_be_unchecked(0x0708090a0b0c0d0e) };
+    w.write_u64_be(0x0708090a0b0c0d0e);
     assert_eq!(w.len(), 15);
 }
 
@@ -43,7 +43,7 @@ fn write_bytes() {
 
     let mut w = VecWriter::new();
 
-    unsafe { w.write_bytes_unchecked(&input) };
+    w.write_bytes(&input);
     assert_eq!(w.data, input);
 }
 
@@ -51,12 +51,10 @@ fn write_bytes() {
 fn write_integers() {
     let mut w = VecWriter::new();
 
-    unsafe {
-        w.write_u8_unchecked(0x00);
-        w.write_u16_be_unchecked(0x0102);
-        w.write_u32_be_unchecked(0x03040506);
-        w.write_u64_be_unchecked(0x0708090a0b0c0d0e);
-    }
+    w.write_u8(0x00);
+    w.write_u16_be(0x0102);
+    w.write_u32_be(0x03040506);
+    w.write_u64_be(0x0708090a0b0c0d0e);
 
     assert_eq!(
         w.data,

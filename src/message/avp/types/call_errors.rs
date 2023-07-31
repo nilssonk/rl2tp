@@ -51,17 +51,17 @@ impl QueryableAVP for CallErrors {
 
 impl WritableAVP for CallErrors {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
 
         // Reserved
-        writer.write_bytes_unchecked(&[0x00, 0x00]);
+        writer.write_bytes(&[0x00, 0x00]);
 
-        writer.write_u32_be_unchecked(self.crc_errors);
-        writer.write_u32_be_unchecked(self.framing_errors);
-        writer.write_u32_be_unchecked(self.hardware_overruns);
-        writer.write_u32_be_unchecked(self.buffer_overruns);
-        writer.write_u32_be_unchecked(self.timeout_errors);
-        writer.write_u32_be_unchecked(self.alignment_errors);
+        writer.write_u32_be(self.crc_errors);
+        writer.write_u32_be(self.framing_errors);
+        writer.write_u32_be(self.hardware_overruns);
+        writer.write_u32_be(self.buffer_overruns);
+        writer.write_u32_be(self.timeout_errors);
+        writer.write_u32_be(self.alignment_errors);
     }
 }

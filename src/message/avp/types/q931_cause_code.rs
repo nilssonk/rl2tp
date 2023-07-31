@@ -54,12 +54,12 @@ impl QueryableAVP for Q931CauseCode {
 
 impl WritableAVP for Q931CauseCode {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_u16_be_unchecked(self.cause_code);
-        writer.write_u8_unchecked(self.cause_msg);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be(self.cause_code);
+        writer.write_u8(self.cause_msg);
         if let Some(value) = &self.advisory {
-            writer.write_bytes_unchecked(value.as_bytes());
+            writer.write_bytes(value.as_bytes());
         }
     }
 }

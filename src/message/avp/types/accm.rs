@@ -21,8 +21,16 @@ impl Accm {
         // Skip reserved
         reader.skip_bytes(2);
 
-        let send_accm = unsafe { reader.bytes(4)?.borrow().try_into().unwrap_unchecked() };
-        let receive_accm = unsafe { reader.bytes(4)?.borrow().try_into().unwrap_unchecked() };
+        let mut get_chunk = || {
+            reader
+                .bytes(4)?
+                .borrow()
+                .try_into()
+                .map_err(|_| "Insufficient data")
+        };
+
+        let send_accm = get_chunk()?;
+        let receive_accm = get_chunk()?;
 
         Ok(Self {
             send_accm,
@@ -40,13 +48,13 @@ impl QueryableAVP for Accm {
 
 impl WritableAVP for Accm {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
 
         // Reserved
-        writer.write_bytes_unchecked(&[0x00, 0x00]);
+        writer.write_bytes(&[0x00, 0x00]);
 
-        writer.write_bytes_unchecked(&self.send_accm);
-        writer.write_bytes_unchecked(&self.receive_accm);
+        writer.write_bytes(&self.send_accm);
+        writer.write_bytes(&self.receive_accm);
     }
 }

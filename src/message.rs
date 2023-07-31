@@ -107,11 +107,8 @@ where
 
     /// # Summary
     /// Write a `Message` using a mutable `Writer`.
-    ///
-    /// # Safety
-    /// This function is marked as unsafe because the `Writer` trait offers no error handling mechanism.
     #[inline]
-    pub unsafe fn write(&self, writer: &mut impl Writer) {
+    pub fn write(&self, writer: &mut impl Writer) {
         match self {
             Message::Control(control) => control.write(Self::PROTOCOL_VERSION, writer),
             Message::Data(data) => data.write(Self::PROTOCOL_VERSION, writer),

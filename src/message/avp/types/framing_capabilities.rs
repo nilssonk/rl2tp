@@ -49,8 +49,8 @@ impl QueryableAVP for FramingCapabilities {
 
 impl WritableAVP for FramingCapabilities {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_u32_be_unchecked(self.data);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_u32_be(self.data);
     }
 }

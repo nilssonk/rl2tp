@@ -46,8 +46,8 @@ impl QueryableAVP for VendorName {
 
 impl WritableAVP for VendorName {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_bytes_unchecked(self.value.as_bytes());
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes(self.value.as_bytes());
     }
 }

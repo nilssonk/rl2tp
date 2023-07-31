@@ -47,8 +47,8 @@ impl From<ProxyAuthenId> for u8 {
 
 impl WritableAVP for ProxyAuthenId {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_bytes_unchecked(&[0x00, self.value]);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes(&[0x00, self.value]);
     }
 }

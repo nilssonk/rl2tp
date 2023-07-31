@@ -96,7 +96,7 @@ impl ControlMessage {
     }
 
     #[inline]
-    pub(crate) unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
+    pub(crate) fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
         let start_position = writer.len();
         let flags = Flags::new(
             MessageFlagType::Control,
@@ -112,13 +112,13 @@ impl ControlMessage {
         let length_position = writer.len();
 
         // Dummy octets to be overwritten
-        writer.write_bytes_unchecked(&[0, 0]);
+        writer.write_bytes(&[0, 0]);
 
         // Write rest of header
-        writer.write_u16_be_unchecked(self.tunnel_id);
-        writer.write_u16_be_unchecked(self.session_id);
-        writer.write_u16_be_unchecked(self.ns);
-        writer.write_u16_be_unchecked(self.nr);
+        writer.write_u16_be(self.tunnel_id);
+        writer.write_u16_be(self.session_id);
+        writer.write_u16_be(self.ns);
+        writer.write_u16_be(self.nr);
 
         // Write payload
         for avp in self.avps.iter() {
@@ -131,6 +131,6 @@ impl ControlMessage {
 
         // Overwrite dummy octets
         assert!(length <= u16::MAX as usize);
-        writer.write_bytes_unchecked_at(&(length as u16).to_be_bytes(), length_position);
+        writer.write_bytes_at(&(length as u16).to_be_bytes(), length_position);
     }
 }
