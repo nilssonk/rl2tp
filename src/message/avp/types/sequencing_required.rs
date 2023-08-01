@@ -17,7 +17,7 @@ impl QueryableAVP for SequencingRequired {
 
 impl WritableAVP for SequencingRequired {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
     }
 }

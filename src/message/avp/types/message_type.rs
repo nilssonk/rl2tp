@@ -87,8 +87,8 @@ impl QueryableAVP for MessageType {
 
 impl WritableAVP for MessageType {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_u16_be_unchecked(self.get_code())
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be(self.get_code())
     }
 }

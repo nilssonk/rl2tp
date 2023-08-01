@@ -43,8 +43,8 @@ impl QueryableAVP for LastSentLcpConfReq {
 
 impl WritableAVP for LastSentLcpConfReq {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_bytes_unchecked(&self.value);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes(&self.value);
     }
 }

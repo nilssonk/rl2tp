@@ -102,7 +102,7 @@ where
     }
 
     #[inline]
-    pub(crate) unsafe fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
+    pub(crate) fn write(&self, protocol_version: u8, writer: &mut impl Writer) {
         let flags = Flags::new(
             MessageFlagType::Data,
             self.length.is_some(),
@@ -114,18 +114,18 @@ where
         flags.write(writer);
 
         if let Some(length) = self.length {
-            writer.write_u16_be_unchecked(length);
+            writer.write_u16_be(length);
         }
 
-        writer.write_u16_be_unchecked(self.tunnel_id);
-        writer.write_u16_be_unchecked(self.session_id);
+        writer.write_u16_be(self.tunnel_id);
+        writer.write_u16_be(self.session_id);
         if let Some((ns, nr)) = self.ns_nr {
-            writer.write_u16_be_unchecked(ns);
-            writer.write_u16_be_unchecked(nr);
+            writer.write_u16_be(ns);
+            writer.write_u16_be(nr);
         }
         if let Some(offset) = self.offset {
-            writer.write_u16_be_unchecked(offset);
+            writer.write_u16_be(offset);
         }
-        writer.write_bytes_unchecked(self.data.borrow());
+        writer.write_bytes(self.data.borrow());
     }
 }

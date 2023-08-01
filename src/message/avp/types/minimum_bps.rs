@@ -44,8 +44,8 @@ impl QueryableAVP for MinimumBps {
 
 impl WritableAVP for MinimumBps {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_u32_be_unchecked(self.value);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_u32_be(self.value);
     }
 }

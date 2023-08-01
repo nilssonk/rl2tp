@@ -72,7 +72,7 @@ pub(crate) trait QueryableAVP {
 
 #[enum_dispatch(AVP)]
 pub(crate) trait WritableAVP {
-    unsafe fn write(&self, writer: &mut impl Writer);
+    fn write(&self, writer: &mut impl Writer);
 }
 
 use AVP::*;
@@ -153,8 +153,7 @@ impl AVP {
 
                 let mut writer = VecWriter::new();
 
-                // The Writer trait is unsafe in general but we know that the VecWriter implementation is safe
-                unsafe { WritableAVP::write(avp, &mut writer) };
+                WritableAVP::write(avp, &mut writer);
                 assert!(writer.len() >= Self::ATTRIBUTE_TYPE_SIZE);
 
                 // Extract Attribute Type
@@ -168,7 +167,7 @@ impl AVP {
                 // Overwrite Attribute Type with AVP length
                 assert!(length <= Self::MAX_LENGTH as usize);
                 let length_octets = (length as u16).to_be_bytes();
-                unsafe { writer.write_bytes_unchecked_at(&length_octets, 0) };
+                writer.write_bytes_at(&length_octets, 0);
 
                 let mut input = writer.data;
 
@@ -370,11 +369,8 @@ impl AVP {
 
     /// # Summary
     /// Write an `AVP` using a `Writer`.
-    ///
-    /// # Safety
-    /// This function is marked as unsafe because it offers no error handling mechanism.
     #[inline]
-    pub unsafe fn write(&self, writer: &mut impl Writer) {
+    pub fn write(&self, writer: &mut impl Writer) {
         const VENDOR_ID: u16 = 0;
         const IS_MANDATORY: bool = true;
 
@@ -382,10 +378,10 @@ impl AVP {
         let start_position = writer.len();
 
         // Dummy octets to be overwritten
-        writer.write_bytes_unchecked(&[0, 0]);
+        writer.write_bytes(&[0, 0]);
 
         // Write rest of header
-        writer.write_u16_be_unchecked(VENDOR_ID);
+        writer.write_u16_be(VENDOR_ID);
 
         // Write payload
         WritableAVP::write(self, writer);
@@ -399,6 +395,6 @@ impl AVP {
         let flags_and_length = Self::make_flags_and_length(IS_MANDATORY, is_hidden, length);
 
         // Oerwrite dummy octets
-        writer.write_bytes_unchecked_at(&flags_and_length, start_position);
+        writer.write_bytes_at(&flags_and_length, start_position);
     }
 }

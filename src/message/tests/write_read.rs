@@ -15,7 +15,7 @@ fn empty_control() {
     });
 
     let mut w = VecWriter::new();
-    unsafe { in_msg.write(&mut w) };
+    in_msg.write(&mut w);
 
     assert_eq!(w.data.len(), TOTAL_LENGTH);
 

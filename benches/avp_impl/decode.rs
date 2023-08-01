@@ -16,7 +16,7 @@ fn make_test(size: usize, rng: &mut impl Rng) -> Vec<u8> {
 
     for _ in 0..size {
         let index = rng.gen_range(0..corpus.len());
-        unsafe { corpus[index].write(&mut writer) };
+        corpus[index].write(&mut writer);
     }
 
     writer.data

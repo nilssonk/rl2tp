@@ -20,7 +20,11 @@ impl RandomVector {
         }
 
         Ok(Self {
-            value: unsafe { reader.bytes(4)?.borrow().try_into().unwrap_unchecked() },
+            value: reader
+                .bytes(4)?
+                .borrow()
+                .try_into()
+                .map_err(|_| "Insufficient data")?,
         })
     }
 }
@@ -46,8 +50,8 @@ impl QueryableAVP for RandomVector {
 
 impl WritableAVP for RandomVector {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_bytes_unchecked(&self.value);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_bytes(&self.value);
     }
 }

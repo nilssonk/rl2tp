@@ -16,8 +16,8 @@ impl QueryableAVP for Hidden {
 
 impl WritableAVP for Hidden {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(self.attribute_type);
-        writer.write_bytes_unchecked(&self.value);
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(self.attribute_type);
+        writer.write_bytes(&self.value);
     }
 }

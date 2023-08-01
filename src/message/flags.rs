@@ -44,8 +44,8 @@ impl Flags {
     }
 
     #[inline]
-    pub unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(self.data);
+    pub fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(self.data);
     }
 
     #[inline]

@@ -57,14 +57,14 @@ impl QueryableAVP for ResultCode {
 
 impl WritableAVP for ResultCode {
     #[inline]
-    unsafe fn write(&self, writer: &mut impl Writer) {
-        writer.write_u16_be_unchecked(Self::ATTRIBUTE_TYPE);
-        writer.write_u16_be_unchecked(self.code.into());
+    fn write(&self, writer: &mut impl Writer) {
+        writer.write_u16_be(Self::ATTRIBUTE_TYPE);
+        writer.write_u16_be(self.code.into());
         if let Some(error) = &self.error {
-            writer.write_u16_be_unchecked(error.error_type.into());
+            writer.write_u16_be(error.error_type.into());
 
             if let Some(message) = &error.error_message {
-                writer.write_bytes_unchecked(message.as_bytes());
+                writer.write_bytes(message.as_bytes());
             }
         }
     }

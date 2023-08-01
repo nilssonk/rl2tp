@@ -9,7 +9,7 @@ macro_rules! io_tests {
             // Serialize input
             let input = $input;
             let mut w = VecWriter::new();
-            unsafe { $input.write(&mut w) };
+            $input.write(&mut w);
 
             // Deserialize to output
             let mut r = SliceReader::from(&w.data);
@@ -96,7 +96,7 @@ fn hidden() {
         .clone()
         .hide(&secret, &rv, &length_padding, &alignment_padding);
     let mut w = VecWriter::new();
-    unsafe { hidden.write(&mut w) };
+    hidden.write(&mut w);
 
     println!("{:?}", w.data);
 
