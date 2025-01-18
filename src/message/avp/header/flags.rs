@@ -28,6 +28,6 @@ impl Flags {
     #[allow(dead_code)] // Remove upon first use
     #[inline]
     pub fn reserved_bits_ok(&self) -> bool {
-        (2..6).into_iter().all(|i| !self.get_bit(i))
+        (2..6).all(|i| !self.get_bit(i))
     }
 }
