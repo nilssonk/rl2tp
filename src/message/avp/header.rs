@@ -29,7 +29,7 @@ impl Header {
 
         let msb = (octet1 >> 6) as u16;
         let lsb = octet2 as u16;
-        let length = msb << 8 | lsb;
+        let length = (msb << 8) | lsb;
 
         // The second 2 octets are the Vendor ID
         let vendor_id = unsafe { reader.read_u16_be_unchecked() };
