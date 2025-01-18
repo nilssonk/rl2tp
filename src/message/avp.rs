@@ -10,7 +10,7 @@ pub mod types;
 
 use enum_dispatch::enum_dispatch;
 
-use crate::common::{Reader, ResultStr, SliceReader, VecWriter, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, SliceReader, VecWriter, Writer};
 use core::borrow::Borrow;
 use std::ops::DerefMut;
 
@@ -77,7 +77,57 @@ pub(crate) trait WritableAVP {
 
 use AVP::*;
 
-fn decode_avp<T: Borrow<[u8]>>(attribute_type: u16, reader: &mut impl Reader<T>) -> ResultStr<AVP> {
+pub(crate) fn avp_name(attribute_type: u16) -> String {
+    let result = match attribute_type {
+        0u16 => "MessageType",
+        1u16 => "ResultCode",
+        2u16 => "ProtocolVersion",
+        3u16 => "FramingCapabilities",
+        4u16 => "BearerCapabilities",
+        5u16 => "TieBreaker",
+        6u16 => "FirmwareRevision",
+        7u16 => "HostName",
+        8u16 => "VendorName",
+        9u16 => "AssignedTunnelId",
+        10u16 => "ReceiveWindowSize",
+        11u16 => "Challenge",
+        12u16 => "Q931CauseCode",
+        13u16 => "ChallengeResponse",
+        14u16 => "AssignedSessionId",
+        15u16 => "CallSerialNumber",
+        16u16 => "MinimumBps",
+        17u16 => "MaximumBps",
+        18u16 => "BearerType",
+        19u16 => "FramingType",
+        21u16 => "CalledNumber",
+        22u16 => "CallingNumber",
+        23u16 => "SubAddress",
+        24u16 => "TxConnectSpeed",
+        25u16 => "PhysicalChannelId",
+        26u16 => "InitialReceivedLcpConfReq",
+        27u16 => "LastSentLcpConfReq",
+        28u16 => "LastReceivedLcpConfReq",
+        29u16 => "ProxyAuthenType",
+        30u16 => "ProxyAuthenName",
+        31u16 => "ProxyAuthenChallenge",
+        32u16 => "ProxyAuthenId",
+        33u16 => "ProxyAuthenResponse",
+        34u16 => "CallErrors",
+        35u16 => "Accm",
+        36u16 => "RandomVector",
+        37u16 => "PrivateGroupId",
+        38u16 => "RxConnectSpeed",
+        39u16 => "SequencingRequired",
+        x => return format!("{x}"),
+    };
+
+    result.to_owned()
+}
+
+fn decode_avp<T: Borrow<[u8]>>(
+    attribute_type: u16,
+    reader: &mut impl Reader<T>,
+) -> DecodeResult<AVP> {
     Ok(match attribute_type {
         0u16 => MessageType(types::MessageType::try_read(reader)?),
         1u16 => ResultCode(types::ResultCode::try_read(reader)?),
@@ -118,7 +168,7 @@ fn decode_avp<T: Borrow<[u8]>>(attribute_type: u16, reader: &mut impl Reader<T>)
         37u16 => PrivateGroupId(types::PrivateGroupId::try_read(reader)?),
         38u16 => RxConnectSpeed(types::RxConnectSpeed::try_read(reader)?),
         39u16 => SequencingRequired(types::SequencingRequired::default()),
-        _ => Err("Unknown AVP encountered")?,
+        x => Err(DecodeError::UnknownAvp(x))?,
     })
 }
 
@@ -236,17 +286,17 @@ impl AVP {
     /// # Parameters
     /// * `secret` - A shared secret.
     /// * `random_vector` - A `RandomVector` AVP received from the same source as the `Hidden` AVP to be revealed.
-    pub fn reveal(self, secret: &[u8], random_vector: &types::RandomVector) -> ResultStr<Self> {
+    pub fn reveal(self, secret: &[u8], random_vector: &types::RandomVector) -> DecodeResult<Self> {
         if let Hidden(mut hidden) = self {
             let chunk_size: usize = Self::CRYPTO_CHUNK_SIZE;
 
             let chunk_data = &mut hidden.value;
 
             if chunk_data.is_empty() {
-                return Err("Hidden AVP with empty payload encountered");
+                return Err(DecodeError::EmptyHiddenAVP);
             }
             if chunk_data.len() % chunk_size != 0 {
-                return Err("Hidden AVP with invalid alignment encountered");
+                return Err(DecodeError::MisalignedHiddenAVP);
             }
 
             let n_chunks = chunk_data.len() / chunk_size;
@@ -295,7 +345,7 @@ impl AVP {
             let mut reader = SliceReader::from(chunk_data.deref_mut());
             let total_length = unsafe { reader.read_u16_be_unchecked() };
             if !(Header::LENGTH..=Self::MAX_LENGTH).contains(&total_length) {
-                return Err("Invalid original length");
+                return Err(DecodeError::InvalidOriginalAVPLength(total_length));
             }
             let payload_length = total_length - Header::LENGTH;
 
@@ -313,15 +363,17 @@ impl AVP {
     ///
     /// Reading will proceed until the `Reader` is empty or an invalid AVP header length field is encountered.
     #[inline]
-    pub fn try_read_greedy<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> Vec<ResultStr<Self>> {
+    pub fn try_read_greedy<T: Borrow<[u8]>>(
+        reader: &mut impl Reader<T>,
+    ) -> Vec<DecodeResult<Self>> {
         let mut result = Vec::new();
         while let Some(header) = Header::try_read(reader) {
             if header.payload_length as usize > reader.len() {
-                result.push(Err("AVP with invalid length field encountered"));
+                result.push(Err(DecodeError::InvalidAVPLength(header.payload_length)));
                 break;
             }
             if header.vendor_id != 0 {
-                result.push(Err("AVP with unsupported vendor ID encountered"));
+                result.push(Err(DecodeError::UnsupportedVendorId(header.vendor_id)));
                 reader.skip_bytes(header.payload_length as usize);
                 continue;
             }

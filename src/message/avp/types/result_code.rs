@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 use core::borrow::Borrow;
 
 mod code;
@@ -20,9 +20,9 @@ impl ResultCode {
     const ERROR_LENGTH: usize = 2;
 
     #[inline]
-    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < Self::FIXED_LENGTH {
-            return Err("Incomplete ResultCode AVP payload encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
 
         let code_raw = unsafe { reader.read_u16_be_unchecked() };

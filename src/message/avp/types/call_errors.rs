@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CallErrors {
@@ -16,9 +16,9 @@ impl CallErrors {
     const LENGTH: usize = 26;
 
     #[inline]
-    pub fn try_read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < Self::LENGTH {
-            return Err("Incomplete CallErrors AVP encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
 
         // Skip reserved

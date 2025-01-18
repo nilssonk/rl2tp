@@ -14,7 +14,7 @@ pub use data_message::DataMessage;
 mod flags;
 use flags::{Flags, MessageFlagType};
 
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, Reader, Writer};
 use core::borrow::Borrow;
 
 /// # Summary
@@ -62,7 +62,7 @@ where
     ///
     /// Note: Only validation of the protocol version will take place.
     #[inline]
-    pub fn try_read(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read(reader: &mut impl Reader<T>) -> Result<Self, Vec<DecodeError>> {
         Self::try_read_validate(
             reader,
             ValidationOptions {
@@ -79,24 +79,26 @@ where
     pub fn try_read_validate(
         reader: &mut impl Reader<T>,
         validation_options: ValidationOptions,
-    ) -> ResultStr<Self> {
-        let flags = Flags::read(reader)?;
+    ) -> Result<Self, Vec<DecodeError>> {
+        let flags = Flags::read(reader).map_err(|x| vec![x])?;
 
         if let ValidateVersion::Yes = validation_options.version {
             let version = flags.get_version();
             if version != Self::PROTOCOL_VERSION {
-                return Err("Invalid version encountered");
+                return Err(vec![DecodeError::InvalidVersion(version)]);
             }
         }
 
         if let ValidateReserved::Yes = validation_options.reserved {
             if !flags.reserved_bits_ok() {
-                return Err("Invalid reserved bits encountered");
+                return Err(vec![DecodeError::InvalidReservedBits]);
             }
         }
 
         match flags.get_type() {
-            MessageFlagType::Data => Ok(Message::Data(DataMessage::try_read(flags, reader)?)),
+            MessageFlagType::Data => Ok(Message::Data(
+                DataMessage::try_read(flags, reader).map_err(|x| vec![x])?,
+            )),
             MessageFlagType::Control => Ok(Message::Control(ControlMessage::try_read(
                 flags,
                 validation_options,

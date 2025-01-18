@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 
 use phf::phf_map;
 
@@ -45,15 +45,15 @@ impl MessageType {
     const LENGTH: usize = 2;
 
     #[inline]
-    pub fn try_read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < Self::LENGTH {
-            return Err("Incomplete MessageType AVP payload encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
         let id = unsafe { reader.read_u16_be_unchecked() };
 
         match MESSAGE_CODE_TO_TYPE.get(&id) {
             Some(&t) => Ok(t),
-            None => Err("Unknown MessageType AVP encountered"),
+            None => Err(DecodeError::UnknownMessageType(id)),
         }
     }
 

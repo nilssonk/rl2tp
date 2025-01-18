@@ -42,7 +42,7 @@ fn try_read_validate_data_invalid_version() {
             unused: ValidateUnused::No,
         },
     );
-    assert_eq!(m, Err("Invalid version encountered"));
+    assert_eq!(m, Err(vec![DecodeError::InvalidVersion(0)]));
 }
 
 #[test]
@@ -106,8 +106,5 @@ fn try_read_validate_control_invalid_priority() {
             unused: ValidateUnused::Yes,
         },
     );
-    assert_eq!(
-        m,
-        Err("Control message with forbidden Priority bit encountered")
-    );
+    assert_eq!(m, Err(vec![DecodeError::ForbiddenControlMessagePriority]));
 }

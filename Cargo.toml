@@ -22,6 +22,7 @@ phf = { version = "0.10", features = ["macros"] }
 criterion = { version = "0.3", optional = true }
 once_cell = { version = "1.10", optional = true }
 rand = { version = "0.8", optional = true, features = ["small_rng"] }
+thiserror = "2"
 
 [[bench]]
 name = "avp"
