@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum MessageFlagType {
@@ -49,9 +49,9 @@ impl Flags {
     }
 
     #[inline]
-    pub fn read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn read<T>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < 2 {
-            return Err("Incomplete flag section encountered");
+            return Err(DecodeError::IncompleteFlags);
         }
         let data = unsafe { reader.read_u16_be_unchecked() };
         Ok(Self { data })

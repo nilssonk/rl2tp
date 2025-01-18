@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 use core::borrow::Borrow;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -14,19 +14,21 @@ impl Q931CauseCode {
     const FIXED_LENGTH: usize = 3;
 
     #[inline]
-    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < Self::FIXED_LENGTH {
-            return Err("Incomplete Q931CauseCode AVP encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
 
         let cause_code = unsafe { reader.read_u16_be_unchecked() };
         let cause_msg = unsafe { reader.read_u8_unchecked() };
 
         let advisory = if !reader.is_empty() {
-            let data = reader.bytes(reader.len())?;
+            let data = reader
+                .bytes(reader.len())
+                .ok_or(DecodeError::AVPReadError(Self::ATTRIBUTE_TYPE))?;
             Some(
                 std::str::from_utf8(data.borrow())
-                    .map_err(|_| "Parsing Q931CauseCode advisory message failed")?
+                    .map_err(|_| DecodeError::InvalidUtf8(Self::ATTRIBUTE_TYPE))?
                     .to_owned(),
             )
         } else {

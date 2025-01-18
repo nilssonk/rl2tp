@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
@@ -19,16 +19,16 @@ impl ProxyAuthenType {
     const LENGTH: usize = 2;
 
     #[inline]
-    pub fn try_read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < Self::LENGTH {
-            return Err("Incomplete ProxyAuthenType AVP encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
 
         unsafe {
             reader
                 .read_u16_be_unchecked()
                 .try_into()
-                .map_err(|_| "Unknown ProxyAuthenType encountered")
+                .map_err(|_| DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE))
         }
     }
 }

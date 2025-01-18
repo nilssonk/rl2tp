@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 use core::borrow::Borrow;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -11,14 +11,16 @@ impl VendorName {
     const ATTRIBUTE_TYPE: u16 = 8;
 
     #[inline]
-    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.is_empty() {
-            return Err("Incomplete VendorName AVP encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
 
-        let data = reader.bytes(reader.len())?;
+        let data = reader
+            .bytes(reader.len())
+            .ok_or(DecodeError::AVPReadError(Self::ATTRIBUTE_TYPE))?;
         let value = std::str::from_utf8(data.borrow())
-            .map_err(|_| "Parsing VendorName AVP value failed")?
+            .map_err(|_| DecodeError::InvalidUtf8(Self::ATTRIBUTE_TYPE))?
             .to_owned();
 
         Ok(Self { value })

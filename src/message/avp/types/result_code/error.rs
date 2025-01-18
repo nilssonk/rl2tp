@@ -1,4 +1,5 @@
-use crate::common::{Reader, ResultStr};
+use crate::avp::types::ResultCode;
+use crate::common::{DecodeError, DecodeResult, Reader};
 use core::borrow::Borrow;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
@@ -24,17 +25,21 @@ pub struct Error {
 
 impl Error {
     #[inline]
-    pub(crate) unsafe fn try_read<T: Borrow<[u8]>>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub(crate) unsafe fn try_read<T: Borrow<[u8]>>(
+        reader: &mut impl Reader<T>,
+    ) -> DecodeResult<Self> {
         let error_raw = reader.read_u16_be_unchecked();
         let error_type = error_raw
             .try_into()
-            .map_err(|_| "Invalid ResultCode ErrorType encountered")?;
+            .map_err(|_| DecodeError::InvalidResultCodeErrorType(error_raw))?;
 
         let error_message = if !reader.is_empty() {
-            let data = reader.bytes(reader.len())?;
+            let data = reader
+                .bytes(reader.len())
+                .ok_or(DecodeError::AVPReadError(ResultCode::ATTRIBUTE_TYPE))?;
             Some(
                 std::str::from_utf8(data.borrow())
-                    .map_err(|_| "Invalid ResultCode error message encountered")?
+                    .map_err(|_| DecodeError::InvalidUtf8(ResultCode::ATTRIBUTE_TYPE))?
                     .to_owned(),
             )
         } else {

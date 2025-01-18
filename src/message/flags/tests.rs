@@ -1,5 +1,5 @@
 use super::{Flags, MessageFlagType};
-use crate::common::SliceReader;
+use crate::common::{DecodeError, SliceReader};
 
 #[test]
 fn from_bytes() {
@@ -27,7 +27,7 @@ fn from_bytes() {
     // Incomplete
     {
         let f = Flags::read(&mut SliceReader::from(&vec![0x00]));
-        assert_eq!(f, Err("Incomplete flag section encountered"));
+        assert_eq!(f, Err(DecodeError::IncompleteFlags));
     }
 }
 

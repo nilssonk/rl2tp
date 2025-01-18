@@ -1,5 +1,5 @@
 use crate::avp::{QueryableAVP, WritableAVP};
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MaximumBps {
@@ -11,9 +11,9 @@ impl MaximumBps {
     const LENGTH: usize = 4;
 
     #[inline]
-    pub fn try_read<T>(reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub fn try_read<T>(reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         if reader.len() < Self::LENGTH {
-            return Err("Incomplete MaximumBps AVP encountered");
+            return Err(DecodeError::IncompleteAVP(Self::ATTRIBUTE_TYPE));
         }
 
         let value = unsafe { reader.read_u32_be_unchecked() };

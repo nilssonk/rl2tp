@@ -1,4 +1,4 @@
-use crate::common::{Reader, ResultStr, Writer};
+use crate::common::{DecodeError, Reader, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
 use crate::message::*;
 use avp::AVP;
@@ -30,27 +30,27 @@ impl ControlMessage {
         flags: Flags,
         validation_options: ValidationOptions,
         reader: &mut impl Reader<T>,
-    ) -> ResultStr<Self> {
+    ) -> Result<Self, Vec<DecodeError>> {
         if let ValidateUnused::Yes = validation_options.unused {
             if flags.is_prioritized() {
-                return Err("Control message with forbidden Priority bit encountered");
+                return Err(vec![DecodeError::ForbiddenControlMessagePriority]);
             }
 
             if flags.has_offset() {
-                return Err("Control message with forbidden Offset fields encountered");
+                return Err(vec![DecodeError::ForbiddenControlMessageOffset]);
             }
         }
 
         if !flags.has_length() {
-            return Err("Control message without required Length field encountered");
+            return Err(vec![DecodeError::ControlMessageWithoutLength]);
         }
         if !flags.has_ns_nr() {
-            return Err("Control message without required Sequence fields encountered");
+            return Err(vec![DecodeError::ControlMessageWithoutNsNr]);
         }
 
         const FIXED_LENGTH_MINUS_FLAGS: usize = 10;
         if reader.len() < FIXED_LENGTH_MINUS_FLAGS {
-            return Err("Incomplete control message header encountered");
+            return Err(vec![DecodeError::IncompleteControlMessageHeader]);
         }
 
         let length = unsafe { reader.read_u16_be_unchecked() };
@@ -61,7 +61,7 @@ impl ControlMessage {
 
         const FIXED_LENGTH: usize = 12;
         if length as usize > reader.len() + FIXED_LENGTH {
-            return Err("Incomplete control message payload encountered");
+            return Err(vec![DecodeError::IncompleteControlMessagePayload]);
         }
 
         let mut avp_reader = reader.subreader(length as usize - FIXED_LENGTH);
@@ -70,7 +70,7 @@ impl ControlMessage {
         if let Some(first) = avp_and_err.first() {
             match first {
                 Ok(AVP::MessageType(_)) => (),
-                _ => return Err("First AVP is not a MessageType AVP"),
+                _ => return Err(vec![DecodeError::ControlMessageTypeNotFirst]),
             }
         }
 
@@ -78,9 +78,7 @@ impl ControlMessage {
             println!("{x:?}");
             x.is_err()
         }) {
-            // @TODO: Better error reporting
-            // @TODO: Allow errors?
-            return Err("AVP errors detected in control message");
+            return Err(avp_and_err.into_iter().filter_map(|x| x.err()).collect());
         }
 
         let avps = avp_and_err.into_iter().filter_map(|x| x.ok()).collect();

@@ -1,6 +1,5 @@
-use crate::common::{Reader, Writer};
+use crate::common::{DecodeError, DecodeResult, Reader, Writer};
 use crate::message::flags::{Flags, MessageFlagType};
-use crate::message::*;
 use core::borrow::Borrow;
 
 /// # Summary
@@ -33,7 +32,7 @@ where
     T: Borrow<[u8]>,
 {
     #[inline]
-    pub(crate) fn try_read(flags: Flags, reader: &mut impl Reader<T>) -> ResultStr<Self> {
+    pub(crate) fn try_read(flags: Flags, reader: &mut impl Reader<T>) -> DecodeResult<Self> {
         let mut minimal_length_minus_flags = 4;
         if flags.has_length() {
             minimal_length_minus_flags += 2;
@@ -45,7 +44,7 @@ where
             minimal_length_minus_flags += 4;
         }
         if reader.len() < minimal_length_minus_flags {
-            return Err("Incomplete data message header encountered");
+            return Err(DecodeError::IncompleteDataMessageHeader);
         }
 
         let maybe_length = if flags.has_length() {
@@ -66,18 +65,18 @@ where
             None
         };
         if flags.has_offset() {
-            let offset_size = unsafe { reader.read_u16_be_unchecked() as usize };
-            if reader.len() < offset_size {
-                return Err("Invalid offset size encountered");
+            let offset_size = unsafe { reader.read_u16_be_unchecked() };
+            if reader.len() < offset_size as usize {
+                return Err(DecodeError::InvalidOffset(offset_size));
             }
-            reader.skip_bytes(offset_size);
+            reader.skip_bytes(offset_size as usize);
         }
 
         let payload_length;
         if let Some(length) = maybe_length {
             let minimal_length = minimal_length_minus_flags + 2;
             if length as usize > reader.len() + minimal_length {
-                return Err("Incomplete data message payload encountered");
+                return Err(DecodeError::IncompleteDataMessagePayload);
             }
             payload_length = length as usize;
         } else {
@@ -85,10 +84,12 @@ where
         }
 
         if reader.is_empty() {
-            return Err("Empty data message payload encountered");
+            return Err(DecodeError::EmptyDataMessagePayload);
         }
 
-        let data = reader.bytes(payload_length)?;
+        let data = reader
+            .bytes(payload_length)
+            .ok_or(DecodeError::MessageReadError)?;
 
         Ok(DataMessage {
             is_prioritized: false,

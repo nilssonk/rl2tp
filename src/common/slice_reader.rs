@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use crate::common::{Reader, ResultStr};
+use crate::common::Reader;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SliceReader<'a> {
@@ -47,8 +47,8 @@ impl<'a> Reader<&'a [u8]> for SliceReader<'a> {
     }
 
     #[inline]
-    fn bytes(&mut self, length: usize) -> ResultStr<&'a [u8]> {
-        let result = self.data.get(..length).ok_or("Incomplete data");
+    fn bytes(&mut self, length: usize) -> Option<&'a [u8]> {
+        let result = self.data.get(..length);
         self.data = &self.data[length..];
         result
     }

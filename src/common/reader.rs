@@ -1,5 +1,3 @@
-use crate::common::ResultStr;
-
 /// # Summary
 /// A trait representing an abstract reader.
 ///
@@ -23,7 +21,7 @@ pub trait Reader<T> {
 
     /// # Summary
     /// Attempt to read a generic byte slice `length` bytes long.
-    fn bytes(&mut self, length: usize) -> ResultStr<T>;
+    fn bytes(&mut self, length: usize) -> Option<T>;
 
     /// # Summary
     /// Read a single u8.
